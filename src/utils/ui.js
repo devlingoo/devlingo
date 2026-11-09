@@ -106,7 +106,7 @@ function learningTopicMessage(difficulty, topics) {
     .addTextDisplayComponents(
       text(`## 📚 ${labels[difficulty] ?? difficulty}`),
       text("Agora escolha exatamente o assunto que deseja estudar:"),
-      text(lines.join("\\n"))
+      text(lines.join("\n"))
     )
     .addSeparatorComponents(divider())
     .addTextDisplayComponents(text("-# Você receberá uma pergunta dentro do assunto escolhido."))];
@@ -156,7 +156,7 @@ function challengeMessage(ch, ownerId, issuedAt, state = { type: "open" }) {
 
   const container = new ContainerBuilder()
     .setAccentColor(color)
-    .addTextDisplayComponents(text(`## 🧩 ${ch.topic?.label ?? `Desafio de ${capitalize(ch.language)}`}`), text(`${ch.difficulty ? `Nível: **${({ beginner: "Iniciante", intermediate: "Intermediário", advanced: "Avançado", expert: "Especialista" })[ch.difficulty] ?? ch.difficulty}**\\n\\n` : ""}${body}`))
+    .addTextDisplayComponents(text(`## 🧩 ${ch.topic?.label ?? `Desafio de ${capitalize(ch.language)}`}`), text(`${ch.difficulty ? `Nível: **${({ beginner: "Iniciante", intermediate: "Intermediário", advanced: "Avançado", expert: "Especialista" })[ch.difficulty] ?? ch.difficulty}**\n\n` : ""}${body}`))
     .addSeparatorComponents(divider())
     .addActionRowComponents(buttons);
 
