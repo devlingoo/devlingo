@@ -1,0 +1,17 @@
+{
+  "name": "devlingo-bot",
+  "version": "0.2.0",
+  "description": "Bot de Discord estilo Duolingo para aprender programação",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  },
+  "engines": {
+    "node": ">=18.11"
+  },
+  "dependencies": {
+    "discord.js": "^14.19.3",
+    "dotenv": "^16.4.5"
+  }
+}

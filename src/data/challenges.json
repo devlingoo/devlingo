@@ -1,0 +1,100 @@
+[
+  {
+    "id": "py-001",
+    "language": "python",
+    "question": "O que esse código imprime?",
+    "code": "print(type([]))",
+    "options": [
+      "<class 'list'>",
+      "<class 'tuple'>",
+      "<class 'dict'>",
+      "<class 'array'>"
+    ],
+    "answer": 0,
+    "explanation": "Os colchetes [] criam uma lista, então o tipo é list."
+  },
+  {
+    "id": "py-002",
+    "language": "python",
+    "question": "O que esse código imprime?",
+    "code": "print(3 * \"ab\")",
+    "options": [
+      "ab3",
+      "ababab",
+      "6",
+      "Erro"
+    ],
+    "answer": 1,
+    "explanation": "Multiplicar uma string por um inteiro repete a string."
+  },
+  {
+    "id": "py-003",
+    "language": "python",
+    "question": "Qual é o resultado de len(\"devlingo\")?",
+    "code": "",
+    "options": [
+      "7",
+      "8",
+      "9",
+      "Erro"
+    ],
+    "answer": 1,
+    "explanation": "A palavra devlingo tem 8 caracteres: d-e-v-l-i-n-g-o."
+  },
+  {
+    "id": "js-001",
+    "language": "javascript",
+    "question": "O que esse código imprime?",
+    "code": "console.log(typeof null);",
+    "options": [
+      "\"null\"",
+      "\"undefined\"",
+      "\"object\"",
+      "\"number\""
+    ],
+    "answer": 2,
+    "explanation": "É uma peculiaridade histórica do JavaScript: typeof null retorna \"object\"."
+  },
+  {
+    "id": "js-002",
+    "language": "javascript",
+    "question": "O que esse código imprime?",
+    "code": "console.log(0.1 + 0.2 === 0.3);",
+    "options": [
+      "true",
+      "false",
+      "undefined",
+      "Erro"
+    ],
+    "answer": 1,
+    "explanation": "Números decimais em ponto flutuante têm imprecisão: 0.1 + 0.2 dá 0.30000000000000004."
+  },
+  {
+    "id": "sql-001",
+    "language": "sql",
+    "question": "Qual função conta quantas linhas uma tabela tem?",
+    "code": "SELECT ____ FROM usuarios;",
+    "options": [
+      "SUM(*)",
+      "COUNT(*)",
+      "TOTAL(*)",
+      "LENGTH(*)"
+    ],
+    "answer": 1,
+    "explanation": "COUNT(*) conta o número de linhas do resultado."
+  },
+  {
+    "id": "git-001",
+    "language": "git",
+    "question": "Qual comando cria uma branch nova e já muda para ela?",
+    "code": "",
+    "options": [
+      "git branch -d nova",
+      "git checkout -b nova",
+      "git merge nova",
+      "git push nova"
+    ],
+    "answer": 1,
+    "explanation": "git checkout -b nova cria e troca de branch de uma vez (git switch -c nova também funciona)."
+  }
+]
