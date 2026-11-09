@@ -11,7 +11,13 @@
       "<class 'array'>"
     ],
     "answer": 0,
-    "explanation": "Os colchetes [] criam uma lista, então o tipo é list."
+    "explanation": "Os colchetes [] criam uma lista, então o tipo é list.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "python-fundamentals",
+      "label": "Fundamentos de Python",
+      "description": "Tipos de dados, variáveis e estruturas básicas"
+    }
   },
   {
     "id": "py-002",
@@ -25,7 +31,13 @@
       "Erro"
     ],
     "answer": 1,
-    "explanation": "Multiplicar uma string por um inteiro repete a string."
+    "explanation": "Multiplicar uma string por um inteiro repete a string.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "python-fundamentals",
+      "label": "Fundamentos de Python",
+      "description": "Tipos de dados, variáveis e estruturas básicas"
+    }
   },
   {
     "id": "py-003",
@@ -39,7 +51,13 @@
       "Erro"
     ],
     "answer": 1,
-    "explanation": "A palavra devlingo tem 8 caracteres: d-e-v-l-i-n-g-o."
+    "explanation": "A palavra devlingo tem 8 caracteres: d-e-v-l-i-n-g-o.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "python-fundamentals",
+      "label": "Fundamentos de Python",
+      "description": "Tipos de dados, variáveis e estruturas básicas"
+    }
   },
   {
     "id": "js-001",
@@ -53,7 +71,13 @@
       "\"number\""
     ],
     "answer": 2,
-    "explanation": "É uma peculiaridade histórica do JavaScript: typeof null retorna \"object\"."
+    "explanation": "É uma peculiaridade histórica do JavaScript: typeof null retorna \"object\".",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "javascript-fundamentals",
+      "label": "Fundamentos de JavaScript",
+      "description": "Tipos, valores e comportamento da linguagem"
+    }
   },
   {
     "id": "js-002",
@@ -67,7 +91,13 @@
       "Erro"
     ],
     "answer": 1,
-    "explanation": "Números decimais em ponto flutuante têm imprecisão: 0.1 + 0.2 dá 0.30000000000000004."
+    "explanation": "Números decimais em ponto flutuante têm imprecisão: 0.1 + 0.2 dá 0.30000000000000004.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "javascript-fundamentals",
+      "label": "Fundamentos de JavaScript",
+      "description": "Tipos, valores e comportamento da linguagem"
+    }
   },
   {
     "id": "sql-001",
@@ -81,7 +111,13 @@
       "LENGTH(*)"
     ],
     "answer": 1,
-    "explanation": "COUNT(*) conta o número de linhas do resultado."
+    "explanation": "COUNT(*) conta o número de linhas do resultado.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "sql-queries",
+      "label": "Consultas SQL",
+      "description": "SELECT, filtros e funções de consulta"
+    }
   },
   {
     "id": "git-001",
@@ -95,6 +131,12 @@
       "git push nova"
     ],
     "answer": 1,
-    "explanation": "git checkout -b nova cria e troca de branch de uma vez (git switch -c nova também funciona)."
+    "explanation": "git checkout -b nova cria e troca de branch de uma vez (git switch -c nova também funciona).",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "git-versioning",
+      "label": "Git e versionamento",
+      "description": "Branches, commits e fluxo de trabalho"
+    }
   }
 ]
