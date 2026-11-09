@@ -117,3 +117,7 @@ Regras que a validação cobra, porque vêm de limites do Discord:
 - Mais desafios, principalmente do nível Especialista (hoje ele fica escondido por não ter conteúdo)
 - Se o bot passar de ~2.500 servidores, o Discord exige sharding; o SQLite em arquivo único também deixa de servir (Postgres)
 - Evitar repetir perguntas já acertadas recentemente na mesma trilha (hoje só a última é excluída)
+
+## Licença
+
+[MIT](LICENSE). O texto usa "Devlingo contributors" como titular; se preferirem os nomes de vocês, é só trocar no `LICENSE`.
