@@ -12,7 +12,7 @@ No servidor, marque o bot no começo da mensagem. Na DM, escreva direto.
 
 | Servidor | DM | O que faz |
 | --- | --- | --- |
-| `@Devlingo desafio` | `desafio` | desafio aleatório (ou `desafio python`, `javascript`, `sql`, `git`) |
+| `@Devlingo aprender` | `aprender` | escolhe nível de dificuldade e assunto para estudar |\n| `@Devlingo desafio` | `desafio` | desafio aleatório (ou `desafio python`, `javascript`, `sql`, `git`) |
 | `@Devlingo perfil` | `perfil` | XP, nível e sequência de dias |
 | `@Devlingo ranking` | `ranking` | top 10 do servidor (na DM, ranking global) |
 | `@Devlingo ajuda` | `ajuda` | lista de comandos |
