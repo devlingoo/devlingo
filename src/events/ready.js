@@ -7,6 +7,6 @@ module.exports = {
 
   execute(client) {
     logger.info(`Logado como ${client.user.tag} em ${client.guilds.cache.size} servidor(es).`);
-    client.user.setActivity("desafios de código 🧩", { type: ActivityType.Playing });
+    client.user.setActivity("Desafios de código 🧩", { type: ActivityType.Playing });
   },
 };
