@@ -5,7 +5,9 @@ module.exports = {
   name: Events.InteractionCreate,
 
   async execute(client, interaction) {
-    if (interaction.isButton()) return buttonHandler.handle(client, interaction);
-    // Sem slash commands: não há outros tipos de interação para tratar.
+    if (interaction.isButton() || interaction.isStringSelectMenu()) {
+      return buttonHandler.handle(client, interaction);
+    }
+    // O bot usa prefixos e componentes; não depende de slash commands.
   },
 };
