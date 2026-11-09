@@ -5,7 +5,8 @@
   "main": "src/devlingo.js",
   "scripts": {
     "start": "node src/devlingo.js",
-    "dev": "node --watch src/devlingo.js"
+    "dev": "node --watch src/devlingo.js",
+    "test": "node --test"
   },
   "engines": {
     "node": ">=18.11"
