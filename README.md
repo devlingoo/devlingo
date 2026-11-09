@@ -12,7 +12,8 @@ No servidor, marque o bot no começo da mensagem. Na DM, escreva direto.
 
 | Servidor | DM | O que faz |
 | --- | --- | --- |
-| `@Devlingo aprender` | `aprender` | escolhe nível de dificuldade e assunto para estudar |\n| `@Devlingo desafio` | `desafio` | desafio aleatório (ou `desafio python`, `javascript`, `sql`, `git`) |
+| `@Devlingo aprender` | `aprender` | escolhe nível de dificuldade e assunto para estudar |
+| `@Devlingo desafio` | `desafio` | desafio aleatório (ou `desafio python`, `javascript`, `sql`, `git`) |
 | `@Devlingo perfil` | `perfil` | XP, nível e sequência de dias |
 | `@Devlingo ranking` | `ranking` | top 10 do servidor (na DM, ranking global) |
 | `@Devlingo ajuda` | `ajuda` | lista de comandos |
@@ -75,7 +76,7 @@ module.exports = {
 
 ## Adicionando desafios
 
-Edite `src/data/challenges.json`. Cada desafio tem `id` (único), `language`, `question`, `code` (opcional), `options` (2 a 4), `answer` (índice da opção certa, começando em 0) e `explanation`. O bot confere isso ao iniciar e avisa se algo estiver errado.
+Edite `src/data/challenges.json`. Cada desafio tem `id` (único), `language`, `difficulty` (`beginner`, `intermediate`, `advanced` ou `expert`), `topic` (`id`, `label` e `description`), `question`, `code` (opcional), `options` (2 a 4), `answer` (índice da opção certa, começando em 0) e `explanation`. O comando `aprender` só oferece níveis e assuntos que tenham desafios cadastrados. O bot valida os dados ao iniciar.
 
 ## Próximos passos
 
