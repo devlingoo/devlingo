@@ -188,4 +188,6 @@ module.exports = {
   rankingMessage,
   profileMessage,
   challengeMessage,
+  learningDifficultyMessage,
+  learningTopicMessage,
 };
