@@ -1,0 +1,40 @@
+name: Testar bot no Discord
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  run-bot:
+    name: Iniciar Devlingo para testes
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Baixar código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Instalar dependências
+        run: npm install --no-audit --no-fund
+
+      - name: Verificar token do Discord
+        env:
+          DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
+        run: |
+          if [ -z "$DISCORD_TOKEN" ]; then
+            echo "::error::O secret DISCORD_TOKEN não foi configurado. Adicione-o em Settings > Secrets and variables > Actions."
+            exit 1
+          fi
+
+      - name: Iniciar bot
+        env:
+          DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
+        run: npm start
