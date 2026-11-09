@@ -1,0 +1,3 @@
+# Todos os arquivos de texto usam LF no repositório e no disco, em qualquer sistema.
+# Sem isso, quem edita no Windows gera diffs cheios de quebras de linha trocadas.
+* text=auto eol=lf

@@ -1,3 +1,4 @@
 node_modules/
 .env
-data/
+# Só a pasta de dados em runtime, na raiz (src/data/ guarda os desafios e precisa ir para o git)
+/data/

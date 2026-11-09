@@ -138,5 +138,1625 @@
       "label": "Git e versionamento",
       "description": "Branches, commits e fluxo de trabalho"
     }
+  },
+  {
+    "id": "py-004",
+    "language": "python",
+    "question": "Como se escreve um comentário de uma linha em Python?",
+    "code": "",
+    "options": [
+      "/* comentário */",
+      "-- comentário",
+      "// comentário",
+      "# comentário"
+    ],
+    "answer": 3,
+    "explanation": "Em Python, tudo depois do `#` até o fim da linha é ignorado pelo interpretador.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "python-fundamentals",
+      "label": "Fundamentos de Python",
+      "description": "Tipos de dados, variáveis e estruturas básicas"
+    }
+  },
+  {
+    "id": "py-005",
+    "language": "python",
+    "question": "O que esse código imprime?",
+    "code": "idade = 20\nprint(idade >= 18)",
+    "options": [
+      "20",
+      "True",
+      "Erro",
+      "true"
+    ],
+    "answer": 1,
+    "explanation": "A comparação devolve o booleano `True`. Em Python os booleanos são escritos com a inicial maiúscula.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "python-fundamentals",
+      "label": "Fundamentos de Python",
+      "description": "Tipos de dados, variáveis e estruturas básicas"
+    }
+  },
+  {
+    "id": "py-006",
+    "language": "python",
+    "question": "O que esse código imprime?",
+    "code": "print(7 // 2)",
+    "options": [
+      "4",
+      "3.5",
+      "2",
+      "3"
+    ],
+    "answer": 3,
+    "explanation": "`//` é a divisão inteira: descarta a parte decimal do resultado (3.5 vira 3).",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "python-fundamentals",
+      "label": "Fundamentos de Python",
+      "description": "Tipos de dados, variáveis e estruturas básicas"
+    }
+  },
+  {
+    "id": "py-007",
+    "language": "python",
+    "question": "O que esse código imprime?",
+    "code": "print(2 ** 3)",
+    "options": [
+      "23",
+      "8",
+      "6",
+      "9"
+    ],
+    "answer": 1,
+    "explanation": "`**` é o operador de potência: 2 elevado a 3 é 8.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "python-fundamentals",
+      "label": "Fundamentos de Python",
+      "description": "Tipos de dados, variáveis e estruturas básicas"
+    }
+  },
+  {
+    "id": "py-008",
+    "language": "python",
+    "question": "Em Python, o que define o bloco de código dentro de um `if` ou de um `for`?",
+    "code": "",
+    "options": [
+      "As chaves { }",
+      "As palavras begin e end",
+      "A indentação (os espaços no início da linha)",
+      "O ponto e vírgula no fim da linha"
+    ],
+    "answer": 2,
+    "explanation": "Python usa indentação para delimitar blocos. Os dois-pontos abrem o bloco e as linhas indentadas fazem parte dele.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "python-fundamentals",
+      "label": "Fundamentos de Python",
+      "description": "Tipos de dados, variáveis e estruturas básicas"
+    }
+  },
+  {
+    "id": "py-009",
+    "language": "python",
+    "question": "O que esse código imprime?",
+    "code": "print(list(range(2, 8, 2)))",
+    "options": [
+      "[2, 3, 4, 5, 6, 7]",
+      "[2, 4, 6, 8]",
+      "[2, 4, 6]",
+      "[4, 6, 8]"
+    ],
+    "answer": 2,
+    "explanation": "`range(início, fim, passo)` vai até o fim sem incluí-lo: 2, 4, 6.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "python-fundamentals",
+      "label": "Fundamentos de Python",
+      "description": "Tipos de dados, variáveis e estruturas básicas"
+    }
+  },
+  {
+    "id": "py-010",
+    "language": "python",
+    "question": "O que esse código imprime?",
+    "code": "def add(x, lista=[]):\n    lista.append(x)\n    return lista\n\nadd(1)\nprint(add(2))",
+    "options": [
+      "[1, 2]",
+      "[2]",
+      "Erro",
+      "[]"
+    ],
+    "answer": 0,
+    "explanation": "O valor padrão `[]` é criado uma única vez, na definição da função, e reaproveitado entre as chamadas. Por isso a lista acumula os itens. Use `None` como padrão e crie a lista dentro da função.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "python-fundamentals",
+      "label": "Fundamentos de Python",
+      "description": "Tipos de dados, variáveis e estruturas básicas"
+    }
+  },
+  {
+    "id": "py-011",
+    "language": "python",
+    "question": "O que esse código imprime?",
+    "code": "print(bool('False'))",
+    "options": [
+      "None",
+      "False",
+      "Erro",
+      "True"
+    ],
+    "answer": 3,
+    "explanation": "Qualquer string não vazia é considerada verdadeira, mesmo que o texto seja 'False'.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "python-fundamentals",
+      "label": "Fundamentos de Python",
+      "description": "Tipos de dados, variáveis e estruturas básicas"
+    }
+  },
+  {
+    "id": "py-012",
+    "language": "python",
+    "question": "O que esse código imprime?",
+    "code": "a = [1, 2]\nb = [1, 2]\nprint(a == b, a is b)",
+    "options": [
+      "False False",
+      "True True",
+      "False True",
+      "True False"
+    ],
+    "answer": 3,
+    "explanation": "`==` compara o conteúdo (iguais) e `is` compara a identidade: são dois objetos diferentes na memória.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "python-fundamentals",
+      "label": "Fundamentos de Python",
+      "description": "Tipos de dados, variáveis e estruturas básicas"
+    }
+  },
+  {
+    "id": "py-013",
+    "language": "python",
+    "question": "O que esse código imprime?",
+    "code": "print(sum(x * x for x in range(4)))",
+    "options": [
+      "14",
+      "[0, 1, 4, 9]",
+      "6",
+      "30"
+    ],
+    "answer": 0,
+    "explanation": "A expressão geradora produz 0, 1, 4 e 9, e `sum` soma tudo: 14.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "python-fundamentals",
+      "label": "Fundamentos de Python",
+      "description": "Tipos de dados, variáveis e estruturas básicas"
+    }
+  },
+  {
+    "id": "py-014",
+    "language": "python",
+    "question": "O que esse código imprime?",
+    "code": "frutas = ['maçã', 'uva']\nprint(frutas[0])",
+    "options": [
+      "maçã",
+      "0",
+      "uva",
+      "['maçã']"
+    ],
+    "answer": 0,
+    "explanation": "Os índices começam em 0, então `frutas[0]` é o primeiro item.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "python-collections",
+      "label": "Listas e dicionários em Python",
+      "description": "Listas, dicionários, fatiamento e comprehensions"
+    }
+  },
+  {
+    "id": "py-015",
+    "language": "python",
+    "question": "Qual método adiciona um item ao final de uma lista?",
+    "code": "",
+    "options": [
+      "add()",
+      "push()",
+      "append()",
+      "insert_end()"
+    ],
+    "answer": 2,
+    "explanation": "`append()` acrescenta o item no fim da lista. `push()` não existe em listas Python.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "python-collections",
+      "label": "Listas e dicionários em Python",
+      "description": "Listas, dicionários, fatiamento e comprehensions"
+    }
+  },
+  {
+    "id": "py-016",
+    "language": "python",
+    "question": "Qual é o resultado de `len([4, 5, 6])`?",
+    "code": "",
+    "options": [
+      "3",
+      "2",
+      "15",
+      "6"
+    ],
+    "answer": 0,
+    "explanation": "`len()` devolve a quantidade de itens da lista: três.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "python-collections",
+      "label": "Listas e dicionários em Python",
+      "description": "Listas, dicionários, fatiamento e comprehensions"
+    }
+  },
+  {
+    "id": "py-017",
+    "language": "python",
+    "question": "Qual sintaxe cria um dicionário em Python?",
+    "code": "",
+    "options": [
+      "('nome': 'Ana')",
+      "<nome: Ana>",
+      "{'nome': 'Ana'}",
+      "['nome', 'Ana']"
+    ],
+    "answer": 2,
+    "explanation": "Dicionários usam chaves com pares `chave: valor`.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "python-collections",
+      "label": "Listas e dicionários em Python",
+      "description": "Listas, dicionários, fatiamento e comprehensions"
+    }
+  },
+  {
+    "id": "py-018",
+    "language": "python",
+    "question": "O que esse código imprime?",
+    "code": "d = {'a': 1, 'b': 2}\nprint(d['b'])",
+    "options": [
+      "2",
+      "1",
+      "KeyError",
+      "'b'"
+    ],
+    "answer": 0,
+    "explanation": "`d['b']` devolve o valor associado à chave 'b'.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "python-collections",
+      "label": "Listas e dicionários em Python",
+      "description": "Listas, dicionários, fatiamento e comprehensions"
+    }
+  },
+  {
+    "id": "py-019",
+    "language": "python",
+    "question": "O que esse código imprime?",
+    "code": "print([1, 2, 3, 4, 5][1:4])",
+    "options": [
+      "[2, 3, 4]",
+      "[1, 4]",
+      "[2, 3, 4, 5]",
+      "[1, 2, 3, 4]"
+    ],
+    "answer": 0,
+    "explanation": "O fatiamento `[1:4]` vai do índice 1 até o 3; o índice final não entra.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "python-collections",
+      "label": "Listas e dicionários em Python",
+      "description": "Listas, dicionários, fatiamento e comprehensions"
+    }
+  },
+  {
+    "id": "py-020",
+    "language": "python",
+    "question": "O que esse código imprime?",
+    "code": "print([n * n for n in range(4)])",
+    "options": [
+      "[0, 1, 4, 9]",
+      "[0, 1, 2, 3]",
+      "[1, 4, 9, 16]",
+      "[0, 2, 4, 6]"
+    ],
+    "answer": 0,
+    "explanation": "A list comprehension eleva ao quadrado cada `n` de 0 a 3.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "python-collections",
+      "label": "Listas e dicionários em Python",
+      "description": "Listas, dicionários, fatiamento e comprehensions"
+    }
+  },
+  {
+    "id": "py-021",
+    "language": "python",
+    "question": "O que esse código imprime?",
+    "code": "d = {'x': 1}\nprint(d.get('y', 0))",
+    "options": [
+      "0",
+      "None",
+      "KeyError",
+      "'y'"
+    ],
+    "answer": 0,
+    "explanation": "`get()` devolve o valor padrão (0) quando a chave não existe, sem lançar `KeyError`.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "python-collections",
+      "label": "Listas e dicionários em Python",
+      "description": "Listas, dicionários, fatiamento e comprehensions"
+    }
+  },
+  {
+    "id": "py-022",
+    "language": "python",
+    "question": "O que acontece ao executar esse código?",
+    "code": "t = (1, 2)\nt[0] = 9",
+    "options": [
+      "Roda sem erro",
+      "TypeError: tuplas não aceitam atribuição",
+      "IndexError",
+      "t vira (9, 2)"
+    ],
+    "answer": 1,
+    "explanation": "Tuplas são imutáveis. Para 'alterar' um item é preciso criar uma nova tupla.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "python-collections",
+      "label": "Listas e dicionários em Python",
+      "description": "Listas, dicionários, fatiamento e comprehensions"
+    }
+  },
+  {
+    "id": "py-023",
+    "language": "python",
+    "question": "O que esse código imprime?",
+    "code": "print(len(set([3, 1, 3, 2, 1])))",
+    "options": [
+      "[1, 2, 3]",
+      "5",
+      "2",
+      "3"
+    ],
+    "answer": 3,
+    "explanation": "Um `set` descarta duplicados: sobram {1, 2, 3}, ou seja, 3 elementos.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "python-collections",
+      "label": "Listas e dicionários em Python",
+      "description": "Listas, dicionários, fatiamento e comprehensions"
+    }
+  },
+  {
+    "id": "py-024",
+    "language": "python",
+    "question": "O que esse código imprime?",
+    "code": "a = [1, 2, 3]\nprint(a[::-1])",
+    "options": [
+      "[3, 2, 1]",
+      "[2, 1]",
+      "[1, 2, 3]",
+      "[3]"
+    ],
+    "answer": 0,
+    "explanation": "O passo -1 percorre a lista de trás para frente, devolvendo uma cópia invertida.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "python-collections",
+      "label": "Listas e dicionários em Python",
+      "description": "Listas, dicionários, fatiamento e comprehensions"
+    }
+  },
+  {
+    "id": "py-025",
+    "language": "python",
+    "question": "O que esse código imprime?",
+    "code": "d = {'a': 1}\nd2 = {**d, 'b': 2}\nprint(d2)",
+    "options": [
+      "{'a': 1, 'b': 2}",
+      "{'**d': 1, 'b': 2}",
+      "SyntaxError",
+      "{'a': 1}"
+    ],
+    "answer": 0,
+    "explanation": "`**` desempacota o dicionário `d` dentro do novo, que ainda ganha a chave 'b'.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "python-collections",
+      "label": "Listas e dicionários em Python",
+      "description": "Listas, dicionários, fatiamento e comprehensions"
+    }
+  },
+  {
+    "id": "js-003",
+    "language": "javascript",
+    "question": "Qual palavra-chave declara uma variável que não pode ser reatribuída?",
+    "code": "",
+    "options": [
+      "let",
+      "static",
+      "const",
+      "var"
+    ],
+    "answer": 2,
+    "explanation": "`const` cria uma constante: depois de inicializada, não aceita nova atribuição.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "javascript-fundamentals",
+      "label": "Fundamentos de JavaScript",
+      "description": "Tipos, valores e comportamento da linguagem"
+    }
+  },
+  {
+    "id": "js-004",
+    "language": "javascript",
+    "question": "O que esse código imprime?",
+    "code": "let x = 10;\nx = x + 5;\nconsole.log(x);",
+    "options": [
+      "10",
+      "x5",
+      "15",
+      "5"
+    ],
+    "answer": 2,
+    "explanation": "`x` começa em 10 e depois recebe 10 + 5.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "javascript-fundamentals",
+      "label": "Fundamentos de JavaScript",
+      "description": "Tipos, valores e comportamento da linguagem"
+    }
+  },
+  {
+    "id": "js-005",
+    "language": "javascript",
+    "question": "Qual destes é um tipo primitivo em JavaScript?",
+    "code": "",
+    "options": [
+      "Array",
+      "Object",
+      "Function",
+      "Boolean"
+    ],
+    "answer": 3,
+    "explanation": "Os primitivos são string, number, bigint, boolean, undefined, null e symbol. Arrays, objetos e funções são objetos.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "javascript-fundamentals",
+      "label": "Fundamentos de JavaScript",
+      "description": "Tipos, valores e comportamento da linguagem"
+    }
+  },
+  {
+    "id": "js-006",
+    "language": "javascript",
+    "question": "O que esse código imprime?",
+    "code": "console.log('5' + 2);",
+    "options": [
+      "TypeError",
+      "52",
+      "NaN",
+      "7"
+    ],
+    "answer": 1,
+    "explanation": "Com uma string, o `+` concatena em vez de somar: '5' + 2 vira '52'.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "javascript-fundamentals",
+      "label": "Fundamentos de JavaScript",
+      "description": "Tipos, valores e comportamento da linguagem"
+    }
+  },
+  {
+    "id": "js-007",
+    "language": "javascript",
+    "question": "O que esse código imprime?",
+    "code": "const lista = [1, 2];\nlista.push(3);\nconsole.log(lista.length);",
+    "options": [
+      "3",
+      "TypeError",
+      "2",
+      "undefined"
+    ],
+    "answer": 0,
+    "explanation": "`const` impede reatribuir a variável, mas não impede alterar o conteúdo do array.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "javascript-fundamentals",
+      "label": "Fundamentos de JavaScript",
+      "description": "Tipos, valores e comportamento da linguagem"
+    }
+  },
+  {
+    "id": "js-008",
+    "language": "javascript",
+    "question": "Qual é a diferença entre `==` e `===`?",
+    "code": "",
+    "options": [
+      "São idênticos; === é só uma questão de estilo",
+      "=== compara valor e tipo; == converte os tipos antes de comparar",
+      "=== compara referências; == compara o conteúdo",
+      "== compara valor e tipo; === converte os tipos antes de comparar"
+    ],
+    "answer": 1,
+    "explanation": "`===` (igualdade estrita) não faz coerção de tipos: `'5' === 5` é false, enquanto `'5' == 5` é true.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "javascript-fundamentals",
+      "label": "Fundamentos de JavaScript",
+      "description": "Tipos, valores e comportamento da linguagem"
+    }
+  },
+  {
+    "id": "js-009",
+    "language": "javascript",
+    "question": "O que esse código imprime?",
+    "code": "if (true) {\n  var a = 1;\n  let b = 2;\n}\nconsole.log(typeof a, typeof b);",
+    "options": [
+      "undefined undefined",
+      "number number",
+      "ReferenceError",
+      "number undefined"
+    ],
+    "answer": 3,
+    "explanation": "`var` ignora o escopo de bloco e continua visível fora do `if`; `let` fica restrito ao bloco, e `typeof` de um nome inexistente devolve 'undefined' em vez de lançar erro.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "javascript-fundamentals",
+      "label": "Fundamentos de JavaScript",
+      "description": "Tipos, valores e comportamento da linguagem"
+    }
+  },
+  {
+    "id": "js-010",
+    "language": "javascript",
+    "question": "O que acontece ao executar esse código?",
+    "code": "console.log(a);\nlet a = 1;",
+    "options": [
+      "Imprime 1",
+      "ReferenceError",
+      "Imprime null",
+      "Imprime undefined"
+    ],
+    "answer": 1,
+    "explanation": "`let` existe no escopo desde o início, mas fica na 'zona morta temporal' até a linha da declaração. Acessar antes lança `ReferenceError` (com `var`, seria `undefined`).",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "javascript-fundamentals",
+      "label": "Fundamentos de JavaScript",
+      "description": "Tipos, valores e comportamento da linguagem"
+    }
+  },
+  {
+    "id": "js-011",
+    "language": "javascript",
+    "question": "O que esse código imprime?",
+    "code": "console.log(null ?? 'padrão', 0 ?? 'padrão', 0 || 'padrão');",
+    "options": [
+      "padrão 0 0",
+      "padrão padrão padrão",
+      "null 0 padrão",
+      "padrão 0 padrão"
+    ],
+    "answer": 3,
+    "explanation": "`??` só usa o valor da direita para `null` ou `undefined`. `||` usa para qualquer valor falsy, inclusive o 0.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "javascript-fundamentals",
+      "label": "Fundamentos de JavaScript",
+      "description": "Tipos, valores e comportamento da linguagem"
+    }
+  },
+  {
+    "id": "js-012",
+    "language": "javascript",
+    "question": "O que esse código imprime?",
+    "code": "console.log(NaN === NaN, Object.is(NaN, NaN));",
+    "options": [
+      "true true",
+      "true false",
+      "false true",
+      "false false"
+    ],
+    "answer": 2,
+    "explanation": "`NaN` não é igual a si mesmo com `===`, mas `Object.is` trata `NaN` como o mesmo valor.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "javascript-fundamentals",
+      "label": "Fundamentos de JavaScript",
+      "description": "Tipos, valores e comportamento da linguagem"
+    }
+  },
+  {
+    "id": "js-013",
+    "language": "javascript",
+    "question": "O que esse código imprime?",
+    "code": "console.log([] == ![]);",
+    "options": [
+      "undefined",
+      "false",
+      "true",
+      "TypeError"
+    ],
+    "answer": 2,
+    "explanation": "`![]` vira false; na comparação com `==`, `[]` vira '' e depois 0, e false também vira 0. Por isso 0 == 0 é true. É um bom motivo para preferir `===`.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "javascript-fundamentals",
+      "label": "Fundamentos de JavaScript",
+      "description": "Tipos, valores e comportamento da linguagem"
+    }
+  },
+  {
+    "id": "js-014",
+    "language": "javascript",
+    "question": "Qual é a sintaxe correta para declarar uma função chamada `soma`?",
+    "code": "",
+    "options": [
+      "fn soma() {}",
+      "function soma() {}",
+      "func soma() {}",
+      "def soma():"
+    ],
+    "answer": 1,
+    "explanation": "Em JavaScript usamos a palavra-chave `function`.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "javascript-functions",
+      "label": "Funções em JavaScript",
+      "description": "Declaração, arrow functions, escopo e closures"
+    }
+  },
+  {
+    "id": "js-015",
+    "language": "javascript",
+    "question": "O que esse código imprime?",
+    "code": "function dobro(n) {\n  return n * 2;\n}\nconsole.log(dobro(4));",
+    "options": [
+      "undefined",
+      "8",
+      "16",
+      "4"
+    ],
+    "answer": 1,
+    "explanation": "A função devolve `n * 2`; com n = 4, o resultado é 8.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "javascript-functions",
+      "label": "Funções em JavaScript",
+      "description": "Declaração, arrow functions, escopo e closures"
+    }
+  },
+  {
+    "id": "js-016",
+    "language": "javascript",
+    "question": "O que uma função devolve quando não tem `return`?",
+    "code": "",
+    "options": [
+      "null",
+      "Uma string vazia",
+      "undefined",
+      "0"
+    ],
+    "answer": 2,
+    "explanation": "Sem `return` explícito, a função devolve `undefined`.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "javascript-functions",
+      "label": "Funções em JavaScript",
+      "description": "Declaração, arrow functions, escopo e closures"
+    }
+  },
+  {
+    "id": "js-017",
+    "language": "javascript",
+    "question": "Em `soma(2, 3)`, como chamamos os valores 2 e 3?",
+    "code": "",
+    "options": [
+      "Parâmetros",
+      "Propriedades",
+      "Argumentos",
+      "Retornos"
+    ],
+    "answer": 2,
+    "explanation": "Parâmetros são os nomes na declaração da função; argumentos são os valores passados na chamada.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "javascript-functions",
+      "label": "Funções em JavaScript",
+      "description": "Declaração, arrow functions, escopo e closures"
+    }
+  },
+  {
+    "id": "js-018",
+    "language": "javascript",
+    "question": "O que esse código imprime?",
+    "code": "const quad = x => x * x;\nconsole.log(quad(5));",
+    "options": [
+      "undefined",
+      "x * x",
+      "25",
+      "10"
+    ],
+    "answer": 2,
+    "explanation": "A arrow function devolve `x * x` implicitamente: 5 * 5 = 25.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "javascript-functions",
+      "label": "Funções em JavaScript",
+      "description": "Declaração, arrow functions, escopo e closures"
+    }
+  },
+  {
+    "id": "js-019",
+    "language": "javascript",
+    "question": "O que esse código imprime?",
+    "code": "function oi(nome = 'mundo') {\n  return 'Oi, ' + nome;\n}\nconsole.log(oi());",
+    "options": [
+      "Oi, mundo",
+      "Oi, undefined",
+      "Oi, null",
+      "ReferenceError"
+    ],
+    "answer": 0,
+    "explanation": "Sem argumento, o parâmetro assume o valor padrão 'mundo'.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "javascript-functions",
+      "label": "Funções em JavaScript",
+      "description": "Declaração, arrow functions, escopo e closures"
+    }
+  },
+  {
+    "id": "js-020",
+    "language": "javascript",
+    "question": "O que esse código imprime?",
+    "code": "function contar(...itens) {\n  return itens.length;\n}\nconsole.log(contar('a', 'b', 'c'));",
+    "options": [
+      "undefined",
+      "1",
+      "['a', 'b', 'c']",
+      "3"
+    ],
+    "answer": 3,
+    "explanation": "O parâmetro rest (`...itens`) reúne todos os argumentos num array de 3 itens.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "javascript-functions",
+      "label": "Funções em JavaScript",
+      "description": "Declaração, arrow functions, escopo e closures"
+    }
+  },
+  {
+    "id": "js-021",
+    "language": "javascript",
+    "question": "Qual afirmação sobre hoisting é verdadeira?",
+    "code": "",
+    "options": [
+      "Uma arrow function em const pode ser chamada antes de ser declarada",
+      "let e const começam com o valor undefined no topo do escopo",
+      "Funções nunca sofrem hoisting",
+      "Uma declaração function pode ser chamada antes de aparecer no código"
+    ],
+    "answer": 3,
+    "explanation": "Declarações de função são içadas por completo. Já `const` e `let` ficam na zona morta temporal até a declaração, então chamar antes lança `ReferenceError`.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "javascript-functions",
+      "label": "Funções em JavaScript",
+      "description": "Declaração, arrow functions, escopo e closures"
+    }
+  },
+  {
+    "id": "js-022",
+    "language": "javascript",
+    "question": "O que esse código imprime?",
+    "code": "function contador() {\n  let c = 0;\n  return () => ++c;\n}\nconst inc = contador();\ninc();\nconsole.log(inc());",
+    "options": [
+      "1",
+      "NaN",
+      "2",
+      "0"
+    ],
+    "answer": 2,
+    "explanation": "A função retornada guarda o acesso a `c` (closure). A primeira chamada leva `c` a 1; a segunda, a 2.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "javascript-functions",
+      "label": "Funções em JavaScript",
+      "description": "Declaração, arrow functions, escopo e closures"
+    }
+  },
+  {
+    "id": "js-023",
+    "language": "javascript",
+    "question": "O que esse código imprime?",
+    "code": "function apresentar(saudacao) {\n  return saudacao + ', ' + this.nome;\n}\nconsole.log(apresentar.call({ nome: 'Lia' }, 'Olá'));",
+    "options": [
+      "TypeError",
+      "Lia, Olá",
+      "Olá, undefined",
+      "Olá, Lia"
+    ],
+    "answer": 3,
+    "explanation": "`call` executa a função com `this` apontando para o objeto passado e repassa os demais argumentos.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "javascript-functions",
+      "label": "Funções em JavaScript",
+      "description": "Declaração, arrow functions, escopo e closures"
+    }
+  },
+  {
+    "id": "js-024",
+    "language": "javascript",
+    "question": "O que esse código imprime?",
+    "code": "console.log(['1', '2', '3'].map(parseInt));",
+    "options": [
+      "[NaN, NaN, NaN]",
+      "[1, 2, 3]",
+      "[1, NaN, NaN]",
+      "['1', '2', '3']"
+    ],
+    "answer": 2,
+    "explanation": "`map` passa (valor, índice) e `parseInt` usa o segundo argumento como base numérica: `parseInt('2', 1)` e `parseInt('3', 2)` dão NaN.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "javascript-functions",
+      "label": "Funções em JavaScript",
+      "description": "Declaração, arrow functions, escopo e closures"
+    }
+  },
+  {
+    "id": "js-025",
+    "language": "javascript",
+    "question": "O que esse código imprime?",
+    "code": "const fns = [];\nfor (var i = 0; i < 3; i++) {\n  fns.push(() => i);\n}\nconsole.log(fns.map(f => f()));",
+    "options": [
+      "[3, 3, 3]",
+      "[undefined, undefined, undefined]",
+      "[1, 2, 3]",
+      "[0, 1, 2]"
+    ],
+    "answer": 0,
+    "explanation": "`var` tem escopo de função: as três funções compartilham o mesmo `i`, que vale 3 no fim do laço. Com `let`, cada volta teria o seu próprio `i`.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "javascript-functions",
+      "label": "Funções em JavaScript",
+      "description": "Declaração, arrow functions, escopo e closures"
+    }
+  },
+  {
+    "id": "js-026",
+    "language": "javascript",
+    "question": "O que esse código imprime?",
+    "code": "const frutas = ['maçã', 'uva', 'pera'];\nconsole.log(frutas[1]);",
+    "options": [
+      "uva",
+      "undefined",
+      "pera",
+      "maçã"
+    ],
+    "answer": 0,
+    "explanation": "Os índices começam em 0: `frutas[1]` é o segundo item.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "javascript-arrays",
+      "label": "Arrays e laços em JavaScript",
+      "description": "Arrays, métodos funcionais e laços de repetição"
+    }
+  },
+  {
+    "id": "js-027",
+    "language": "javascript",
+    "question": "Qual método adiciona um item ao final de um array?",
+    "code": "",
+    "options": [
+      "pop()",
+      "unshift()",
+      "shift()",
+      "push()"
+    ],
+    "answer": 3,
+    "explanation": "`push()` acrescenta no fim. `pop()` remove do fim, `shift()` remove do início e `unshift()` adiciona no início.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "javascript-arrays",
+      "label": "Arrays e laços em JavaScript",
+      "description": "Arrays, métodos funcionais e laços de repetição"
+    }
+  },
+  {
+    "id": "js-028",
+    "language": "javascript",
+    "question": "O que esse código imprime?",
+    "code": "for (let i = 0; i < 3; i++) {\n  console.log(i);\n}",
+    "options": [
+      "0 1 2 3",
+      "1 2 3",
+      "0 1 2",
+      "1 2"
+    ],
+    "answer": 2,
+    "explanation": "`i` começa em 0 e o laço roda enquanto `i < 3`, passando por 0, 1 e 2.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "javascript-arrays",
+      "label": "Arrays e laços em JavaScript",
+      "description": "Arrays, métodos funcionais e laços de repetição"
+    }
+  },
+  {
+    "id": "js-029",
+    "language": "javascript",
+    "question": "Qual é o índice do primeiro elemento de um array?",
+    "code": "",
+    "options": [
+      "1",
+      "-1",
+      "0",
+      "first"
+    ],
+    "answer": 2,
+    "explanation": "Arrays em JavaScript são indexados a partir de zero.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "javascript-arrays",
+      "label": "Arrays e laços em JavaScript",
+      "description": "Arrays, métodos funcionais e laços de repetição"
+    }
+  },
+  {
+    "id": "js-030",
+    "language": "javascript",
+    "question": "O que esse código imprime?",
+    "code": "console.log([1, 2, 3].map(n => n * 2));",
+    "options": [
+      "6",
+      "[1, 2, 3]",
+      "[2, 4]",
+      "[2, 4, 6]"
+    ],
+    "answer": 3,
+    "explanation": "`map` cria um novo array aplicando a função a cada item.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "javascript-arrays",
+      "label": "Arrays e laços em JavaScript",
+      "description": "Arrays, métodos funcionais e laços de repetição"
+    }
+  },
+  {
+    "id": "js-031",
+    "language": "javascript",
+    "question": "O que esse código imprime?",
+    "code": "console.log([1, 2, 3, 4].filter(n => n % 2 === 0));",
+    "options": [
+      "2",
+      "[2, 4]",
+      "[1, 3]",
+      "[true, false, true, false]"
+    ],
+    "answer": 1,
+    "explanation": "`filter` mantém apenas os itens para os quais a função devolve true: os pares.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "javascript-arrays",
+      "label": "Arrays e laços em JavaScript",
+      "description": "Arrays, métodos funcionais e laços de repetição"
+    }
+  },
+  {
+    "id": "js-032",
+    "language": "javascript",
+    "question": "O que esse código imprime?",
+    "code": "console.log([1, 2, 3, 4].reduce((acc, n) => acc + n, 0));",
+    "options": [
+      "4",
+      "10",
+      "[1, 2, 3, 4]",
+      "0"
+    ],
+    "answer": 1,
+    "explanation": "`reduce` acumula um valor: começa em 0 e soma cada item, resultando em 10.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "javascript-arrays",
+      "label": "Arrays e laços em JavaScript",
+      "description": "Arrays, métodos funcionais e laços de repetição"
+    }
+  },
+  {
+    "id": "js-033",
+    "language": "javascript",
+    "question": "Qual laço percorre diretamente os valores de um array, sem usar índices?",
+    "code": "",
+    "options": [
+      "for (const x of arr)",
+      "for (let i = 0; i < arr; i++)",
+      "for (const x in arr)",
+      "while (arr)"
+    ],
+    "answer": 0,
+    "explanation": "`for...of` itera pelos valores. `for...in` percorre as chaves (índices como texto), o que raramente é o que se quer em arrays.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "javascript-arrays",
+      "label": "Arrays e laços em JavaScript",
+      "description": "Arrays, métodos funcionais e laços de repetição"
+    }
+  },
+  {
+    "id": "js-034",
+    "language": "javascript",
+    "question": "O que esse código imprime?",
+    "code": "console.log([10, 9, 1].sort());",
+    "options": [
+      "[9, 10, 1]",
+      "[10, 9, 1]",
+      "[1, 9, 10]",
+      "[1, 10, 9]"
+    ],
+    "answer": 3,
+    "explanation": "Sem função de comparação, `sort` ordena como texto: '1' < '10' < '9'. Para números use `sort((a, b) => a - b)`.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "javascript-arrays",
+      "label": "Arrays e laços em JavaScript",
+      "description": "Arrays, métodos funcionais e laços de repetição"
+    }
+  },
+  {
+    "id": "js-035",
+    "language": "javascript",
+    "question": "O que esse código imprime?",
+    "code": "const a = [1, 2, 3];\nconst b = a;\nb.push(4);\nconsole.log(a.length);",
+    "options": [
+      "4",
+      "3",
+      "undefined",
+      "TypeError"
+    ],
+    "answer": 0,
+    "explanation": "`b` não é uma cópia: é outra referência para o mesmo array. Para copiar, use `[...a]` ou `a.slice()`.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "javascript-arrays",
+      "label": "Arrays e laços em JavaScript",
+      "description": "Arrays, métodos funcionais e laços de repetição"
+    }
+  },
+  {
+    "id": "js-036",
+    "language": "javascript",
+    "question": "O que esse código imprime?",
+    "code": "console.log([1, [2, [3]]].flat().length);",
+    "options": [
+      "2",
+      "4",
+      "3",
+      "1"
+    ],
+    "answer": 2,
+    "explanation": "`flat()` achata só um nível por padrão: `[1, 2, [3]]`, com 3 itens.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "javascript-arrays",
+      "label": "Arrays e laços em JavaScript",
+      "description": "Arrays, métodos funcionais e laços de repetição"
+    }
+  },
+  {
+    "id": "js-037",
+    "language": "javascript",
+    "question": "O que esse código imprime?",
+    "code": "console.log([...'abc'].map((c, i) => c + i).join('-'));",
+    "options": [
+      "a-b-c",
+      "abc012",
+      "['a0', 'b1', 'c2']",
+      "a0-b1-c2"
+    ],
+    "answer": 3,
+    "explanation": "O spread separa a string em letras, `map` junta cada letra ao índice e `join` une tudo com hífen.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "javascript-arrays",
+      "label": "Arrays e laços em JavaScript",
+      "description": "Arrays, métodos funcionais e laços de repetição"
+    }
+  },
+  {
+    "id": "sql-002",
+    "language": "sql",
+    "question": "Qual consulta traz todas as colunas da tabela `alunos`?",
+    "code": "",
+    "options": [
+      "SELECT * FROM alunos;",
+      "OPEN alunos;",
+      "GET ALL FROM alunos;",
+      "SHOW alunos;"
+    ],
+    "answer": 0,
+    "explanation": "O asterisco (`*`) significa todas as colunas.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "sql-queries",
+      "label": "Consultas SQL",
+      "description": "SELECT, filtros e funções de consulta"
+    }
+  },
+  {
+    "id": "sql-003",
+    "language": "sql",
+    "question": "Qual cláusula filtra as linhas retornadas por uma consulta?",
+    "code": "",
+    "options": [
+      "FROM",
+      "LIMIT",
+      "ORDER BY",
+      "WHERE"
+    ],
+    "answer": 3,
+    "explanation": "`WHERE` mantém só as linhas que atendem à condição.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "sql-queries",
+      "label": "Consultas SQL",
+      "description": "SELECT, filtros e funções de consulta"
+    }
+  },
+  {
+    "id": "sql-004",
+    "language": "sql",
+    "question": "Qual cláusula ordena o resultado de uma consulta?",
+    "code": "",
+    "options": [
+      "SORT BY",
+      "GROUP BY",
+      "ORDER BY",
+      "ARRANGE"
+    ],
+    "answer": 2,
+    "explanation": "`ORDER BY` ordena por uma ou mais colunas; use `DESC` para ordem decrescente.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "sql-queries",
+      "label": "Consultas SQL",
+      "description": "SELECT, filtros e funções de consulta"
+    }
+  },
+  {
+    "id": "sql-005",
+    "language": "sql",
+    "question": "Qual comando adiciona uma nova linha a uma tabela?",
+    "code": "",
+    "options": [
+      "INSERT INTO",
+      "NEW ROW",
+      "ADD ROW",
+      "APPEND"
+    ],
+    "answer": 0,
+    "explanation": "`INSERT INTO tabela (colunas) VALUES (...)` cria uma nova linha.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "sql-queries",
+      "label": "Consultas SQL",
+      "description": "SELECT, filtros e funções de consulta"
+    }
+  },
+  {
+    "id": "sql-006",
+    "language": "sql",
+    "question": "Qual consulta traz os alunos com nota maior que 7?",
+    "code": "",
+    "options": [
+      "SELECT * FROM alunos WHEN nota > 7;",
+      "SELECT * FROM alunos WHERE nota > 7;",
+      "SELECT * FROM alunos FILTER nota > 7;",
+      "SELECT * FROM alunos IF nota > 7;"
+    ],
+    "answer": 1,
+    "explanation": "O filtro de linhas é feito com `WHERE`.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "sql-queries",
+      "label": "Consultas SQL",
+      "description": "SELECT, filtros e funções de consulta"
+    }
+  },
+  {
+    "id": "sql-007",
+    "language": "sql",
+    "question": "O que `SELECT COUNT(*) FROM pedidos;` retorna?",
+    "code": "",
+    "options": [
+      "Todas as linhas da tabela pedidos",
+      "O maior valor da coluna id",
+      "O número de linhas da tabela pedidos",
+      "A soma de todos os valores de pedidos"
+    ],
+    "answer": 2,
+    "explanation": "`COUNT(*)` conta as linhas do resultado.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "sql-queries",
+      "label": "Consultas SQL",
+      "description": "SELECT, filtros e funções de consulta"
+    }
+  },
+  {
+    "id": "sql-008",
+    "language": "sql",
+    "question": "Qual cláusula agrupa linhas para usar com `SUM`, `AVG` ou `COUNT`?",
+    "code": "",
+    "options": [
+      "PARTITION",
+      "COLLECT",
+      "ORDER BY",
+      "GROUP BY"
+    ],
+    "answer": 3,
+    "explanation": "`GROUP BY` junta as linhas com o mesmo valor da coluna para calcular uma agregação por grupo.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "sql-queries",
+      "label": "Consultas SQL",
+      "description": "SELECT, filtros e funções de consulta"
+    }
+  },
+  {
+    "id": "sql-009",
+    "language": "sql",
+    "question": "Qual condição busca nomes que começam com 'Ma'?",
+    "code": "",
+    "options": [
+      "nome STARTS 'Ma'",
+      "nome = 'Ma*'",
+      "nome IN 'Ma%'",
+      "nome LIKE 'Ma%'"
+    ],
+    "answer": 3,
+    "explanation": "`LIKE` usa `%` como curinga para qualquer sequência de caracteres.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "sql-queries",
+      "label": "Consultas SQL",
+      "description": "SELECT, filtros e funções de consulta"
+    }
+  },
+  {
+    "id": "sql-010",
+    "language": "sql",
+    "question": "Qual JOIN devolve todas as linhas da tabela da esquerda, mesmo sem correspondência?",
+    "code": "",
+    "options": [
+      "RIGHT JOIN",
+      "INNER JOIN",
+      "LEFT JOIN",
+      "CROSS JOIN"
+    ],
+    "answer": 2,
+    "explanation": "`LEFT JOIN` mantém todas as linhas da esquerda e preenche com NULL as colunas da direita quando não há par. `INNER JOIN` só devolve linhas com correspondência.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "sql-queries",
+      "label": "Consultas SQL",
+      "description": "SELECT, filtros e funções de consulta"
+    }
+  },
+  {
+    "id": "sql-011",
+    "language": "sql",
+    "question": "Qual é a diferença entre `WHERE` e `HAVING`?",
+    "code": "",
+    "options": [
+      "São sinônimos e funcionam igual",
+      "WHERE filtra linhas antes de agrupar; HAVING filtra grupos depois",
+      "HAVING filtra linhas antes de agrupar; WHERE filtra grupos depois",
+      "WHERE só funciona com JOIN, HAVING só com ORDER BY"
+    ],
+    "answer": 1,
+    "explanation": "Condições sobre agregações (como `COUNT(*) > 5`) só podem ir no `HAVING`, porque o grupo só existe depois do `GROUP BY`.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "sql-queries",
+      "label": "Consultas SQL",
+      "description": "SELECT, filtros e funções de consulta"
+    }
+  },
+  {
+    "id": "sql-012",
+    "language": "sql",
+    "question": "Como testar corretamente se a coluna `email` está vazia (NULL)?",
+    "code": "",
+    "options": [
+      "email EQUALS NULL",
+      "email == NULL",
+      "email IS NULL",
+      "email = NULL"
+    ],
+    "answer": 2,
+    "explanation": "`NULL` significa 'desconhecido', e qualquer comparação com `= NULL` resulta em desconhecido. O teste correto é `IS NULL`.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "sql-queries",
+      "label": "Consultas SQL",
+      "description": "SELECT, filtros e funções de consulta"
+    }
+  },
+  {
+    "id": "sql-013",
+    "language": "sql",
+    "question": "Qual é a melhor defesa contra SQL injection?",
+    "code": "",
+    "options": [
+      "Esconder as mensagens de erro do banco",
+      "Concatenar o texto do usuário com cuidado",
+      "Consultas parametrizadas (prepared statements)",
+      "Usar apenas letras maiúsculas nos comandos"
+    ],
+    "answer": 2,
+    "explanation": "Com parâmetros, o valor do usuário nunca é interpretado como parte do comando SQL.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "sql-queries",
+      "label": "Consultas SQL",
+      "description": "SELECT, filtros e funções de consulta"
+    }
+  },
+  {
+    "id": "git-002",
+    "language": "git",
+    "question": "Qual comando cria um novo repositório Git na pasta atual?",
+    "code": "",
+    "options": [
+      "git new",
+      "git start",
+      "git init",
+      "git create"
+    ],
+    "answer": 2,
+    "explanation": "`git init` cria a pasta oculta `.git`, que guarda todo o histórico.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "git-versioning",
+      "label": "Git e versionamento",
+      "description": "Branches, commits e fluxo de trabalho"
+    }
+  },
+  {
+    "id": "git-003",
+    "language": "git",
+    "question": "Qual comando mostra quais arquivos foram modificados ou estão em staging?",
+    "code": "",
+    "options": [
+      "git status",
+      "git remote -v",
+      "git log",
+      "git show"
+    ],
+    "answer": 0,
+    "explanation": "`git status` mostra o estado da árvore de trabalho e da área de staging.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "git-versioning",
+      "label": "Git e versionamento",
+      "description": "Branches, commits e fluxo de trabalho"
+    }
+  },
+  {
+    "id": "git-004",
+    "language": "git",
+    "question": "Qual comando coloca o arquivo `index.js` na área de staging?",
+    "code": "",
+    "options": [
+      "git save index.js",
+      "git push index.js",
+      "git fetch index.js",
+      "git add index.js"
+    ],
+    "answer": 3,
+    "explanation": "`git add` prepara as mudanças do arquivo para o próximo commit.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "git-versioning",
+      "label": "Git e versionamento",
+      "description": "Branches, commits e fluxo de trabalho"
+    }
+  },
+  {
+    "id": "git-005",
+    "language": "git",
+    "question": "Qual comando registra as mudanças em staging com uma mensagem?",
+    "code": "",
+    "options": [
+      "git push -m 'mensagem'",
+      "git commit -m 'mensagem'",
+      "git save -m 'mensagem'",
+      "git add -m 'mensagem'"
+    ],
+    "answer": 1,
+    "explanation": "`git commit` grava um novo ponto no histórico com as mudanças que estavam em staging.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "git-versioning",
+      "label": "Git e versionamento",
+      "description": "Branches, commits e fluxo de trabalho"
+    }
+  },
+  {
+    "id": "git-006",
+    "language": "git",
+    "question": "Qual comando baixa uma cópia de um repositório remoto para a sua máquina?",
+    "code": "",
+    "options": [
+      "git fetch <url>",
+      "git copy <url>",
+      "git clone <url>",
+      "git remote <url>"
+    ],
+    "answer": 2,
+    "explanation": "`git clone` copia o repositório inteiro, com o histórico, e já configura o remoto `origin`.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "git-versioning",
+      "label": "Git e versionamento",
+      "description": "Branches, commits e fluxo de trabalho"
+    }
+  },
+  {
+    "id": "git-007",
+    "language": "git",
+    "question": "Qual comando cria a branch `login` e já muda para ela?",
+    "code": "",
+    "options": [
+      "git new-branch login",
+      "git branch login",
+      "git switch login",
+      "git switch -c login"
+    ],
+    "answer": 3,
+    "explanation": "`git switch -c` cria e troca de branch de uma vez. `git branch login` só cria, sem trocar.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "git-versioning",
+      "label": "Git e versionamento",
+      "description": "Branches, commits e fluxo de trabalho"
+    }
+  },
+  {
+    "id": "git-008",
+    "language": "git",
+    "question": "Qual é a diferença entre `git fetch` e `git pull`?",
+    "code": "",
+    "options": [
+      "fetch envia commits ao remoto; pull apaga a branch local",
+      "Não há diferença, são apelidos do mesmo comando",
+      "pull só baixa as novidades; fetch baixa e já integra na branch atual",
+      "fetch só baixa as novidades; pull baixa e já integra na branch atual"
+    ],
+    "answer": 3,
+    "explanation": "`git pull` equivale a `git fetch` seguido de `git merge` (ou `rebase`, se configurado).",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "git-versioning",
+      "label": "Git e versionamento",
+      "description": "Branches, commits e fluxo de trabalho"
+    }
+  },
+  {
+    "id": "git-009",
+    "language": "git",
+    "question": "Qual comando envia seus commits da branch `main` para o remoto `origin`?",
+    "code": "",
+    "options": [
+      "git push origin main",
+      "git upload main",
+      "git pull origin main",
+      "git send origin main"
+    ],
+    "answer": 0,
+    "explanation": "`git push` publica os commits locais no repositório remoto.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "git-versioning",
+      "label": "Git e versionamento",
+      "description": "Branches, commits e fluxo de trabalho"
+    }
+  },
+  {
+    "id": "git-010",
+    "language": "git",
+    "question": "O que faz `git rebase main` quando você está numa branch de feature?",
+    "code": "",
+    "options": [
+      "Apaga a branch main",
+      "Envia sua branch para o remoto",
+      "Reaplica seus commits sobre a ponta de main, reescrevendo o histórico",
+      "Cria um commit de merge juntando as duas branches"
+    ],
+    "answer": 2,
+    "explanation": "O rebase recria os seus commits em cima de `main`, deixando um histórico linear. Como reescreve commits, evite fazer isso em branches já compartilhadas.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "git-versioning",
+      "label": "Git e versionamento",
+      "description": "Branches, commits e fluxo de trabalho"
+    }
+  },
+  {
+    "id": "git-011",
+    "language": "git",
+    "question": "Como desfazer um commit já publicado sem reescrever o histórico?",
+    "code": "",
+    "options": [
+      "git reset --hard <hash>",
+      "git commit --amend",
+      "git checkout -- .",
+      "git revert <hash>"
+    ],
+    "answer": 3,
+    "explanation": "`git revert` cria um novo commit que desfaz o anterior, preservando o histórico para quem já o baixou.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "git-versioning",
+      "label": "Git e versionamento",
+      "description": "Branches, commits e fluxo de trabalho"
+    }
+  },
+  {
+    "id": "git-012",
+    "language": "git",
+    "question": "O que faz o comando `git stash`?",
+    "code": "",
+    "options": [
+      "Apaga as mudanças não commitadas para sempre",
+      "Cria uma nova branch com as mudanças",
+      "Guarda as mudanças não commitadas num lugar temporário",
+      "Envia as mudanças para o remoto"
+    ],
+    "answer": 2,
+    "explanation": "`git stash` limpa o diretório de trabalho guardando as alterações; depois use `git stash pop` para recuperá-las.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "git-versioning",
+      "label": "Git e versionamento",
+      "description": "Branches, commits e fluxo de trabalho"
+    }
+  },
+  {
+    "id": "git-013",
+    "language": "git",
+    "question": "Como trazer apenas um commit específico de outra branch para a atual?",
+    "code": "",
+    "options": [
+      "git cherry-pick <hash>",
+      "git merge <hash>",
+      "git revert <hash>",
+      "git checkout <hash>"
+    ],
+    "answer": 0,
+    "explanation": "`cherry-pick` aplica o conteúdo de um commit escolhido na branch atual, criando um novo commit equivalente.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "git-versioning",
+      "label": "Git e versionamento",
+      "description": "Branches, commits e fluxo de trabalho"
+    }
   }
 ]

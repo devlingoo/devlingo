@@ -12,7 +12,7 @@ No servidor, marque o bot no começo da mensagem. Na DM, escreva direto.
 
 | Servidor | DM | O que faz |
 | --- | --- | --- |
-| `@Devlingo aprender` | `aprender` | escolhe nível de dificuldade e assunto para estudar |
+| `@Devlingo aprender` | `aprender` | trilha de estudo: escolhe o nível e o assunto exato, e só pergunta sobre ele |
 | `@Devlingo desafio` | `desafio` | desafio aleatório (ou `desafio python`, `javascript`, `sql`, `git`) |
 | `@Devlingo perfil` | `perfil` | XP, nível e sequência de dias |
 | `@Devlingo ranking` | `ranking` | top 10 do servidor (na DM, ranking global) |
@@ -20,9 +20,17 @@ No servidor, marque o bot no começo da mensagem. Na DM, escreva direto.
 
 O XP e a sequência são globais por pessoa; o ranking do servidor conta só o XP ganho naquele servidor. Cada desafio expira em 5 minutos e só quem pediu pode responder.
 
+**Limite diário:** cada pessoa ganha no máximo 200 XP por dia. Depois disso ainda dá para treinar e ler as explicações, mas o XP só volta no dia seguinte (o `perfil` mostra o XP de hoje). O "dia" muda à meia-noite de `America/Sao_Paulo`, não do servidor onde o bot roda.
+
+### Trilha de estudo (`aprender`)
+
+1. Escolha o **nível** (🟢 Iniciante, 🟡 Intermediário, 🟠 Avançado, 🔴 Especialista). Só aparecem os níveis que já têm desafios cadastrados.
+2. Escolha o **assunto exato** (por exemplo, "Funções em JavaScript" ou "Consultas SQL").
+3. Responda. Depois de cada resposta, **Próxima pergunta** sorteia outra do mesmo nível e assunto (sem repetir a que acabou de sair), **Trocar assunto** volta à lista de assuntos do nível e **Trocar nível** volta ao início.
+
 ## Como rodar
 
-Precisa do [Node.js](https://nodejs.org) 18.11 ou mais novo.
+Precisa do [Node.js](https://nodejs.org) 22.13 ou mais novo (o banco SQLite vem embutido no Node, sem instalar nada a mais).
 
 1. Crie o bot no [Discord Developer Portal](https://discord.com/developers/applications), aba **Bot**. Não precisa ligar nenhuma Privileged Gateway Intent.
 2. Copie o token e convide o bot ao servidor (OAuth2 → URL Generator → escopo `bot`; permissões: View Channels, Send Messages, Read Message History, Add Reactions).
@@ -37,18 +45,36 @@ npm start                # ou npm run dev para reiniciar ao salvar
 
 **Nunca** suba o `.env` para o GitHub (já está no `.gitignore`).
 
+Variáveis opcionais do `.env` (todas explicadas no `.env.example`):
+
+| Variável | Padrão | Para quê |
+| --- | --- | --- |
+| `ALLOWED_CHANNEL_ID` | vazio | nos servidores, o bot só responde nesse canal |
+| `DAILY_XP_CAP` | `200` | máximo de XP por pessoa por dia (`0` = sem limite) |
+| `TIMEZONE` | `America/Sao_Paulo` | fuso que define "o dia" da sequência e do limite diário |
+| `DB_PATH` | `data/devlingo.db` | onde fica o banco |
+
+**Dados:** o progresso fica em SQLite (`data/devlingo.db`, ignorado pelo git; faça backup dessa pasta). Se existir um `data/data.json` da versão antiga, ele é importado sozinho na primeira inicialização e guardado como `data.json.migrated`.
+
+**Testes:** `npm test` roda tudo sem token e sem internet.
+
+Quer contribuir? Veja o [CONTRIBUTING.md](CONTRIBUTING.md).
+
 ## Estrutura
 
 ```
 src/
-  index.js              cria o cliente e carrega os handlers
-  config.js             XP, tempos, cores
+  devlingo.js           cria o cliente e carrega os handlers
+  config.js             XP, limite diário, fuso, banco, tempos, cores
   commands/             um arquivo por comando
   events/               um arquivo por evento do Discord
-  buttons/              um arquivo por tipo de botão (prefixo do customId)
+  buttons/              um arquivo por tipo de botão ou menu (prefixo do customId)
   handlers/             carregam commands/, events/ e buttons/
-  utils/                ui (Components V2), db, challenges, parse, logger
+  utils/                ui (Components V2), db (SQLite), challenges, time, parse, logger
   data/challenges.json  os desafios
+test/                   testes automáticos (npm test), sem precisar de token nem de internet
+data/                   banco SQLite em runtime (fora do git)
+.github/                CI (testes em cada PR), template de PR e o workflow manual de teste do bot
 ```
 
 ### Criar um comando novo
@@ -76,10 +102,18 @@ module.exports = {
 
 ## Adicionando desafios
 
-Edite `src/data/challenges.json`. Cada desafio tem `id` (único), `language`, `difficulty` (`beginner`, `intermediate`, `advanced` ou `expert`), `topic` (`id`, `label` e `description`), `question`, `code` (opcional), `options` (2 a 4), `answer` (índice da opção certa, começando em 0) e `explanation`. O comando `aprender` só oferece níveis e assuntos que tenham desafios cadastrados. O bot valida os dados ao iniciar.
+Edite `src/data/challenges.json`. Cada desafio tem `id` (único), `language`, `difficulty` (`beginner`, `intermediate`, `advanced` ou `expert`), `topic` (`id`, `label` e `description`), `question`, `code` (opcional), `options` (2 a 4), `answer` (índice da opção certa, começando em 0) e `explanation`. O comando `aprender` só oferece níveis e assuntos que tenham desafios cadastrados. O bot valida os dados ao iniciar (e `npm test` também).
+
+Regras que a validação cobra, porque vêm de limites do Discord:
+
+- `id` com até 16 caracteres e `topic.id` com até 32 (só `a-z`, `0-9` e hífen): eles vão dentro do `customId` dos botões.
+- Cada opção com no máximo 77 caracteres e sem repetir: o botão mostra `A) ` + a opção, e o Discord corta o rótulo em 80.
+- O texto de `question` e `explanation` aceita Markdown (como `` `código` ``); as **opções não**, porque são rótulos de botão.
+- Use o mesmo `label` e `description` para o mesmo `topic.id` em todos os níveis. Para o assunto aparecer em mais de um nível, basta cadastrar desafios dele em cada nível.
+- Tente ter pelo menos 4 desafios por assunto e nível, para o "Próxima pergunta" não ficar repetitivo.
 
 ## Próximos passos
 
-- Trocar o `data/data.json` por um banco de dados de verdade (SQLite ou Postgres) antes de crescer
-- Desafios por nível e trilhas
-- Limite de XP por dia
+- Mais desafios, principalmente do nível Especialista (hoje ele fica escondido por não ter conteúdo)
+- Se o bot passar de ~2.500 servidores, o Discord exige sharding; o SQLite em arquivo único também deixa de servir (Postgres)
+- Evitar repetir perguntas já acertadas recentemente na mesma trilha (hoje só a última é excluída)

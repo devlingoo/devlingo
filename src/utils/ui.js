@@ -10,11 +10,13 @@ const {
   SectionBuilder,
   SeparatorBuilder,
   SeparatorSpacingSize,
+  StringSelectMenuBuilder,
   TextDisplayBuilder,
   ThumbnailBuilder,
   escapeMarkdown,
 } = require("discord.js");
 const config = require("../config");
+const challenges = require("./challenges");
 
 const LETTERS = "ABCD";
 const FENCE = { git: "bash" }; // linguagem -> bloco de código do Discord
@@ -76,6 +78,7 @@ function profileMessage({ name, avatarUrl, user }) {
           `⭐ **${user.xp} XP** • nível **${level}**`,
           `${progressBar(into, config.xpPerLevel)} ${into}/${config.xpPerLevel}`,
           `🔥 **${user.streak}** dia(s) de sequência`,
+          ...(config.dailyXpCap > 0 ? [`📅 Hoje: **${user.dailyXp ?? 0}/${config.dailyXpCap}** XP`] : []),
         ].join("\n")
       )
     )
@@ -85,37 +88,95 @@ function profileMessage({ name, avatarUrl, user }) {
 }
 
 
-function learningDifficultyMessage() {
+// Passo 1 da trilha: escolher o nível. Só aparecem os níveis que já têm desafios cadastrados.
+// customId do menu: learn:difficulty:<idDoDono>
+function learningLevelMenu(ownerId) {
+  const levels = challenges.availableDifficulties();
   const container = new ContainerBuilder()
     .setAccentColor(config.colors.brand)
     .addTextDisplayComponents(
       text("## 🧭 Sua trilha de aprendizado"),
-      text("Escolha o nível de dificuldade. Depois, você poderá selecionar a linguagem e o assunto que deseja praticar."),
-      text("🟢 **Iniciante** — fundamentos e primeiros passos\n🟡 **Intermediário** — prática e resolução de problemas\n🟠 **Avançado** — conceitos complexos\n🔴 **Especialista** — arquitetura e domínio técnico")
+      text("Escolha o nível de dificuldade. Depois, escolha o assunto exato que quer praticar: eu só pergunto sobre ele."),
+      text(levels.map((d) => `${d.emoji} **${d.label}** — ${d.description}`).join("\n"))
     )
     .addSeparatorComponents(divider())
-    .addTextDisplayComponents(text("-# Os níveis e assuntos são liberados conforme os desafios são cadastrados."));
-  return [container];
+    .addTextDisplayComponents(text("-# Os níveis e assuntos aparecem conforme os desafios são cadastrados."));
+
+  const menu = new StringSelectMenuBuilder()
+    .setCustomId(`learn:difficulty:${ownerId}`)
+    .setPlaceholder("Selecione seu nível")
+    .addOptions(
+      levels.map((d) => ({ label: d.label, value: d.id, description: d.description, emoji: d.emoji }))
+    );
+
+  return [container, new ActionRowBuilder().addComponents(menu)];
 }
 
-function learningTopicMessage(difficulty, topics) {
-  const labels = { beginner: "Iniciante", intermediate: "Intermediário", advanced: "Avançado", expert: "Especialista" };
+// Passo 2 da trilha: escolher o assunto exato dentro do nível.
+// customId do menu: learn:topic:<idDoDono>:<nível>
+function learningTopicMenu(ownerId, difficulty, topics) {
   const lines = topics.map((topic) => `• **${topic.label}** — ${topic.description}`);
-  return [new ContainerBuilder()
+  const container = new ContainerBuilder()
     .setAccentColor(config.colors.brand)
     .addTextDisplayComponents(
-      text(`## 📚 ${labels[difficulty] ?? difficulty}`),
+      text(`## 📚 ${challenges.difficultyLabel(difficulty)}`),
       text("Agora escolha exatamente o assunto que deseja estudar:"),
       text(lines.join("\n"))
     )
     .addSeparatorComponents(divider())
-    .addTextDisplayComponents(text("-# Você receberá uma pergunta dentro do assunto escolhido."))];
+    .addTextDisplayComponents(text("-# Você só recebe perguntas do assunto escolhido, até querer trocar."));
+
+  const menu = new StringSelectMenuBuilder()
+    .setCustomId(`learn:topic:${ownerId}:${difficulty}`)
+    .setPlaceholder("Escolha um assunto")
+    .addOptions(
+      topics.slice(0, 25).map((topic) => ({
+        label: topic.label.slice(0, 100),
+        value: topic.id,
+        description: topic.description.slice(0, 100),
+      }))
+    );
+
+  const back = new ButtonBuilder()
+    .setCustomId(`learn:levels:${ownerId}`)
+    .setLabel("Trocar nível")
+    .setEmoji("🔄")
+    .setStyle(ButtonStyle.Secondary);
+
+  return [
+    container,
+    new ActionRowBuilder().addComponents(menu),
+    new ActionRowBuilder().addComponents(back),
+  ];
+}
+
+// Botões que continuam a sessão de estudo depois de uma resposta (ou de o desafio expirar).
+// Todos começam com "learn:" e levam o dono no 3º campo, como os menus.
+function studyNavigation(ch, ownerId) {
+  return new ActionRowBuilder().addComponents(
+    new ButtonBuilder()
+      .setCustomId(`learn:next:${ownerId}:${ch.difficulty}:${ch.topic.id}:${ch.id}`)
+      .setLabel("Próxima pergunta")
+      .setEmoji("▶️")
+      .setStyle(ButtonStyle.Primary),
+    new ButtonBuilder()
+      .setCustomId(`learn:topics:${ownerId}:${ch.difficulty}`)
+      .setLabel("Trocar assunto")
+      .setEmoji("🔀")
+      .setStyle(ButtonStyle.Secondary),
+    new ButtonBuilder()
+      .setCustomId(`learn:levels:${ownerId}`)
+      .setLabel("Trocar nível")
+      .setEmoji("🔄")
+      .setStyle(ButtonStyle.Secondary)
+  );
 }
 
 // ---------- desafio ----------
 
-// customId: ch:<idDoDesafio>:<opção>:<idDoDono>:<criadoEm em base36>
-function challengeButtons(ch, ownerId, issuedAt, { disabled = false, chosen = null, reveal = false } = {}) {
+// customId: ch:<idDoDesafio>:<opção>:<idDoDono>:<criadoEm em base36>[:s]
+// O ":s" marca que o desafio faz parte de uma sessão de estudo (comando aprender).
+function challengeButtons(ch, ownerId, issuedAt, { disabled = false, chosen = null, reveal = false, study = false } = {}) {
   const row = new ActionRowBuilder();
   ch.options.forEach((option, i) => {
     let style = ButtonStyle.Secondary;
@@ -124,7 +185,7 @@ function challengeButtons(ch, ownerId, issuedAt, { disabled = false, chosen = nu
 
     row.addComponents(
       new ButtonBuilder()
-        .setCustomId(`ch:${ch.id}:${i}:${ownerId}:${issuedAt}`)
+        .setCustomId(`ch:${ch.id}:${i}:${ownerId}:${issuedAt}${study ? ":s" : ""}`)
         .setLabel(`${LETTERS[i]}) ${option}`.slice(0, 80))
         .setStyle(style)
         .setDisabled(disabled)
@@ -135,6 +196,8 @@ function challengeButtons(ch, ownerId, issuedAt, { disabled = false, chosen = nu
 
 // state: { type: "open" } | { type: "expired" } |
 //        { type: "answered", chosen, correct, gained, xp, streak }
+// Qualquer estado aceita `study: true` (sessão de estudo): depois da resposta aparecem
+// os botões "Próxima pergunta", "Trocar assunto" e "Trocar nível".
 function challengeMessage(ch, ownerId, issuedAt, state = { type: "open" }) {
   let body = ch.question;
   if (ch.code) {
@@ -152,28 +215,39 @@ function challengeMessage(ch, ownerId, issuedAt, state = { type: "open" }) {
     disabled: state.type !== "open",
     chosen: state.chosen ?? null,
     reveal: state.type === "answered",
+    study: Boolean(state.study),
   });
 
   const container = new ContainerBuilder()
     .setAccentColor(color)
-    .addTextDisplayComponents(text(`## 🧩 ${ch.topic?.label ?? `Desafio de ${capitalize(ch.language)}`}`), text(`${ch.difficulty ? `Nível: **${({ beginner: "Iniciante", intermediate: "Intermediário", advanced: "Avançado", expert: "Especialista" })[ch.difficulty] ?? ch.difficulty}**\n\n` : ""}${body}`))
+    .addTextDisplayComponents(
+      text(`## 🧩 ${ch.topic?.label ?? `Desafio de ${capitalize(ch.language)}`}`),
+      text(`${ch.difficulty ? `Nível: **${challenges.difficultyLabel(ch.difficulty)}**\n\n` : ""}${body}`)
+    )
     .addSeparatorComponents(divider())
     .addActionRowComponents(buttons);
 
   if (state.type === "answered") {
     const verdict = state.correct
-      ? `✅ **Acertou!** +${state.gained} XP`
+      ? `✅ **Acertou!** ${state.gained > 0 ? `+${state.gained} XP` : "Sem XP desta vez."}`
       : `❌ **Errou!** A resposta certa era **${LETTERS[ch.answer]}**.`;
     container
       .addSeparatorComponents(divider())
       .addTextDisplayComponents(
         text(`${verdict}\n💡 ${ch.explanation}`),
-        text(`-# ⭐ ${state.xp} XP • 🔥 ${state.streak} dia(s) de sequência`)
+        text(
+          `-# ⭐ ${state.xp} XP • 🔥 ${state.streak} dia(s) de sequência` +
+            (state.capped ? `\n-# 🛑 Limite diário de ${config.dailyXpCap} XP atingido: o XP volta amanhã.` : "")
+        )
       );
   } else if (state.type === "expired") {
     container.addTextDisplayComponents(text("-# ⏰ Esse desafio expirou."));
   } else {
     container.addTextDisplayComponents(text("-# Só quem pediu pode responder"));
+  }
+
+  if (state.study && state.type !== "open") {
+    container.addActionRowComponents(studyNavigation(ch, ownerId));
   }
 
   return [container];
@@ -188,6 +262,6 @@ module.exports = {
   rankingMessage,
   profileMessage,
   challengeMessage,
-  learningDifficultyMessage,
-  learningTopicMessage,
+  learningLevelMenu,
+  learningTopicMenu,
 };
