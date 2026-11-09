@@ -4,10 +4,12 @@ const db = require("../utils/db");
 const challenges = require("../utils/challenges");
 const { callPrefix, challengeMessage } = require("../utils/ui");
 
-// Mensagens já respondidas (evita duplo clique e XP em dobro). Limitado para não crescer sem fim.
+// Desafios já respondidos (evita duplo clique e XP em dobro). Limitado para não crescer sem fim.
+// A chave é mensagem + momento da pergunta: na trilha de estudo a mesma mensagem recebe
+// uma pergunta nova a cada "Próxima pergunta", e cada uma precisa poder ser respondida.
 const answered = new Set();
-function markAnswered(messageId) {
-  answered.add(messageId);
+function markAnswered(key) {
+  answered.add(key);
   if (answered.size > 10_000) answered.delete(answered.values().next().value);
 }
 
@@ -18,9 +20,10 @@ const update = (interaction, components) =>
 module.exports = {
   prefix: "ch",
 
-  // customId: ch:<idDoDesafio>:<opção>:<idDoDono>:<criadoEm em base36>
+  // customId: ch:<idDoDesafio>:<opção>:<idDoDono>:<criadoEm em base36>[:s]
   async execute(interaction, parts, client) {
-    const [, challengeId, chosenText, ownerId, issuedAt] = parts;
+    const [, challengeId, chosenText, ownerId, issuedAt, mode] = parts;
+    const study = mode === "s"; // veio do comando aprender: oferece "Próxima pergunta"
 
     if (interaction.user.id !== ownerId) {
       const call = callPrefix(client, interaction.inGuild());
@@ -35,15 +38,16 @@ module.exports = {
     }
 
     // Já respondido (clique repetido): só confirma o clique, sem fazer nada
-    if (answered.has(interaction.message.id)) return interaction.deferUpdate();
+    const key = `${interaction.message.id}:${issuedAt}`;
+    if (answered.has(key)) return interaction.deferUpdate();
 
     const issued = parseInt(issuedAt, 36);
     if (!Number.isFinite(issued) || Date.now() - issued > config.challengeTtlMs) {
-      markAnswered(interaction.message.id);
-      return update(interaction, challengeMessage(ch, ownerId, issuedAt, { type: "expired" }));
+      markAnswered(key);
+      return update(interaction, challengeMessage(ch, ownerId, issuedAt, { type: "expired", study }));
     }
 
-    markAnswered(interaction.message.id);
+    markAnswered(key);
 
     const chosen = Number(chosenText);
     const correct = chosen === ch.answer;
@@ -57,7 +61,7 @@ module.exports = {
 
     return update(
       interaction,
-      challengeMessage(ch, ownerId, issuedAt, { type: "answered", chosen, correct, gained, xp, streak })
+      challengeMessage(ch, ownerId, issuedAt, { type: "answered", chosen, correct, gained, xp, streak, study })
     );
   },
 };

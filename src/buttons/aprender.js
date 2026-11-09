@@ -1,60 +1,70 @@
-const { ActionRowBuilder, StringSelectMenuBuilder, MessageFlags } = require("discord.js");
+const { MessageFlags } = require("discord.js");
 const challenges = require("../utils/challenges");
-const { learningTopicMessage, challengeMessage } = require("../utils/ui");
+const { learningLevelMenu, learningTopicMenu, challengeMessage } = require("../utils/ui");
 
 const ephemeral = (content) => ({ content, flags: MessageFlags.Ephemeral });
+const show = (interaction, components) =>
+  interaction.update({ components, flags: MessageFlags.IsComponentsV2 });
 
+// Todos os componentes da trilha têm o customId "learn:<etapa>:<idDoDono>:...":
+//   learn:difficulty:<dono>                               menu de níveis
+//   learn:topic:<dono>:<nível>                            menu de assuntos
+//   learn:next:<dono>:<nível>:<assunto>:<últimoDesafio>   botão "Próxima pergunta"
+//   learn:topics:<dono>:<nível>                           botão "Trocar assunto"
+//   learn:levels:<dono>                                   botão "Trocar nível"
 module.exports = {
   prefix: "learn",
 
   async execute(interaction, parts) {
-    const [, stage, ownerId, difficulty] = parts;
+    const [, stage, ownerId, difficulty, topicId, lastId] = parts;
 
     if (interaction.user.id !== ownerId) {
       return interaction.reply(ephemeral("Essa seleção pertence a outra pessoa. Peça sua própria trilha com o comando aprender."));
     }
 
-    if (!interaction.isStringSelectMenu()) return;
+    const isMenu = interaction.isStringSelectMenu();
+    const isButton = interaction.isButton();
 
-    if (stage === "difficulty") {
-      const selectedDifficulty = interaction.values[0];
-      const topics = challenges.topics(selectedDifficulty);
+    // Escolheu um nível no menu: mostra os assuntos dele.
+    if (stage === "difficulty" && isMenu) return showTopics(interaction, ownerId, interaction.values[0]);
 
-      if (!topics.length) {
-        return interaction.reply(ephemeral("Ainda não há perguntas cadastradas nesse nível. Escolha Iniciante por enquanto; novos desafios serão adicionados às outras trilhas."));
+    // "Trocar assunto": volta ao menu de assuntos do mesmo nível.
+    if (stage === "topics" && isButton) return showTopics(interaction, ownerId, difficulty);
+
+    // "Trocar nível": volta ao menu de níveis.
+    if (stage === "levels" && isButton) {
+      if (challenges.availableDifficulties().length === 0) {
+        return interaction.reply(ephemeral("Ainda não há desafios cadastrados."));
       }
-
-      const menu = new StringSelectMenuBuilder()
-        .setCustomId("learn:topic:" + ownerId + ":" + selectedDifficulty)
-        .setPlaceholder("Escolha um assunto")
-        .addOptions(topics.slice(0, 25).map((topic) => ({
-          label: topic.label.slice(0, 100),
-          value: topic.id,
-          description: topic.description.slice(0, 100),
-        })));
-
-      return interaction.update({
-        components: [
-          ...learningTopicMessage(selectedDifficulty, topics),
-          new ActionRowBuilder().addComponents(menu),
-        ],
-        flags: MessageFlags.IsComponentsV2,
-      });
+      return show(interaction, learningLevelMenu(ownerId));
     }
 
-    if (stage === "topic") {
-      const topicId = interaction.values[0];
-      const topic = challenges.topics(difficulty).find((item) => item.id === topicId);
-      if (!topic) return interaction.reply(ephemeral("Esse assunto não está disponível nessa trilha. Use aprender para começar novamente."));
+    // Escolheu o assunto no menu: primeira pergunta.
+    if (stage === "topic" && isMenu) return ask(interaction, ownerId, difficulty, interaction.values[0]);
 
-      const challenge = challenges.random({ difficulty, topic: topicId });
-      if (!challenge) return interaction.reply(ephemeral("Ainda não há perguntas para esse assunto."));
-
-      const issuedAt = Date.now().toString(36);
-      return interaction.update({
-        components: challengeMessage(challenge, ownerId, issuedAt),
-        flags: MessageFlags.IsComponentsV2,
-      });
-    }
+    // "Próxima pergunta": mais uma do mesmo nível e assunto.
+    if (stage === "next" && isButton) return ask(interaction, ownerId, difficulty, topicId, lastId);
   },
 };
+
+async function showTopics(interaction, ownerId, difficulty) {
+  const topics = challenges.topics(difficulty);
+  if (!topics.length) {
+    return interaction.reply(ephemeral("Ainda não há perguntas cadastradas nesse nível. Use aprender para escolher outro."));
+  }
+  return show(interaction, learningTopicMenu(ownerId, difficulty, topics));
+}
+
+// Sorteia uma pergunta do nível e assunto escolhidos (nunca de outro assunto).
+async function ask(interaction, ownerId, difficulty, topicId, lastId) {
+  const topic = challenges.topics(difficulty).find((item) => item.id === topicId);
+  if (!topic) {
+    return interaction.reply(ephemeral("Esse assunto não está disponível nessa trilha. Use aprender para começar novamente."));
+  }
+
+  const challenge = challenges.random({ difficulty, topic: topicId }, lastId);
+  if (!challenge) return interaction.reply(ephemeral("Ainda não há perguntas para esse assunto."));
+
+  const issuedAt = Date.now().toString(36);
+  return show(interaction, challengeMessage(challenge, ownerId, issuedAt, { type: "open", study: true }));
+}
