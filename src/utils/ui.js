@@ -78,6 +78,7 @@ function profileMessage({ name, avatarUrl, user }) {
           `⭐ **${user.xp} XP** • nível **${level}**`,
           `${progressBar(into, config.xpPerLevel)} ${into}/${config.xpPerLevel}`,
           `🔥 **${user.streak}** dia(s) de sequência`,
+          ...(config.dailyXpCap > 0 ? [`📅 Hoje: **${user.dailyXp ?? 0}/${config.dailyXpCap}** XP`] : []),
         ].join("\n")
       )
     )
@@ -228,13 +229,16 @@ function challengeMessage(ch, ownerId, issuedAt, state = { type: "open" }) {
 
   if (state.type === "answered") {
     const verdict = state.correct
-      ? `✅ **Acertou!** +${state.gained} XP`
+      ? `✅ **Acertou!** ${state.gained > 0 ? `+${state.gained} XP` : "Sem XP desta vez."}`
       : `❌ **Errou!** A resposta certa era **${LETTERS[ch.answer]}**.`;
     container
       .addSeparatorComponents(divider())
       .addTextDisplayComponents(
         text(`${verdict}\n💡 ${ch.explanation}`),
-        text(`-# ⭐ ${state.xp} XP • 🔥 ${state.streak} dia(s) de sequência`)
+        text(
+          `-# ⭐ ${state.xp} XP • 🔥 ${state.streak} dia(s) de sequência` +
+            (state.capped ? `\n-# 🛑 Limite diário de ${config.dailyXpCap} XP atingido: o XP volta amanhã.` : "")
+        )
       );
   } else if (state.type === "expired") {
     container.addTextDisplayComponents(text("-# ⏰ Esse desafio expirou."));

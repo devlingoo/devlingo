@@ -1,9 +1,11 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const { customIds, fakeInteraction, fakeClient } = require("./helpers");
+const { TYPE, flatten, customIds, fakeInteraction, fakeClient } = require("./helpers");
 
-// Troca o banco por um falso: os testes nunca escrevem em data/data.json.
+// Troca o banco por um falso: estes testes não tocam em arquivo nenhum (o banco real é testado
+// em db.test.js). `capLeft` simula o limite diário: quanto XP ainda pode entrar hoje.
 const recorded = [];
+let capLeft = Infinity;
 const dbPath = require.resolve("../src/utils/db");
 require.cache[dbPath] = {
   id: dbPath,
@@ -12,9 +14,12 @@ require.cache[dbPath] = {
   exports: {
     recordAnswer(userId, guildId, correct, reward) {
       recorded.push({ userId, guildId, correct });
-      return { xp: correct ? reward : 0, streak: 1 };
+      const wanted = correct ? reward : 0;
+      const gained = Math.min(wanted, capLeft);
+      capLeft -= gained;
+      return { xp: gained, streak: 1, gained, capped: gained < wanted, dailyXp: gained };
     },
-    getUser: () => ({ xp: 0, streak: 0 }),
+    getUser: () => ({ xp: 0, streak: 0, dailyXp: 0 }),
     top: () => [],
   },
 };
@@ -134,4 +139,46 @@ test("o menu de níveis esconde níveis sem conteúdo (especialista)", async () 
   const json = JSON.stringify(lastCall(levels).payload.components.map((c) => c.toJSON()));
   assert.ok(json.includes('"value":"beginner"'));
   assert.ok(!json.includes('"value":"expert"'));
+});
+
+// Texto de todos os TextDisplay de uma resposta, para checar o que a pessoa lê.
+const textOf = (call) =>
+  flatten(call.payload.components)
+    .filter((n) => n.type === TYPE.TextDisplay)
+    .map((n) => n.content)
+    .join("\n");
+
+test("com o limite diário batido, acertar explica e avisa em vez de prometer XP", async () => {
+  capLeft = 0; // hoje não entra mais XP
+  const ch = challenges.random({ difficulty: "beginner", topic: "javascript-fundamentals" });
+  const i = fakeInteraction({
+    customId: `ch:${ch.id}:${ch.answer}:${OWNER}:${Date.now().toString(36)}:s`,
+    userId: OWNER,
+    kind: "button",
+    messageId: "cap",
+  });
+  await run(answer, i);
+  capLeft = Infinity;
+
+  const text = textOf(lastCall(i));
+  assert.match(text, /Acertou/);
+  assert.match(text, /Sem XP desta vez/);
+  assert.match(text, /Limite diário de \d+ XP atingido/);
+  assert.ok(text.includes(ch.explanation), "a explicação continua aparecendo");
+  assert.ok(customIds(lastCall(i).payload.components).some((id) => id.startsWith("learn:next:")), "dá para seguir treinando");
+});
+
+test("sem bater o limite, não aparece aviso de limite", async () => {
+  capLeft = Infinity;
+  const ch = challenges.random({ difficulty: "beginner", topic: "javascript-fundamentals" });
+  const i = fakeInteraction({
+    customId: `ch:${ch.id}:${ch.answer}:${OWNER}:${Date.now().toString(36)}`,
+    userId: OWNER,
+    kind: "button",
+    messageId: "nocap",
+  });
+  await run(answer, i);
+  const text = textOf(lastCall(i));
+  assert.match(text, /\+10 XP/);
+  assert.doesNotMatch(text, /Limite diário/);
 });

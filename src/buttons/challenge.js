@@ -51,8 +51,8 @@ module.exports = {
 
     const chosen = Number(chosenText);
     const correct = chosen === ch.answer;
-    const gained = correct ? config.xpCorrect : 0;
-    const { xp, streak } = db.recordAnswer(
+    // `gained` já considera o limite diário de XP (pode ser menor que o prêmio, ou 0).
+    const { xp, streak, gained, capped } = db.recordAnswer(
       interaction.user.id,
       interaction.guildId,
       correct,
@@ -61,7 +61,7 @@ module.exports = {
 
     return update(
       interaction,
-      challengeMessage(ch, ownerId, issuedAt, { type: "answered", chosen, correct, gained, xp, streak, study })
+      challengeMessage(ch, ownerId, issuedAt, { type: "answered", chosen, correct, gained, capped, xp, streak, study })
     );
   },
 };

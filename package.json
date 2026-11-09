@@ -4,12 +4,12 @@
   "description": "Bot de Discord estilo Duolingo para aprender programação",
   "main": "src/devlingo.js",
   "scripts": {
-    "start": "node src/devlingo.js",
-    "dev": "node --watch src/devlingo.js",
-    "test": "node --test"
+    "start": "node --disable-warning=ExperimentalWarning src/devlingo.js",
+    "dev": "node --disable-warning=ExperimentalWarning --watch src/devlingo.js",
+    "test": "node --disable-warning=ExperimentalWarning --test"
   },
   "engines": {
-    "node": ">=18.11"
+    "node": ">=22.13"
   },
   "dependencies": {
     "discord.js": "^14.19.3",

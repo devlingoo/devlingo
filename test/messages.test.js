@@ -8,11 +8,13 @@ const loadCommands = require("../src/handlers/commandHandler");
 const loadEvents = require("../src/handlers/eventHandler");
 const buttonHandler = require("../src/handlers/buttonHandler");
 const messageCreate = require("../src/events/messageCreate");
+const db = require("../src/utils/db");
 
 // Cliente falso, mas com os handlers reais carregando as pastas commands/, events/ e buttons/.
 const client = Object.assign(new EventEmitter(), {
   user: { id: "1", toString: () => "<@1>" },
   guilds: { cache: { size: 0 } },
+  users: { fetch: async (id) => ({ username: `usuario-${id}` }) },
 });
 loadCommands(client);
 buttonHandler.load(client);
@@ -22,7 +24,7 @@ function fakeMessage({ content, authorId, dm = false }) {
   const sent = [];
   return {
     sent,
-    author: { id: authorId, bot: false },
+    author: { id: authorId, bot: false, displayName: "Ana", displayAvatarURL: () => "https://cdn.example/avatar.png" },
     content,
     guildId: dm ? null : "g1",
     channel: {
@@ -74,4 +76,33 @@ test("'@bot ajuda' lista o comando aprender", async () => {
     .map((n) => n.content)
     .join("\n");
   assert.match(text, /aprender/);
+});
+
+const textOf = (msg) =>
+  flatten(msg.sent[0].components)
+    .filter((n) => n.type === TYPE.TextDisplay)
+    .map((n) => n.content)
+    .join("\n");
+
+test("'perfil' e 'ranking' leem o banco SQLite de verdade", async () => {
+  db.open(":memory:");
+
+  const empty = fakeMessage({ content: "ranking", authorId: "301", dm: true });
+  await messageCreate.execute(client, empty);
+  assert.match(textOf(empty), /Ninguém pontuou/);
+
+  db.recordAnswer("302", null, true, 10);
+  db.recordAnswer("302", null, true, 10);
+
+  const profile = fakeMessage({ content: "perfil", authorId: "302", dm: true });
+  await messageCreate.execute(client, profile);
+  assert.match(textOf(profile), /20 XP/);
+  assert.match(textOf(profile), /Hoje: \*\*20\/\d+\*\* XP/);
+  assert.match(textOf(profile), /1\*\* dia\(s\) de sequência/);
+
+  const ranking = fakeMessage({ content: "ranking", authorId: "303", dm: true });
+  await messageCreate.execute(client, ranking);
+  assert.match(textOf(ranking), /usuario-302.*20 XP/);
+
+  db.close();
 });
