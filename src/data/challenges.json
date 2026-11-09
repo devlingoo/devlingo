@@ -1758,5 +1758,565 @@
       "label": "Git e versionamento",
       "description": "Branches, commits e fluxo de trabalho"
     }
+  },
+  {
+    "id": "js-038",
+    "language": "javascript",
+    "question": "O que esse código imprime?",
+    "code": "console.log('A');\nsetTimeout(() => console.log('B'), 0);\nPromise.resolve().then(() => console.log('C'));\nconsole.log('D');",
+    "options": [
+      "A D C B",
+      "A C D B",
+      "A D B C",
+      "A B C D"
+    ],
+    "answer": 0,
+    "explanation": "O código síncrono roda primeiro (A e D). Depois o event loop esvazia a fila de microtarefas (o `then` da Promise: C) antes de passar às macrotarefas (o `setTimeout`: B), mesmo com atraso 0.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "javascript-fundamentals",
+      "label": "Fundamentos de JavaScript",
+      "description": "Tipos, valores e comportamento da linguagem"
+    }
+  },
+  {
+    "id": "js-039",
+    "language": "javascript",
+    "question": "O que esse código imprime?",
+    "code": "function Foo() {}\nconst f = new Foo();\nconsole.log(f.__proto__ === Foo.prototype, Object.getPrototypeOf(Foo) === Function.prototype);",
+    "options": [
+      "true true",
+      "true false",
+      "false true",
+      "false false"
+    ],
+    "answer": 0,
+    "explanation": "Instâncias criadas com `new Foo()` apontam para `Foo.prototype`. A própria função `Foo` também é um objeto, e o protótipo dela é `Function.prototype`.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "javascript-fundamentals",
+      "label": "Fundamentos de JavaScript",
+      "description": "Tipos, valores e comportamento da linguagem"
+    }
+  },
+  {
+    "id": "js-040",
+    "language": "javascript",
+    "question": "O que esse código imprime?",
+    "code": "console.log([NaN].includes(NaN), [NaN].indexOf(NaN));",
+    "options": [
+      "true -1",
+      "false -1",
+      "false 0",
+      "true 0"
+    ],
+    "answer": 0,
+    "explanation": "`includes` usa o algoritmo SameValueZero e encontra o NaN. `indexOf` usa `===`, e `NaN === NaN` é false, então devolve -1.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "javascript-fundamentals",
+      "label": "Fundamentos de JavaScript",
+      "description": "Tipos, valores e comportamento da linguagem"
+    }
+  },
+  {
+    "id": "js-041",
+    "language": "javascript",
+    "question": "O que esse código imprime?",
+    "code": "console.log(Number.MAX_SAFE_INTEGER + 2);",
+    "options": [
+      "9007199254740993",
+      "Infinity",
+      "9007199254740992",
+      "9007199254740991"
+    ],
+    "answer": 2,
+    "explanation": "Acima de 2^53 os números de ponto flutuante não representam todos os inteiros: 9007199254740993 é arredondado para 9007199254740992. Para inteiros grandes e exatos use `BigInt`.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "javascript-fundamentals",
+      "label": "Fundamentos de JavaScript",
+      "description": "Tipos, valores e comportamento da linguagem"
+    }
+  },
+  {
+    "id": "js-042",
+    "language": "javascript",
+    "question": "O que esse código imprime?",
+    "code": "async function a() {\n  console.log(1);\n  await null;\n  console.log(2);\n}\na();\nconsole.log(3);",
+    "options": [
+      "3 1 2",
+      "1 3 2",
+      "1 2 3",
+      "2 1 3"
+    ],
+    "answer": 1,
+    "explanation": "A função roda de forma síncrona até o primeiro `await` (imprime 1). O resto dela vira uma microtarefa, então o código que vem depois da chamada (3) executa antes do 2.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "javascript-functions",
+      "label": "Funções em JavaScript",
+      "description": "Declaração, arrow functions, escopo e closures"
+    }
+  },
+  {
+    "id": "js-043",
+    "language": "javascript",
+    "question": "O que esse código imprime?",
+    "code": "const obj = {\n  n: 1,\n  a() { return [0].map(() => this.n)[0]; },\n  b() { return [0].map(function () { return this?.n; })[0]; },\n};\nconsole.log(obj.a(), obj.b());",
+    "options": [
+      "1 undefined",
+      "undefined 1",
+      "undefined undefined",
+      "1 1"
+    ],
+    "answer": 0,
+    "explanation": "A arrow function herda o `this` do método (o `obj`) e devolve 1. A função comum chamada pelo `map` tem o próprio `this` (global ou undefined), que não tem `n`.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "javascript-functions",
+      "label": "Funções em JavaScript",
+      "description": "Declaração, arrow functions, escopo e closures"
+    }
+  },
+  {
+    "id": "js-044",
+    "language": "javascript",
+    "question": "O que esse código imprime?",
+    "code": "const memo = (fn) => {\n  const cache = new Map();\n  return (x) => {\n    if (!cache.has(x)) cache.set(x, fn(x));\n    return cache.get(x);\n  };\n};\nlet calls = 0;\nconst quad = memo((x) => { calls++; return x * x; });\nquad(3); quad(3); quad(4);\nconsole.log(calls);",
+    "options": [
+      "0",
+      "3",
+      "2",
+      "1"
+    ],
+    "answer": 2,
+    "explanation": "O cache guarda o resultado por argumento: `quad(3)` só executa a função na primeira vez, e `quad(4)` é um valor novo. Total: 2 execuções.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "javascript-functions",
+      "label": "Funções em JavaScript",
+      "description": "Declaração, arrow functions, escopo e closures"
+    }
+  },
+  {
+    "id": "js-045",
+    "language": "javascript",
+    "question": "O que esse código imprime?",
+    "code": "function* g() {\n  const x = yield 1;\n  console.log(x);\n  yield 2;\n}\nconst it = g();\nit.next();\nconsole.log(it.next('ok').value);",
+    "options": [
+      "1 2",
+      "ok 1",
+      "undefined 2",
+      "ok 2"
+    ],
+    "answer": 3,
+    "explanation": "O valor passado a `next('ok')` vira o resultado da expressão `yield 1` dentro do gerador (`x = 'ok'`). Ele segue até `yield 2`, cujo valor é impresso depois.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "javascript-functions",
+      "label": "Funções em JavaScript",
+      "description": "Declaração, arrow functions, escopo e closures"
+    }
+  },
+  {
+    "id": "js-046",
+    "language": "javascript",
+    "question": "O que esse código imprime?",
+    "code": "console.log([1, , 3].length, Object.keys([1, , 3]).length);",
+    "options": [
+      "3 2",
+      "3 3",
+      "2 3",
+      "2 2"
+    ],
+    "answer": 0,
+    "explanation": "Um array esparso tem `length` 3, mas o buraco não é uma propriedade: `Object.keys` lista só os índices 0 e 2.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "javascript-arrays",
+      "label": "Arrays e laços em JavaScript",
+      "description": "Arrays, métodos funcionais e laços de repetição"
+    }
+  },
+  {
+    "id": "js-047",
+    "language": "javascript",
+    "question": "O que acontece ao executar esse código?",
+    "code": "console.log([].reduce((a, b) => a + b));",
+    "options": [
+      "Imprime 0",
+      "TypeError",
+      "Imprime NaN",
+      "Imprime undefined"
+    ],
+    "answer": 1,
+    "explanation": "`reduce` sem valor inicial num array vazio lança `TypeError`. Passe um valor inicial (`reduce(fn, 0)`) para evitar.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "javascript-arrays",
+      "label": "Arrays e laços em JavaScript",
+      "description": "Arrays, métodos funcionais e laços de repetição"
+    }
+  },
+  {
+    "id": "js-048",
+    "language": "javascript",
+    "question": "O que esse código imprime?",
+    "code": "const a = [{ n: 1 }];\nconst b = [...a];\nconst c = structuredClone(a);\na[0].n = 2;\nconsole.log(b[0].n, c[0].n);",
+    "options": [
+      "1 2",
+      "2 2",
+      "2 1",
+      "1 1"
+    ],
+    "answer": 2,
+    "explanation": "O spread faz cópia rasa: `b[0]` é o mesmo objeto que `a[0]`. `structuredClone` faz cópia profunda: `c[0]` é um objeto novo e continua com n = 1.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "javascript-arrays",
+      "label": "Arrays e laços em JavaScript",
+      "description": "Arrays, métodos funcionais e laços de repetição"
+    }
+  },
+  {
+    "id": "js-049",
+    "language": "javascript",
+    "question": "Em buscas repetidas numa lista grande, qual é a diferença entre `array.includes(x)` e `set.has(x)`?",
+    "code": "",
+    "options": [
+      "includes é O(1) e Set.has é O(n)",
+      "Set.has é O(n) e includes é O(log n)",
+      "includes percorre o array (O(n)); Set.has é O(1) em média",
+      "Os dois são O(1), só muda a sintaxe"
+    ],
+    "answer": 2,
+    "explanation": "`includes` compara item a item. `Set` usa uma tabela hash: a busca leva tempo constante, em média. Para muitas buscas, converter a lista em `Set` compensa.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "javascript-arrays",
+      "label": "Arrays e laços em JavaScript",
+      "description": "Arrays, métodos funcionais e laços de repetição"
+    }
+  },
+  {
+    "id": "py-026",
+    "language": "python",
+    "question": "O que esse código imprime?",
+    "code": "fs = [lambda: i for i in range(3)]\nprint([f() for f in fs])",
+    "options": [
+      "[0, 1, 2]",
+      "[0, 0, 0]",
+      "[2, 2, 2]",
+      "[3, 3, 3]"
+    ],
+    "answer": 2,
+    "explanation": "O `i` da lambda só é resolvido quando ela é chamada (late binding), e nesse momento vale 2, o último valor do laço. Para fixar o valor, use `lambda i=i: i`.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "python-fundamentals",
+      "label": "Fundamentos de Python",
+      "description": "Tipos de dados, variáveis e estruturas básicas"
+    }
+  },
+  {
+    "id": "py-027",
+    "language": "python",
+    "question": "O que esse código imprime?",
+    "code": "def gen():\n    yield from range(3)\n\ng = gen()\nprint(list(g), list(g))",
+    "options": [
+      "[0, 1, 2] []",
+      "[0, 1, 2] [0, 1, 2]",
+      "[] []",
+      "[0, 1, 2] None"
+    ],
+    "answer": 0,
+    "explanation": "Um gerador só pode ser percorrido uma vez. Depois que o primeiro `list(g)` o esgota, o segundo recebe uma lista vazia.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "python-fundamentals",
+      "label": "Fundamentos de Python",
+      "description": "Tipos de dados, variáveis e estruturas básicas"
+    }
+  },
+  {
+    "id": "py-028",
+    "language": "python",
+    "question": "O que acontece ao executar esse código?",
+    "code": "x = 10\n\ndef f():\n    print(x)\n    x = 5\n\nf()",
+    "options": [
+      "Imprime 5",
+      "Imprime None",
+      "Imprime 10",
+      "UnboundLocalError"
+    ],
+    "answer": 3,
+    "explanation": "Como `x` recebe uma atribuição dentro de `f`, o Python a trata como variável local na função inteira. O `print` tenta ler essa local antes de ela existir. Use `global x` ou outro nome.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "python-fundamentals",
+      "label": "Fundamentos de Python",
+      "description": "Tipos de dados, variáveis e estruturas básicas"
+    }
+  },
+  {
+    "id": "py-029",
+    "language": "python",
+    "question": "O que esse código imprime?",
+    "code": "class A:\n    def hi(self): return 'A'\n\nclass B(A):\n    def hi(self): return 'B' + super().hi()\n\nclass C(A):\n    def hi(self): return 'C' + super().hi()\n\nclass D(B, C):\n    pass\n\nprint(D().hi())",
+    "options": [
+      "BA",
+      "BCA",
+      "ABC",
+      "CBA"
+    ],
+    "answer": 1,
+    "explanation": "A ordem de resolução de métodos (MRO) de `D` é D, B, C, A. O `super()` de B chama C (não A), e o de C chama A, resultando em B + C + A.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "python-fundamentals",
+      "label": "Fundamentos de Python",
+      "description": "Tipos de dados, variáveis e estruturas básicas"
+    }
+  },
+  {
+    "id": "py-030",
+    "language": "python",
+    "question": "O que acontece ao executar esse código?",
+    "code": "d = {'a': 1}\nfor k in d:\n    d['b'] = 2",
+    "options": [
+      "RuntimeError: o dicionário mudou de tamanho durante o laço",
+      "Laço infinito",
+      "Roda e d fica com 'a' e 'b'",
+      "KeyError"
+    ],
+    "answer": 0,
+    "explanation": "Adicionar ou remover chaves enquanto se itera sobre o dicionário lança `RuntimeError`. Itere sobre uma cópia (`list(d)`) se precisar alterá-lo.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "python-collections",
+      "label": "Listas e dicionários em Python",
+      "description": "Listas, dicionários, fatiamento e comprehensions"
+    }
+  },
+  {
+    "id": "py-031",
+    "language": "python",
+    "question": "O que esse código imprime?",
+    "code": "a = [[0] * 2] * 2\na[0][0] = 1\nprint(a)",
+    "options": [
+      "[[1, 0], [0, 0]]",
+      "[[1, 1], [1, 1]]",
+      "[[1, 0], [1, 0]]",
+      "[[0, 0], [0, 0]]"
+    ],
+    "answer": 2,
+    "explanation": "`[[0] * 2] * 2` repete a mesma lista interna duas vezes, sem fazer cópias. Alterar uma linha altera as duas. Use `[[0] * 2 for _ in range(2)]`.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "python-collections",
+      "label": "Listas e dicionários em Python",
+      "description": "Listas, dicionários, fatiamento e comprehensions"
+    }
+  },
+  {
+    "id": "py-032",
+    "language": "python",
+    "question": "O que esse código imprime?",
+    "code": "from collections import Counter\nprint(Counter('abracadabra').most_common(1))",
+    "options": [
+      "[('a', 4)]",
+      "('a', 5)",
+      "[('a', 5)]",
+      "[('b', 2)]"
+    ],
+    "answer": 2,
+    "explanation": "`Counter` conta as ocorrências: 'a' aparece 5 vezes em 'abracadabra'. `most_common(1)` devolve uma lista com o par mais frequente.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "python-collections",
+      "label": "Listas e dicionários em Python",
+      "description": "Listas, dicionários, fatiamento e comprehensions"
+    }
+  },
+  {
+    "id": "py-033",
+    "language": "python",
+    "question": "O que esse código imprime?",
+    "code": "print(sorted(['bb', 'a', 'cc', 'd'], key=len))",
+    "options": [
+      "['d', 'a', 'cc', 'bb']",
+      "['a', 'd', 'bb', 'cc']",
+      "['bb', 'cc', 'a', 'd']",
+      "['a', 'bb', 'cc', 'd']"
+    ],
+    "answer": 1,
+    "explanation": "A ordenação do Python é estável: itens com a mesma chave (mesmo tamanho) mantêm a ordem original. 'a' vem antes de 'd', e 'bb' antes de 'cc'.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "python-collections",
+      "label": "Listas e dicionários em Python",
+      "description": "Listas, dicionários, fatiamento e comprehensions"
+    }
+  },
+  {
+    "id": "sql-014",
+    "language": "sql",
+    "question": "Qual expressão numera as linhas dentro de cada departamento, recomeçando a contagem em cada um?",
+    "code": "",
+    "options": [
+      "ORDER BY dept, salario LIMIT 1",
+      "ROW_NUMBER() OVER (PARTITION BY dept ORDER BY salario DESC)",
+      "COUNT(*) GROUP BY dept",
+      "NUMBER() WITHIN dept ORDER BY salario"
+    ],
+    "answer": 1,
+    "explanation": "Funções de janela (`OVER`) calculam sobre um conjunto de linhas sem colapsá-las. `PARTITION BY` define os grupos e `ORDER BY` a ordem dentro de cada um.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "sql-queries",
+      "label": "Consultas SQL",
+      "description": "SELECT, filtros e funções de consulta"
+    }
+  },
+  {
+    "id": "sql-015",
+    "language": "sql",
+    "question": "Qual filtro NÃO consegue aproveitar bem um índice B-tree comum na coluna `nome`?",
+    "code": "",
+    "options": [
+      "nome LIKE '%ana'",
+      "nome LIKE 'ana%'",
+      "nome > 'ana'",
+      "nome = 'ana'"
+    ],
+    "answer": 0,
+    "explanation": "Com o curinga no início, o banco não sabe por onde começar na árvore ordenada e precisa varrer a tabela. Com o curinga no fim (`'ana%'`) ele usa o índice como uma busca por faixa.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "sql-queries",
+      "label": "Consultas SQL",
+      "description": "SELECT, filtros e funções de consulta"
+    }
+  },
+  {
+    "id": "sql-016",
+    "language": "sql",
+    "question": "Quantas linhas essa consulta retorna?",
+    "code": "SELECT 'x' WHERE 1 NOT IN (2, NULL);",
+    "options": [
+      "Dá erro por causa do NULL",
+      "Uma (o valor 'x')",
+      "Nenhuma",
+      "Duas"
+    ],
+    "answer": 2,
+    "explanation": "`1 NOT IN (2, NULL)` equivale a `1 <> 2 AND 1 <> NULL`. Comparar com NULL dá 'desconhecido', então a condição nunca é verdadeira. É uma armadilha clássica do `NOT IN` com NULL; prefira `NOT EXISTS`.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "sql-queries",
+      "label": "Consultas SQL",
+      "description": "SELECT, filtros e funções de consulta"
+    }
+  },
+  {
+    "id": "sql-017",
+    "language": "sql",
+    "question": "No nível de isolamento READ COMMITTED, qual anomalia ainda pode acontecer?",
+    "code": "",
+    "options": [
+      "Perda do COMMIT depois de uma queda de energia",
+      "Leitura suja: ler dados ainda não confirmados por outra transação",
+      "Leitura não repetível: reler a mesma linha devolve outro valor",
+      "Duas transações gravando o mesmo valor ao mesmo tempo no disco"
+    ],
+    "answer": 2,
+    "explanation": "READ COMMITTED só garante que você lê dados já confirmados (sem leitura suja). Entre duas leituras, outra transação pode confirmar uma alteração, e a segunda leitura mostra o valor novo. Para evitar, use REPEATABLE READ ou superior.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "sql-queries",
+      "label": "Consultas SQL",
+      "description": "SELECT, filtros e funções de consulta"
+    }
+  },
+  {
+    "id": "git-014",
+    "language": "git",
+    "question": "Você rodou `git reset --hard` e perdeu commits. Como costuma ser possível recuperá-los?",
+    "code": "",
+    "options": [
+      "Não dá: reset --hard apaga os commits para sempre",
+      "Achar o hash no git reflog e voltar com git reset --hard <hash>",
+      "Com git stash pop, que traz de volta os commits",
+      "Com git revert HEAD, que recria os arquivos apagados"
+    ],
+    "answer": 1,
+    "explanation": "Os commits continuam no banco de objetos por um tempo, e o `reflog` registra para onde o HEAD apontou. Ache o hash de antes do reset e volte para ele. Só somem de vez quando o coletor de lixo do Git os remove.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "git-versioning",
+      "label": "Git e versionamento",
+      "description": "Branches, commits e fluxo de trabalho"
+    }
+  },
+  {
+    "id": "git-015",
+    "language": "git",
+    "question": "Qual comando acha, por busca binária, o commit que introduziu um bug?",
+    "code": "",
+    "options": [
+      "git blame",
+      "git cherry-pick",
+      "git bisect",
+      "git grep"
+    ],
+    "answer": 2,
+    "explanation": "`git bisect` pede que você marque commits como bons ou ruins e divide o intervalo ao meio a cada passo; em poucas etapas ele aponta o primeiro commit ruim.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "git-versioning",
+      "label": "Git e versionamento",
+      "description": "Branches, commits e fluxo de trabalho"
+    }
+  },
+  {
+    "id": "git-016",
+    "language": "git",
+    "question": "Por que `git push --force-with-lease` é mais seguro que `--force`?",
+    "code": "",
+    "options": [
+      "Só funciona em branches novas",
+      "Apaga o histórico remoto antes de enviar",
+      "Faz um merge automático antes do push",
+      "Recusa o push se o remoto tiver commits que você ainda não viu"
+    ],
+    "answer": 3,
+    "explanation": "`--force` sobrescreve a branch remota mesmo que outra pessoa tenha enviado commits. `--force-with-lease` só sobrescreve se o remoto ainda estiver como você o viu da última vez, evitando destruir trabalho alheio.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "git-versioning",
+      "label": "Git e versionamento",
+      "description": "Branches, commits e fluxo de trabalho"
+    }
+  },
+  {
+    "id": "git-017",
+    "language": "git",
+    "question": "No `git rebase -i`, o que a ação `squash` faz com um commit?",
+    "code": "",
+    "options": [
+      "Move o commit para outra branch",
+      "Apaga o commit e as mudanças dele",
+      "Junta o commit ao anterior, combinando as mensagens",
+      "Divide o commit em vários menores"
+    ],
+    "answer": 2,
+    "explanation": "`squash` (ou `fixup`, que descarta a mensagem) funde o commit no anterior, deixando o histórico mais limpo antes de abrir o PR.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "git-versioning",
+      "label": "Git e versionamento",
+      "description": "Branches, commits e fluxo de trabalho"
+    }
   }
 ]

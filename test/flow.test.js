@@ -133,12 +133,29 @@ test("'Trocar assunto' e 'Trocar nível' voltam aos menus certos", async () => {
   assert.ok(customIds(lastCall(levels).payload.components).includes(`learn:difficulty:${OWNER}`));
 });
 
-test("o menu de níveis esconde níveis sem conteúdo (especialista)", async () => {
-  const levels = fakeInteraction({ customId: `learn:levels:${OWNER}`, userId: OWNER, kind: "button" });
-  await run(learn, levels);
-  const json = JSON.stringify(lastCall(levels).payload.components.map((c) => c.toJSON()));
-  assert.ok(json.includes('"value":"beginner"'));
-  assert.ok(!json.includes('"value":"expert"'));
+// Valores (ids de nível) que o menu "Selecione seu nível" oferece hoje.
+async function levelsInMenu() {
+  const i = fakeInteraction({ customId: `learn:levels:${OWNER}`, userId: OWNER, kind: "button" });
+  await run(learn, i);
+  const json = JSON.stringify(lastCall(i).payload.components.map((c) => c.toJSON()));
+  return [...json.matchAll(/"value":"(\w+)"/g)].map((m) => m[1]);
+}
+
+test("o menu de níveis oferece os quatro níveis, inclusive o Especialista", async () => {
+  assert.deepEqual(await levelsInMenu(), ["beginner", "intermediate", "advanced", "expert"]);
+});
+
+test("o menu de níveis esconde um nível quando ele não tem nenhum desafio", async () => {
+  // `challenges.list` é o mesmo array usado nas buscas: tiramos o nível expert e depois devolvemos.
+  const removed = challenges.list.filter((c) => c.difficulty === "expert");
+  assert.ok(removed.length > 0);
+  for (const c of removed) challenges.list.splice(challenges.list.indexOf(c), 1);
+  try {
+    assert.deepEqual(await levelsInMenu(), ["beginner", "intermediate", "advanced"]);
+  } finally {
+    challenges.list.push(...removed);
+  }
+  assert.ok((await levelsInMenu()).includes("expert"), "o nível volta quando o conteúdo volta");
 });
 
 // Texto de todos os TextDisplay de uma resposta, para checar o que a pessoa lê.

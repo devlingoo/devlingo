@@ -18,6 +18,16 @@ test("todo nível com conteúdo tem assuntos, e cada assunto tem perguntas para 
   }
 });
 
+test("todos os assuntos têm pelo menos 4 desafios em cada um dos 4 níveis", () => {
+  const topicIds = [...new Set(challenges.list.map((c) => c.topic.id))];
+  for (const level of challenges.DIFFICULTIES) {
+    for (const topicId of topicIds) {
+      const n = challenges.list.filter((c) => c.difficulty === level.id && c.topic.id === topicId).length;
+      assert.ok(n >= 4, `${level.id}/${topicId} tem só ${n} desafio(s)`);
+    }
+  }
+});
+
 test("o mesmo assunto tem rótulo e descrição idênticos em todos os níveis", () => {
   const seen = new Map();
   for (const c of challenges.list) {
