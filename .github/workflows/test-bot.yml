@@ -1,10 +1,19 @@
 name: Testar bot no Discord
 
+# ATENÇÃO: isto liga o bot DE VERDADE, com o token do secret DISCORD_TOKEN, por até 30 minutos.
+# Cada instância ligada responde a todas as mensagens. Se o bot também estiver rodando em outro
+# lugar com o mesmo token (inclusive no seu computador), cada mensagem será respondida DUAS vezes.
+# Para desenvolver no seu computador, use um bot de teste separado (outro token).
 on:
   workflow_dispatch:
 
 permissions:
   contents: read
+
+# No máximo uma instância por vez aqui: disparar de novo cancela a execução anterior.
+concurrency:
+  group: devlingo-bot
+  cancel-in-progress: true
 
 jobs:
   run-bot:
@@ -32,6 +41,9 @@ jobs:
             echo "::error::O secret DISCORD_TOKEN não foi configurado. Adicione-o em Settings > Secrets and variables > Actions."
             exit 1
           fi
+
+      - name: Lembrete sobre instâncias duplicadas
+        run: echo "::warning title=Uma instância por token::O bot responde a todas as mensagens enquanto esta execução estiver ativa. Se ele também roda em outro lugar com o mesmo token, cada mensagem será respondida duas vezes. Para parar, cancele esta execução."
 
       - name: Iniciar bot
         env:

@@ -30,6 +30,10 @@ Para rodar o bot de verdade, copie `.env.example` para `.env` e preencha o `DISC
 
 O progresso fica em SQLite (`src/utils/db.js`). Para mudar as tabelas, **acrescente** uma migração nova ao fim da lista `MIGRATIONS`; nunca edite as anteriores, porque bancos que já existem já passaram por elas.
 
+## Uma instância por token
+
+Se o bot rodar em dois lugares ao mesmo tempo com o mesmo token, cada mensagem é respondida duas vezes (e uma das instâncias pode estar com código antigo). Antes de rodar `npm start`, confira se o workflow "Testar bot no Discord" não está em execução (aba Actions) e se não há outro terminal com o bot aberto. O ideal é cada pessoa ter o **próprio bot de teste** (outro token no `.env`) e deixar o token do bot de verdade só onde ele roda de fato.
+
 ## Segredos
 
 Se um token do bot vazar (commit, print, conversa), redefina-o em Developer Portal → Bot → Reset Token e atualize o `.env` e o secret `DISCORD_TOKEN` do repositório.
