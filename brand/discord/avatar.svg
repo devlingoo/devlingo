@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024"><title>Avatar do Devlingo</title>
+  <defs>
+    <linearGradient id="av-bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2E2090"/><stop offset="1" stop-color="#17123A"/></linearGradient>
+    <radialGradient id="av-glow" cx="0.5" cy="0.56" r="0.5"><stop offset="0" stop-color="#6C4DFF" stop-opacity=".5"/><stop offset="1" stop-color="#6C4DFF" stop-opacity="0"/></radialGradient>
+    <radialGradient id="av-mint" cx="0.9" cy="0.95" r="0.5"><stop offset="0" stop-color="#2BD9A8" stop-opacity=".16"/><stop offset="1" stop-color="#2BD9A8" stop-opacity="0"/></radialGradient>
+  </defs>
+  <rect width="1024" height="1024" fill="url(#av-bg)"/>
+  <rect width="1024" height="1024" fill="url(#av-glow)"/>
+  <rect width="1024" height="1024" fill="url(#av-mint)"/>
+  <g transform="translate(199.5 162) scale(1.5625) translate(-56 -34)">
+  <defs>
+    <linearGradient id="av-bubble" gradientUnits="userSpaceOnUse" x1="96" y1="118" x2="420" y2="470">
+      <stop offset="0" stop-color="#8E75FF"/><stop offset="1" stop-color="#5233E6"/>
+    </linearGradient>
+    <radialGradient id="av-spark" cx="0.38" cy="0.32" r="0.8">
+      <stop offset="0" stop-color="#FFD978"/><stop offset="1" stop-color="#FFB224"/>
+    </radialGradient>
+  </defs>
+  <path d="M256 124 V84" stroke="#7A5CFF" stroke-width="16" stroke-linecap="round" fill="none"/>
+  <circle cx="256" cy="60" r="26" fill="url(#av-spark)"/>
+  <circle cx="247" cy="51" r="7" fill="#fff" fill-opacity=".55"/>
+  <rect x="56" y="118" width="400" height="300" rx="112" fill="url(#av-bubble)"/>
+  <path d="M174 402 H262 L134 466 Z" fill="url(#av-bubble)" stroke="url(#av-bubble)" stroke-width="22" stroke-linejoin="round"/>
+  <path d="M112 196 Q146 150 232 146" stroke="#fff" stroke-opacity=".2" stroke-width="14" stroke-linecap="round" fill="none"/>
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M212 218 L170 250 L212 282" stroke="#fff" stroke-width="32"/>
+    <path d="M300 218 L342 250 L300 282" stroke="#fff" stroke-width="32"/>
+    <path d="M206 316 Q256 354 306 316" stroke="#2BD9A8" stroke-width="28"/>
+  </g></g>
+</svg>

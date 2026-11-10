@@ -51,11 +51,13 @@ module.exports = {
   comboEvery: 5, // a cada N acertos seguidos, o combo dá um bônus
   comboBonusXp: 5,
 
+  // Cores da marca (a paleta completa e o porquê de cada uma estão em brand/guide.html).
+  // Os valores são os mesmos de brand/tokens/colors.json.
   colors: {
-    brand: 0x5865f2,
-    success: 0x57f287,
-    danger: 0xed4245,
-    muted: 0x747f8d,
-    gold: 0xf1c40f, // comemorações: subir de nível, marcos, conquistas
+    brand: 0x6c4dff, // Violeta Devlingo: mensagens padrão
+    success: 0x2bd9a8, // Menta: acerto
+    danger: 0xff5c7a, // Coral: erro
+    muted: 0x6b6890, // Bruma: desafio expirado
+    gold: 0xffb224, // Faísca: comemorações (subir de nível, meta, marcos, conquistas)
   },
 };
