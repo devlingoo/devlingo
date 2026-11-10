@@ -31,6 +31,12 @@ Para rodar o bot de verdade, copie `.env.example` para `.env` e preencha o `DISC
 
 O progresso fica em SQLite (`src/utils/db.js`). Para mudar as tabelas, **acrescente** uma migração nova ao fim da lista `MIGRATIONS`; nunca edite as anteriores, porque bancos que já existem já passaram por elas.
 
+## Conquistas e telas
+
+- Conquista nova: acrescente na lista de `src/utils/achievements.js` (a `key` nunca muda, porque é o que fica gravado no banco). Se a regra precisa de uma estatística nova, ela entra em `recordAnswer` (`src/utils/db.js`) junto com uma migração.
+- As telas (o que cada comando mostra) ficam em `src/utils/views.js`; os comandos e os botões de atalho usam as mesmas funções. Comando novo entra na ajuda sozinho: defina `category` (`estudar`, `voce` ou `ajuda`) e, se quiser, `order`.
+- Em mensagens com menção ao bot, deixe a menção **fora** de crases (`commandRef` em `ui.js` já faz isso): dentro de código o Discord mostra o número, não o nome.
+
 ## Segredos
 
 Se um token do bot vazar (commit, print, conversa), redefina-o em Developer Portal → Bot → Reset Token e atualize o `.env` e o secret `DISCORD_TOKEN` do repositório.

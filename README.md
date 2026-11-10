@@ -15,13 +15,29 @@ No servidor, marque o bot no começo da mensagem. Na DM, escreva direto.
 | `@Devlingo configurar` | `configurar` | escolhe suas áreas (Frontend, Backend...) e seu nível; dá para mudar quando quiser |
 | `@Devlingo aprender` | `aprender` | trilha de estudo: escolhe o assunto exato e só pergunta sobre ele |
 | `@Devlingo desafio` | `desafio` | desafio aleatório do seu nível e das suas áreas (ou `desafio python`, `javascript`, `sql`, `git`) |
-| `@Devlingo perfil` | `perfil` | XP, nível, sequência de dias e trilha |
-| `@Devlingo ranking` | `ranking` | top 10 do servidor (na DM, ranking global) |
-| `@Devlingo ajuda` | `ajuda` | lista de comandos |
+| `@Devlingo perfil` | `perfil` | nível, XP, sequência, meta do dia, estatísticas e trilha |
+| `@Devlingo ranking` | `ranking` | top 10 do servidor (na DM, ranking global) e a sua posição |
+| `@Devlingo conquistas` | `conquistas` | suas medalhas: as que você já ganhou e as que faltam |
+| `@Devlingo ajuda` | `ajuda` | lista de comandos, agrupada por tipo |
+
+As telas têm botões de atalho (📚 Estudar, 👤 Perfil, 🏆 Ranking, 🏅 Conquistas, ⚙️ Configurar) para andar entre elas sem digitar.
 
 O XP e a sequência são globais por pessoa; o ranking do servidor conta só o XP ganho naquele servidor. Cada desafio expira em 5 minutos e só quem pediu pode responder.
 
 **Limite diário:** cada pessoa ganha no máximo 200 XP por dia. Depois disso ainda dá para treinar e ler as explicações, mas o XP só volta no dia seguinte (o `perfil` mostra o XP de hoje). O "dia" muda à meia-noite de `America/Sao_Paulo`, não do servidor onde o bot roda.
+
+### Estímulos de hábito
+
+O bot recompensa quem volta todo dia, sem punir quem falha:
+
+- 🎯 **Meta do dia:** 5 respostas por dia (certas ou erradas) cumprem a meta e rendem **+15 XP**, uma vez por dia. A barra aparece em toda resposta e no `perfil`.
+- 🔥 **Sequência e marcos:** a sequência cresce na primeira resposta de cada dia. Os marcos de 3, 7, 14, 30, 60 e 100 dias dão XP de bônus (+10, +30, +60, +150, +300 e +500). O `perfil` mostra o próximo marco e avisa, sem pressão, quando a sequência está em risco hoje.
+- ⚡ **Combo:** acertos seguidos mostram um combo; a cada 5, **+5 XP**. Errar zera (o bot avisa, sem drama).
+- 🆙 **Níveis e títulos:** cada 100 XP é um nível. Títulos: 🌱 Semente, 🌿 Broto, 🌳 Árvore, ⚡ Faísca, 🔥 Chama e 👑 Lenda. Subir de nível é comemorado na própria resposta (a mensagem fica dourada).
+- 🏅 **Conquistas:** 13 medalhas (primeiro passo, 10/50/100 acertos, sequências, combos, meta, nível Especialista...). O comando `conquistas` mostra as ganhas e as que faltam.
+- 📍 **Ranking com a sua posição**, mesmo fora do top 10.
+
+Os bônus ficam **fora** do limite diário de XP: são raros e premiam constância, não volume (e o combo só dá bônus quando o XP da resposta entrou). Os valores estão em `src/config.js`; `DAILY_GOAL` no `.env` muda a meta ou a desliga (`0`). Quem já usava o bot começa as estatísticas e conquistas do zero, mas mantém XP e sequência.
 
 ### Configuração inicial (`configurar`)
 
@@ -63,6 +79,7 @@ Variáveis opcionais do `.env` (todas explicadas no `.env.example`):
 | --- | --- | --- |
 | `ALLOWED_CHANNEL_ID` | vazio | nos servidores, o bot só responde nesse canal |
 | `DAILY_XP_CAP` | `200` | máximo de XP por pessoa por dia (`0` = sem limite) |
+| `DAILY_GOAL` | `5` | respostas por dia que cumprem a meta diária (`0` = sem meta) |
 | `TIMEZONE` | `America/Sao_Paulo` | fuso que define "o dia" da sequência e do limite diário |
 | `DB_PATH` | `data/devlingo.db` | onde fica o banco |
 
@@ -133,5 +150,6 @@ Cada área lista os `topics` (ids de assunto) que pertencem a ela. Um assunto po
 
 - Mais desafios e mais assuntos (hoje são 116 desafios em 7 assuntos, com 4 em cada nível; `npm test` exige esse mínimo). Frontend ainda só tem JavaScript: faltam HTML/CSS e DOM. Backend ainda não tem HTTP/APIs, Banco de dados não tem modelagem, e DevOps só tem Git (faltam Linux e Docker).
 - Avisar quando a pessoa vai bem num nível (por exemplo, 90% de acerto) e sugerir subir; hoje o nível só muda se ela mudar em `configurar`.
+- Mais estímulos de hábito, ainda não feitos: "desafio do dia" igual para todo mundo, "congelar" a sequência por um dia, ligas semanais de ranking e lembretes por DM (esses só com **opt-in** da pessoa, nunca por padrão)
 - Se o bot passar de ~2.500 servidores, o Discord exige sharding; o SQLite em arquivo único também deixa de servir (Postgres)
 - Evitar repetir perguntas já acertadas recentemente na mesma trilha (hoje só a última é excluída)
