@@ -8,6 +8,8 @@ module.exports = {
   aliases: ["quiz", "d"],
   description: "um desafio aleatório do seu nível e das suas áreas (ou de uma linguagem: python, javascript, sql, git)",
   usage: "desafio [linguagem]",
+  category: "estudar",
+  order: 3,
 
   async execute({ message, args }) {
     const ownerId = message.author.id;

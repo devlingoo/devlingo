@@ -50,17 +50,20 @@ module.exports = {
 
     const chosen = Number(chosenText);
     const correct = chosen === ch.answer;
-    // `gained` já considera o limite diário de XP (pode ser menor que o prêmio, ou 0).
-    const { xp, streak, gained, capped } = db.recordAnswer(
+    // O resultado traz tudo o que a mensagem mostra: XP que entrou (já com o limite diário), bônus,
+    // combo, meta do dia, marcos de sequência, subida de nível e conquistas novas.
+    const result = db.recordAnswer(
       interaction.user.id,
       interaction.guildId,
       correct,
-      config.xpCorrect
+      config.xpCorrect,
+      new Date(),
+      { difficulty: ch.difficulty }
     );
 
     return update(
       interaction,
-      challengeMessage(ch, ownerId, issuedAt, { type: "answered", chosen, correct, gained, capped, xp, streak, study })
+      challengeMessage(ch, ownerId, issuedAt, { type: "answered", chosen, correct, study, ...result })
     );
   },
 };
