@@ -3598,5 +3598,645 @@
       "label": "Modelagem de dados",
       "description": "Tabelas, chaves, relacionamentos e normalização"
     }
+  },
+  {
+    "id": "lnx-001",
+    "language": "bash",
+    "question": "Qual comando mostra em qual pasta você está agora?",
+    "code": "",
+    "options": [
+      "ls",
+      "whoami",
+      "cd",
+      "pwd"
+    ],
+    "answer": 3,
+    "explanation": "`pwd` (print working directory) imprime o caminho da pasta atual. O `ls` lista o conteúdo, o `cd` troca de pasta e o `whoami` mostra o usuário.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "linux-shell",
+      "label": "Linux e terminal",
+      "description": "Comandos do dia a dia, pipes, permissões e scripts"
+    }
+  },
+  {
+    "id": "lnx-002",
+    "language": "bash",
+    "question": "Qual comando lista os arquivos da pasta, inclusive os ocultos, em formato detalhado?",
+    "code": "",
+    "options": [
+      "ls -h",
+      "ls -r",
+      "dir --all",
+      "ls -la"
+    ],
+    "answer": 3,
+    "explanation": "No `ls -la`, o `-l` mostra o formato detalhado (permissões, dono, tamanho, data) e o `-a` inclui os ocultos, os que começam com ponto. O `-r` só inverte a ordem e o `-h` só deixa os tamanhos legíveis.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "linux-shell",
+      "label": "Linux e terminal",
+      "description": "Comandos do dia a dia, pipes, permissões e scripts"
+    }
+  },
+  {
+    "id": "lnx-003",
+    "language": "bash",
+    "question": "Qual comando cria uma pasta chamada projetos?",
+    "code": "",
+    "options": [
+      "mkdir projetos",
+      "rm projetos",
+      "touch projetos",
+      "cd projetos"
+    ],
+    "answer": 0,
+    "explanation": "`mkdir` (make directory) cria pastas. O `touch` cria um arquivo vazio, o `cd` entra numa pasta que já existe e o `rm` apaga arquivos (e, sem `-r`, recusa pastas).",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "linux-shell",
+      "label": "Linux e terminal",
+      "description": "Comandos do dia a dia, pipes, permissões e scripts"
+    }
+  },
+  {
+    "id": "lnx-004",
+    "language": "bash",
+    "question": "O que o comando `cd ..` faz?",
+    "code": "cd ..",
+    "options": [
+      "Fecha a janela do terminal e encerra a sessão",
+      "Vai para a pasta pessoal do usuário (a home)",
+      "Sobe para a pasta pai (a que contém a atual)",
+      "Volta para a última pasta em que você estava"
+    ],
+    "answer": 2,
+    "explanation": "Os dois pontos (`..`) representam a pasta pai. Para ir à pasta pessoal, use `cd` sozinho (ou `cd ~`); para voltar à pasta anterior, `cd -`.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "linux-shell",
+      "label": "Linux e terminal",
+      "description": "Comandos do dia a dia, pipes, permissões e scripts"
+    }
+  },
+  {
+    "id": "lnx-005",
+    "language": "bash",
+    "question": "O que esse comando mostra?",
+    "code": "cat acessos.log | grep \"404\" | wc -l",
+    "options": [
+      "O tamanho do log em bytes",
+      "Quantas palavras há no log inteiro",
+      "As linhas do log que contêm 404",
+      "Quantas linhas do log contêm 404"
+    ],
+    "answer": 3,
+    "explanation": "O pipe (`|`) liga a saída de um comando à entrada do próximo: `cat` lê o arquivo, `grep` fica só com as linhas com 404 e `wc -l` conta linhas. Sem o `wc -l`, apareceriam as próprias linhas.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "linux-shell",
+      "label": "Linux e terminal",
+      "description": "Comandos do dia a dia, pipes, permissões e scripts"
+    }
+  },
+  {
+    "id": "lnx-006",
+    "language": "bash",
+    "question": "O que o último comando mostra?",
+    "code": "echo \"a\" > lista.txt\necho \"b\" >> lista.txt\necho \"c\" > lista.txt\ncat lista.txt",
+    "options": [
+      "a, b e c, uma por linha",
+      "O b e o c",
+      "Só o c",
+      "Só o a e o b"
+    ],
+    "answer": 2,
+    "explanation": "O `>` sobrescreve o arquivo (apaga o que havia) e o `>>` acrescenta no final. A terceira linha usa `>` de novo, então apaga `a` e `b` e deixa só `c`.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "linux-shell",
+      "label": "Linux e terminal",
+      "description": "Comandos do dia a dia, pipes, permissões e scripts"
+    }
+  },
+  {
+    "id": "lnx-007",
+    "language": "bash",
+    "question": "Que permissões esse comando dá ao arquivo?",
+    "code": "chmod 755 deploy.sh",
+    "options": [
+      "Só o dono pode ler e executar; os demais não podem nada",
+      "Dono: ler, escrever e executar; grupo e outros: ler e executar",
+      "Dono: só leitura; grupo e outros: ler, escrever e executar",
+      "Todos (dono, grupo e outros) podem ler, escrever e executar"
+    ],
+    "answer": 1,
+    "explanation": "Cada dígito do modo é soma de leitura (4), escrita (2) e execução (1), na ordem dono, grupo, outros. 7 = 4+2+1 (`rwx`) e 5 = 4+1 (`r-x`), então `755` é `rwxr-xr-x`: o padrão de scripts e programas.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "linux-shell",
+      "label": "Linux e terminal",
+      "description": "Comandos do dia a dia, pipes, permissões e scripts"
+    }
+  },
+  {
+    "id": "lnx-008",
+    "language": "bash",
+    "question": "O que o `echo $?` mostra?",
+    "code": "ls /pasta-que-nao-existe\necho $?",
+    "options": [
+      "O nome da pasta em que o terminal está aberto",
+      "Quantos arquivos o ls conseguiu listar na pasta",
+      "O código de saída do último comando (0 = sucesso)",
+      "O número do processo (PID) do último comando"
+    ],
+    "answer": 2,
+    "explanation": "Todo comando termina com um código de saída: `0` significa sucesso e qualquer outro valor, falha. O `$?` guarda o do último comando; é nele que `&&`, `||` e `if` se baseiam. Aqui o `ls` falha (código 2).",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "linux-shell",
+      "label": "Linux e terminal",
+      "description": "Comandos do dia a dia, pipes, permissões e scripts"
+    }
+  },
+  {
+    "id": "lnx-009",
+    "language": "bash",
+    "question": "O que aparece no terminal?",
+    "code": "false && echo \"A\" || echo \"B\"\ntrue || echo \"C\"\necho \"D\"",
+    "options": [
+      "B e D",
+      "A, B e D",
+      "A e D",
+      "B, C e D"
+    ],
+    "answer": 0,
+    "explanation": "O `&&` só executa o próximo se o anterior deu certo, e o `||` só se deu errado. `false` falha, então o `A` é pulado e o `B` roda. `true` dá certo, então o `C` é pulado. O `D` roda sempre.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "linux-shell",
+      "label": "Linux e terminal",
+      "description": "Comandos do dia a dia, pipes, permissões e scripts"
+    }
+  },
+  {
+    "id": "lnx-010",
+    "language": "bash",
+    "question": "O que esse comando mostra?",
+    "code": "cut -d' ' -f1 acessos.log | sort | uniq -c | sort -rn | head -3",
+    "options": [
+      "Os 3 IPs que menos aparecem, em ordem alfabética",
+      "As 3 últimas linhas do log, sem linhas repetidas",
+      "Os 3 IPs que mais aparecem, com a contagem de cada",
+      "As 3 primeiras linhas do log, já em ordem alfabética"
+    ],
+    "answer": 2,
+    "explanation": "`cut` pega a 1ª coluna (os IPs), `sort` agrupa os iguais, `uniq -c` conta cada grupo, `sort -rn` ordena do maior para o menor número e `head -3` fica com os 3 primeiros. É o clássico \"top N\" do terminal.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "linux-shell",
+      "label": "Linux e terminal",
+      "description": "Comandos do dia a dia, pipes, permissões e scripts"
+    }
+  },
+  {
+    "id": "lnx-011",
+    "language": "bash",
+    "question": "O que esse comando faz?",
+    "code": "find . -name \"*.log\" -mtime +7 -delete",
+    "options": [
+      "Apaga os .log (nesta pasta e abaixo) com mais de 7 dias",
+      "Apaga os .log modificados nos últimos 7 dias",
+      "Lista os .log com mais de 7 KB, sem apagar nada",
+      "Apaga os .log só da pasta atual, não importa a idade deles"
+    ],
+    "answer": 0,
+    "explanation": "`find` percorre as subpastas, `-name` filtra pelo nome, `-mtime +7` seleciona o que foi modificado há mais de 7 dias e `-delete` apaga. Teste antes sem o `-delete` para só listar o que seria apagado.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "linux-shell",
+      "label": "Linux e terminal",
+      "description": "Comandos do dia a dia, pipes, permissões e scripts"
+    }
+  },
+  {
+    "id": "lnx-012",
+    "language": "bash",
+    "question": "O que aparece no terminal?",
+    "code": "nome=\"Ana\"\necho 'Olá, $nome'\necho \"Olá, $nome\"",
+    "options": [
+      "Olá, Ana e depois Olá, Ana",
+      "Olá, $nome e depois Olá, Ana",
+      "Olá, Ana e depois Olá, $nome",
+      "Olá, $nome e depois Olá, $nome"
+    ],
+    "answer": 1,
+    "explanation": "Aspas simples (`'...'`) mostram o texto literal, sem expandir variáveis. Aspas duplas (`\"...\"`) expandem `$nome`. Use aspas duplas ao redor de variáveis também para preservar espaços no valor.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "linux-shell",
+      "label": "Linux e terminal",
+      "description": "Comandos do dia a dia, pipes, permissões e scripts"
+    }
+  },
+  {
+    "id": "lnx-013",
+    "language": "bash",
+    "question": "O que aparece?",
+    "code": "set -o pipefail\nfalse | cat\necho \"status: $?\"",
+    "options": [
+      "status: 1",
+      "status: 127",
+      "status: 0",
+      "Nada: o script para antes"
+    ],
+    "answer": 0,
+    "explanation": "Sem `pipefail`, o status de um pipeline é o do último comando (aqui o `cat`, que dá 0) e a falha do `false` passa despercebida. Com `set -o pipefail`, o pipeline falha se qualquer etapa falhar. Costuma vir junto de `set -eu`.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "linux-shell",
+      "label": "Linux e terminal",
+      "description": "Comandos do dia a dia, pipes, permissões e scripts"
+    }
+  },
+  {
+    "id": "lnx-014",
+    "language": "bash",
+    "question": "Qual das duas linhas manda a saída normal E as mensagens de erro para o out.txt?",
+    "code": "# A\nls /nada pasta > out.txt 2>&1\n# B\nls /nada pasta 2>&1 > out.txt",
+    "options": [
+      "Nenhuma das duas",
+      "Só a A",
+      "Só a B",
+      "As duas"
+    ],
+    "answer": 1,
+    "explanation": "Os redirecionamentos valem na ordem. Na A, a saída vai para o arquivo e então o erro (2) é copiado para onde a saída (1) aponta: o arquivo. Na B, o erro copia o destino atual da saída (a tela) antes de ela ir para o arquivo, então o erro continua na tela.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "linux-shell",
+      "label": "Linux e terminal",
+      "description": "Comandos do dia a dia, pipes, permissões e scripts"
+    }
+  },
+  {
+    "id": "lnx-015",
+    "language": "bash",
+    "question": "Esse comando falha em arquivos como \"meu arquivo.txt\". Qual o problema e a correção?",
+    "code": "find . -name \"*.txt\" | xargs rm",
+    "options": [
+      "O find não enxerga arquivos ocultos; use a opção -hidden sempre",
+      "O rm não apaga .txt sem a opção -f; use sempre rm -f",
+      "O xargs só aceita um arquivo por vez; use xargs -n 1",
+      "Espaços viram vários argumentos; use find -print0 e xargs -0"
+    ],
+    "answer": 3,
+    "explanation": "O `xargs` separa os argumentos por espaço, então \"meu arquivo.txt\" vira \"meu\" e \"arquivo.txt\" (e o arquivo fica). `find -print0 | xargs -0` separa por byte nulo, que não pode existir em nome de arquivo. Ou use `find ... -delete`.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "linux-shell",
+      "label": "Linux e terminal",
+      "description": "Comandos do dia a dia, pipes, permissões e scripts"
+    }
+  },
+  {
+    "id": "lnx-016",
+    "language": "bash",
+    "question": "Por que tentar `kill PID` (SIGTERM) antes de recorrer ao `kill -9`?",
+    "code": "",
+    "options": [
+      "O -9 apenas pausa o processo, em vez de encerrá-lo",
+      "O SIGTERM deixa o programa limpar tudo; o -9 corta na hora",
+      "O SIGTERM encerra o processo bem mais rápido que o -9",
+      "O -9 só funciona quando o comando é rodado pelo usuário root"
+    ],
+    "answer": 1,
+    "explanation": "O `kill` comum envia SIGTERM, que o programa pode tratar (salvar, fechar conexões, apagar temporários). O `kill -9` envia SIGKILL, que não pode ser tratado nem ignorado: o sistema encerra o processo de imediato, sem limpeza. Fica como último recurso.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "linux-shell",
+      "label": "Linux e terminal",
+      "description": "Comandos do dia a dia, pipes, permissões e scripts"
+    }
+  },
+  {
+    "id": "dkr-001",
+    "language": "docker",
+    "question": "Qual é a diferença entre uma imagem e um contêiner Docker?",
+    "code": "",
+    "options": [
+      "A imagem só existe no Docker Hub e o contêiner só no computador",
+      "A imagem é o pacote; o contêiner é a execução dele, isolada",
+      "São a mesma coisa; só mudam de nome conforme o sistema",
+      "O contêiner é o pacote; a imagem é o processo em execução"
+    ],
+    "answer": 1,
+    "explanation": "A imagem é o pacote com os arquivos, bibliotecas e configurações necessários. O contêiner é um processo isolado criado a partir dela. De uma mesma imagem saem quantos contêineres você quiser.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "docker-basics",
+      "label": "Docker e contêineres",
+      "description": "Imagens, contêineres, Dockerfile e Compose"
+    }
+  },
+  {
+    "id": "dkr-002",
+    "language": "docker",
+    "question": "Qual comando baixa a imagem do nginx do Docker Hub, sem iniciar nada?",
+    "code": "",
+    "options": [
+      "docker get nginx",
+      "docker pull nginx",
+      "docker install nginx",
+      "docker run nginx"
+    ],
+    "answer": 1,
+    "explanation": "O `docker pull` só baixa a imagem do registro. O `docker run` também baixa (se faltar), mas em seguida cria e inicia um contêiner. `get` e `install` não são comandos do Docker.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "docker-basics",
+      "label": "Docker e contêineres",
+      "description": "Imagens, contêineres, Dockerfile e Compose"
+    }
+  },
+  {
+    "id": "dkr-003",
+    "language": "docker",
+    "question": "Qual comando lista os contêineres que estão em execução?",
+    "code": "",
+    "options": [
+      "docker list",
+      "docker run -l",
+      "docker images",
+      "docker ps"
+    ],
+    "answer": 3,
+    "explanation": "O `docker ps` mostra os contêineres em execução; com `-a` mostra também os parados. O `docker images` lista as imagens baixadas, não os contêineres.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "docker-basics",
+      "label": "Docker e contêineres",
+      "description": "Imagens, contêineres, Dockerfile e Compose"
+    }
+  },
+  {
+    "id": "dkr-004",
+    "language": "docker",
+    "question": "O que a opção `-p 8080:80` faz?",
+    "code": "docker run -d -p 8080:80 nginx",
+    "options": [
+      "Liga a porta 8080 do seu computador à 80 do contêiner",
+      "Liga a porta 80 do computador à porta 8080 do contêiner",
+      "Limita o contêiner a 80 processos durante 8080 segundos",
+      "Abre as portas 8080 e 80 no firewall do seu computador"
+    ],
+    "answer": 0,
+    "explanation": "O formato é `-p PORTA_DO_COMPUTADOR:PORTA_DO_CONTÊINER`. Aqui, abrir http://localhost:8080 no navegador chega ao nginx, que escuta na porta 80 dentro do contêiner.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "docker-basics",
+      "label": "Docker e contêineres",
+      "description": "Imagens, contêineres, Dockerfile e Compose"
+    }
+  },
+  {
+    "id": "dkr-005",
+    "language": "docker",
+    "question": "Qual a diferença entre RUN e CMD em um Dockerfile?",
+    "code": "FROM node:22\nRUN npm install\nCMD [\"node\", \"index.js\"]",
+    "options": [
+      "RUN roda ao iniciar o contêiner; CMD, na construção da imagem",
+      "RUN só aceita comandos do sistema operacional; CMD só aceita os do Node",
+      "RUN executa ao construir a imagem; CMD define o que roda ao iniciar",
+      "São sinônimos: os dois rodam na construção da imagem"
+    ],
+    "answer": 2,
+    "explanation": "O `RUN` executa o comando durante o `docker build` e grava o resultado como uma nova camada da imagem (aqui, as dependências instaladas). O `CMD` não executa nada na construção: só registra o comando padrão para quando o contêiner iniciar.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "docker-basics",
+      "label": "Docker e contêineres",
+      "description": "Imagens, contêineres, Dockerfile e Compose"
+    }
+  },
+  {
+    "id": "dkr-006",
+    "language": "docker",
+    "question": "O que acontece com o contêiner quando o comando termina?",
+    "code": "docker run --rm alpine echo oi",
+    "options": [
+      "Ele é removido automaticamente",
+      "Fica parado, esperando para ser reiniciado",
+      "Reinicia sozinho até o comando dar certo",
+      "É removido junto com a imagem alpine"
+    ],
+    "answer": 0,
+    "explanation": "Sem `--rm`, o contêiner parado continua existindo (aparece no `docker ps -a`) e vai se acumulando. Com `--rm`, o Docker o remove ao terminar. A imagem não é afetada.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "docker-basics",
+      "label": "Docker e contêineres",
+      "description": "Imagens, contêineres, Dockerfile e Compose"
+    }
+  },
+  {
+    "id": "dkr-007",
+    "language": "docker",
+    "question": "Um banco de dados roda num contêiner sem volume. O que acontece com os dados se o contêiner for removido?",
+    "code": "",
+    "options": [
+      "Os dados somem com o contêiner; para guardá-los, use um volume",
+      "Nada muda: o Docker sempre mantém os dados",
+      "São copiados sozinhos para uma pasta do computador",
+      "Ficam gravados na imagem e aparecem no próximo contêiner criado"
+    ],
+    "answer": 0,
+    "explanation": "O que o contêiner grava vai para a camada gravável dele, que só existe junto com ele. Para os dados sobreviverem, monte um volume (`-v dados:/var/lib/postgresql/data`) ou uma pasta do computador (bind mount).",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "docker-basics",
+      "label": "Docker e contêineres",
+      "description": "Imagens, contêineres, Dockerfile e Compose"
+    }
+  },
+  {
+    "id": "dkr-008",
+    "language": "docker",
+    "question": "O que o `EXPOSE 3000` faz sozinho?",
+    "code": "FROM node:22\nCOPY . /app\nEXPOSE 3000\nCMD [\"node\", \"/app/index.js\"]",
+    "options": [
+      "Publica a porta 3000 no computador automaticamente",
+      "Só documenta a porta; para acessar de fora, use -p",
+      "Abre a porta 3000 no firewall do sistema operacional",
+      "Faz a aplicação passar a escutar na porta 3000 sozinha"
+    ],
+    "answer": 1,
+    "explanation": "O `EXPOSE` é documentação: informa quem usa a imagem em qual porta a aplicação escuta. Quem de fato publica é o `docker run -p` (ou `-P`, que publica todas as portas expostas).",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "docker-basics",
+      "label": "Docker e contêineres",
+      "description": "Imagens, contêineres, Dockerfile e Compose"
+    }
+  },
+  {
+    "id": "dkr-009",
+    "language": "docker",
+    "question": "O que mudar para o `npm install` ser reaproveitado do cache quando só o código muda?",
+    "code": "FROM node:22\nWORKDIR /app\nCOPY . .\nRUN npm install\nCMD [\"node\", \"index.js\"]",
+    "options": [
+      "Mover o WORKDIR para o fim do arquivo, depois do CMD e do RUN",
+      "Trocar o RUN npm install por CMD npm install",
+      "Usar docker build --no-cache em todo build",
+      "Copiar o package*.json, instalar e só depois copiar o código"
+    ],
+    "answer": 3,
+    "explanation": "Cada instrução vira uma camada, e quando uma muda, todas as seguintes são refeitas. Com `COPY . .` antes do `npm install`, qualquer alteração de código invalida a instalação. Copiando antes só o `package*.json`, ela só refaz quando as dependências mudam.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "docker-basics",
+      "label": "Docker e contêineres",
+      "description": "Imagens, contêineres, Dockerfile e Compose"
+    }
+  },
+  {
+    "id": "dkr-010",
+    "language": "docker",
+    "question": "Por que a forma de lista é preferida para o CMD?",
+    "code": "# forma de lista (exec)\nCMD [\"node\", \"app.js\"]\n\n# forma de texto (shell)\nCMD node app.js",
+    "options": [
+      "Porque a forma de texto não aceita nenhum argumento no comando",
+      "O processo vira o PID 1 e recebe sinais como o SIGTERM",
+      "Porque a forma de texto só funciona no Windows",
+      "Porque a forma de lista roda mais rápido no build"
+    ],
+    "answer": 1,
+    "explanation": "Na forma de texto (shell), o comando roda dentro de `/bin/sh -c`, e quem recebe o SIGTERM do `docker stop` é o shell, que não o repassa: a aplicação não fecha direito e o Docker acaba usando SIGKILL após o prazo. Na forma de lista, a aplicação é o PID 1.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "docker-basics",
+      "label": "Docker e contêineres",
+      "description": "Imagens, contêineres, Dockerfile e Compose"
+    }
+  },
+  {
+    "id": "dkr-011",
+    "language": "docker",
+    "question": "Com `docker run minha-imagem -c 1 8.8.8.8`, qual comando é executado?",
+    "code": "ENTRYPOINT [\"ping\"]\nCMD [\"-c\", \"3\", \"localhost\"]",
+    "options": [
+      "ping -c 3 localhost",
+      "-c 1 8.8.8.8",
+      "ping -c 1 8.8.8.8",
+      "ping -c 3 localhost -c 1 8.8.8.8"
+    ],
+    "answer": 2,
+    "explanation": "O `ENTRYPOINT` é o executável fixo e o `CMD` são só os argumentos padrão. O que vem depois do nome da imagem no `docker run` substitui o `CMD` e mantém o `ENTRYPOINT`. Sem argumentos, rodaria `ping -c 3 localhost`.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "docker-basics",
+      "label": "Docker e contêineres",
+      "description": "Imagens, contêineres, Dockerfile e Compose"
+    }
+  },
+  {
+    "id": "dkr-012",
+    "language": "docker",
+    "question": "Qual instrução faz o contêiner rodar como um usuário comum, e não como root?",
+    "code": "FROM node:22\nRUN useradd -m app\n____ app\nCMD [\"node\", \"index.js\"]",
+    "options": [
+      "RUN",
+      "SETUSER",
+      "USER",
+      "WORKDIR"
+    ],
+    "answer": 2,
+    "explanation": "O `USER` define o usuário padrão para as instruções seguintes e para o `CMD`/`ENTRYPOINT` em execução. Rodar sem privilégios de root segue o princípio do menor privilégio: se a aplicação for comprometida, o estrago é menor.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "docker-basics",
+      "label": "Docker e contêineres",
+      "description": "Imagens, contêineres, Dockerfile e Compose"
+    }
+  },
+  {
+    "id": "dkr-013",
+    "language": "docker",
+    "question": "Qual o ganho principal dessa estrutura em dois estágios?",
+    "code": "FROM golang:1.24 AS build\nWORKDIR /src\nCOPY . .\nRUN go build -o /app\n\nFROM gcr.io/distroless/static\nCOPY --from=build /app /app\nCMD [\"/app\"]",
+    "options": [
+      "O contêiner reinicia sozinho se o binário falhar",
+      "O build roda mais rápido porque usa duas CPUs",
+      "A imagem final inclui os dois estágios, para facilitar a depuração",
+      "A imagem final leva só o binário, sem compilador nem código-fonte"
+    ],
+    "answer": 3,
+    "explanation": "No multi-stage, cada `FROM` começa um estágio, e o `COPY --from` traz só o que interessa do anterior. O compilador e o código ficam para trás: a imagem final é bem menor e tem menos coisas para atacar.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "docker-basics",
+      "label": "Docker e contêineres",
+      "description": "Imagens, contêineres, Dockerfile e Compose"
+    }
+  },
+  {
+    "id": "dkr-014",
+    "language": "docker",
+    "question": "O que esse trecho garante que um depends_on simples não garante?",
+    "code": "services:\n  api:\n    build: .\n    depends_on:\n      db:\n        condition: service_healthy\n  db:\n    image: postgres:17\n    healthcheck:\n      test: [\"CMD-SHELL\", \"pg_isready -U postgres\"]",
+    "options": [
+      "Que a api só sobe quando o Postgres aceita conexões",
+      "Que o db inicia mais rápido do que a api no mesmo host",
+      "Que o db reinicia sozinho sempre que o contêiner cair",
+      "Que a api e o db compartilham o mesmo volume de dados"
+    ],
+    "answer": 0,
+    "explanation": "O `depends_on` simples só controla a ordem de início: o Compose espera o contêiner estar rodando, não pronto. Com `condition: service_healthy` e um `healthcheck`, a `api` só sobe quando o banco de fato responde, evitando erros de conexão na partida.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "docker-basics",
+      "label": "Docker e contêineres",
+      "description": "Imagens, contêineres, Dockerfile e Compose"
+    }
+  },
+  {
+    "id": "dkr-015",
+    "language": "docker",
+    "question": "Para que serve o arquivo .dockerignore?",
+    "code": "# .dockerignore\nnode_modules\n.git\n.env",
+    "options": [
+      "Impedir que o contêiner leia certos arquivos enquanto roda",
+      "Fazer o docker pull pular as imagens listadas nele",
+      "Ignorar os erros de sintaxe do Dockerfile durante o build",
+      "Tirar arquivos do contexto de build (menor e sem segredos)"
+    ],
+    "answer": 3,
+    "explanation": "O `.dockerignore` (como o `.gitignore`) tira arquivos do contexto enviado ao build: ele fica menor e mais rápido, e um `COPY . .` não leva `node_modules`, `.git` nem `.env` (com senhas) para dentro da imagem.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "docker-basics",
+      "label": "Docker e contêineres",
+      "description": "Imagens, contêineres, Dockerfile e Compose"
+    }
+  },
+  {
+    "id": "dkr-016",
+    "language": "docker",
+    "question": "Por que isso é inseguro, e qual a alternativa para segredos usados no build?",
+    "code": "FROM node:22\nENV API_KEY=abc123\nRUN npm install",
+    "options": [
+      "O ENV não aceita valores com letras e números juntos",
+      "O Docker criptografa o valor, mas a chave fica no Docker Hub",
+      "O valor fica na imagem; use build secrets (--mount=type=secret)",
+      "O ENV só vale durante o build e some depois, mas o npm pode logá-lo"
+    ],
+    "answer": 2,
+    "explanation": "Variáveis de `ENV` e `ARG` ficam nas camadas da imagem (aparecem em `docker history` e `docker inspect`), então quem baixar a imagem lê o segredo. Para o build, use secret mounts (`RUN --mount=type=secret`); em execução, passe o valor pelo ambiente ou um gerenciador de segredos.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "docker-basics",
+      "label": "Docker e contêineres",
+      "description": "Imagens, contêineres, Dockerfile e Compose"
+    }
   }
 ]

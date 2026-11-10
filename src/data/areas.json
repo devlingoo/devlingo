@@ -32,6 +32,6 @@
     "label": "Ferramentas e DevOps",
     "emoji": "🛠️",
     "description": "Versionamento, entrega e infraestrutura",
-    "topics": ["git-versioning"]
+    "topics": ["linux-shell", "docker-basics", "git-versioning"]
   }
 ]

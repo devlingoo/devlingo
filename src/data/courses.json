@@ -47,5 +47,12 @@
     "emoji": "🧱",
     "description": "Chaves, relacionamentos, normalização e índices: o desenho por trás das tabelas.",
     "modules": ["db-modeling"]
+  },
+  {
+    "id": "devops",
+    "name": "Linux e Docker",
+    "emoji": "🐳",
+    "description": "Terminal, permissões, imagens e contêineres: a base para entregar software.",
+    "modules": ["linux-shell", "docker-basics"]
   }
 ]
