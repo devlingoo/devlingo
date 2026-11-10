@@ -41,10 +41,21 @@ module.exports = {
   challengeTtlMs: 5 * 60 * 1000, // depois disso o desafio expira
   cooldownMs: 3000, // intervalo mínimo entre comandos da mesma pessoa
 
+  // ---- Estímulos de hábito. Os bônus abaixo ficam FORA do limite diário de XP: são raros
+  // (uma vez por dia, por marco ou a cada N acertos seguidos) e premiam constância, não volume.
+  // Meta diária: quantas respostas (certas ou erradas) por dia cumprem a meta (0 desliga).
+  dailyGoal: nonNegativeInt(process.env.DAILY_GOAL, 5),
+  goalBonusXp: 15, // XP ao cumprir a meta do dia (uma vez por dia)
+  // Marcos de sequência: dias seguidos -> XP de bônus no dia em que o marco é atingido.
+  streakMilestones: { 3: 10, 7: 30, 14: 60, 30: 150, 60: 300, 100: 500 },
+  comboEvery: 5, // a cada N acertos seguidos, o combo dá um bônus
+  comboBonusXp: 5,
+
   colors: {
     brand: 0x5865f2,
     success: 0x57f287,
     danger: 0xed4245,
     muted: 0x747f8d,
+    gold: 0xf1c40f, // comemorações: subir de nível, marcos, conquistas
   },
 };
