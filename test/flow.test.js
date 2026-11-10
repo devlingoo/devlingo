@@ -20,6 +20,8 @@ require.cache[dbPath] = {
       return { xp: gained, streak: 1, gained, capped: gained < wanted, dailyXp: gained };
     },
     getUser: () => ({ xp: 0, streak: 0, dailyXp: 0 }),
+    getPreferences: () => null,
+    setPreferences() {},
     top: () => [],
   },
 };

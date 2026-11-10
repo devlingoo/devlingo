@@ -27,6 +27,12 @@ const MIGRATIONS = [
   );
   CREATE INDEX guild_xp_rank ON guild_xp (guild_id, xp DESC);
   `,
+  // v2: configuração inicial da pessoa (nível e áreas escolhidos no comando "configurar").
+  // `areas` guarda os ids separados por vírgula, por exemplo "frontend,backend".
+  `
+  ALTER TABLE users ADD COLUMN level TEXT;
+  ALTER TABLE users ADD COLUMN areas TEXT;
+  `,
 ];
 
 let db = null;
@@ -143,6 +149,23 @@ function getUser(userId, now = new Date()) {
   };
 }
 
+// Configuração inicial da pessoa: { level, areas: [ids] }, ou null se ainda não configurou.
+function getPreferences(userId) {
+  const row = connection().prepare("SELECT level, areas FROM users WHERE id = ?").get(userId);
+  if (!row?.level || !row?.areas) return null;
+  return { level: row.level, areas: row.areas.split(",").filter(Boolean) };
+}
+
+// Guarda (ou troca) o nível e as áreas. Cria a pessoa se ela ainda não existir; XP e sequência não mudam.
+function setPreferences(userId, { level, areas }) {
+  connection()
+    .prepare(
+      `INSERT INTO users (id, level, areas) VALUES (?, ?, ?)
+       ON CONFLICT(id) DO UPDATE SET level = excluded.level, areas = excluded.areas`
+    )
+    .run(userId, level, areas.join(","));
+}
+
 // Registra uma resposta. guildId é null quando vem de DM.
 // Devolve { xp, streak, gained, capped, dailyXp }:
 //   gained = XP que realmente entrou (pode ser menor que o prêmio por causa do limite diário)
@@ -207,4 +230,4 @@ function top(guildId, limit = 10) {
   return rows.map((r) => ({ userId: r.userId, xp: r.xp }));
 }
 
-module.exports = { getUser, recordAnswer, top, open, close };
+module.exports = { getUser, getPreferences, setPreferences, recordAnswer, top, open, close };
