@@ -382,12 +382,13 @@ function setupLevelMenu(ownerId, areaIds, { current = null } = {}) {
 }
 
 // Resumo depois de salvar, com atalho para começar a estudar.
-function setupDoneMessage(ownerId, prefs) {
+// `promoted: true` é a versão de quando a pessoa aceita subir de nível pelo botão da sugestão.
+function setupDoneMessage(ownerId, prefs, { promoted = false } = {}) {
   const container = new ContainerBuilder()
-    .setAccentColor(config.colors.success)
+    .setAccentColor(promoted ? config.colors.gold : config.colors.success)
     .addTextDisplayComponents(
-      text("## ✅ Tudo pronto!"),
-      text(`🧭 Áreas: ${areas.labels(prefs.areas)}\n🎚️ Nível inicial: ${levelTag(prefs.level)}`),
+      text(promoted ? "## ⬆️ Você subiu de nível!" : "## ✅ Tudo pronto!"),
+      text(`🧭 Áreas: ${areas.labels(prefs.areas)}\n🎚️ ${promoted ? "Seu nível agora" : "Nível inicial"}: ${levelTag(prefs.level)}`),
       text("-# Quer mudar? Use `configurar` a qualquer momento.")
     )
     .addSeparatorComponents(divider())
@@ -467,6 +468,13 @@ function celebrationLines(state) {
     const title = progress.titleFor(state.levelUp.to);
     party(`🆙 **Subiu para o nível ${state.levelUp.to}!** ${title.emoji} ${title.name}`);
   }
+  if (state.levelSuggestion) {
+    const s = state.levelSuggestion;
+    party(
+      `📈 **Você está mandando bem no nível ${s.from.label}!** ${s.correct} acertos nas últimas ${s.answered} respostas. ` +
+        `Que tal encarar o ${s.to.emoji} **${s.to.label}**? Nada muda sozinho: só sobe se você tocar no botão.`
+    );
+  }
   if (state.goal?.completed) party(`🎯 **Meta do dia cumprida!** +${state.bonus?.goal ?? 0} XP`);
   if (state.milestone) party(`🔥 **${state.milestone.days} dias seguidos!** +${state.milestone.bonus} XP de bônus`);
   if (state.bonus?.combo > 0) party(`⚡ **Combo ×${state.combo}!** +${state.bonus.combo} XP`);
@@ -544,6 +552,19 @@ function challengeMessage(ch, ownerId, issuedAt, state = { type: "open" }) {
     container.addSeparatorComponents(divider()).addTextDisplayComponents(text(`${verdict}\n💡 ${ch.explanation}`));
     if (celebration.lines.length > 0) container.addTextDisplayComponents(text(celebration.lines.join("\n")));
     container.addTextDisplayComponents(text(footer.join("\n")));
+
+    // Sugestão de subir de nível: um botão só (customId setup:up:<idDoDono>:<nívelNovo>, tratado em buttons/setup.js).
+    if (state.levelSuggestion) {
+      container.addActionRowComponents(
+        new ActionRowBuilder().addComponents(
+          new ButtonBuilder()
+            .setCustomId(`setup:up:${ownerId}:${state.levelSuggestion.to.id}`)
+            .setLabel(`Subir para ${state.levelSuggestion.to.label}`)
+            .setEmoji("⬆️")
+            .setStyle(ButtonStyle.Success)
+        )
+      );
+    }
 
     // Certificado novo: botão para ver a imagem na hora.
     if (state.certificates?.length) {

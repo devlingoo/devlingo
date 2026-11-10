@@ -56,6 +56,12 @@ module.exports = {
   // várias vezes não conta mais de uma vez. 1 a 100.
   coursePassPercent: Math.min(100, Math.max(1, nonNegativeInt(process.env.COURSE_PASS_PERCENT, 75) || 75)),
 
+  // ---- Sugestão de subir de nível. Vale o nível escolhido em "configurar": olha as últimas N respostas
+  // nele e, com pelo menos P% de acerto, a mensagem convida a subir (N = 0 desliga). Só sugere; quem
+  // decide é a pessoa. Depois de sugerir, a contagem recomeça do zero.
+  levelUpWindow: nonNegativeInt(process.env.LEVEL_UP_WINDOW, 20),
+  levelUpPercent: Math.min(100, Math.max(1, nonNegativeInt(process.env.LEVEL_UP_PERCENT, 90) || 90)),
+
   // Cores da marca (a paleta completa e o porquê de cada uma estão em brand/guide.html).
   // Os valores são os mesmos de brand/tokens/colors.json.
   colors: {

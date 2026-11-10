@@ -79,6 +79,11 @@ const MIGRATIONS = [
 
   ALTER TABLE users ADD COLUMN cert_name TEXT;
   `,
+  // v5: sugestão de subir de nível. "recent" guarda os resultados mais recentes da pessoa no nível que
+  // ela escolheu em "configurar" ("1" = acertou, "0" = errou, do mais antigo para o mais novo).
+  `
+  ALTER TABLE users ADD COLUMN recent TEXT NOT NULL DEFAULT '';
+  `,
 ];
 
 let db = null;
@@ -205,13 +210,22 @@ function getPreferences(userId) {
 }
 
 // Guarda (ou troca) o nível e as áreas. Cria a pessoa se ela ainda não existir; XP e sequência não mudam.
+// Trocar de nível zera os resultados recentes (a sugestão de subir vale para o nível atual); só mexer
+// nas áreas, não.
 function setPreferences(userId, { level, areas }) {
   connection()
     .prepare(
       `INSERT INTO users (id, level, areas) VALUES (?, ?, ?)
-       ON CONFLICT(id) DO UPDATE SET level = excluded.level, areas = excluded.areas`
+       ON CONFLICT(id) DO UPDATE SET
+         recent = CASE WHEN users.level IS excluded.level THEN users.recent ELSE '' END,
+         level = excluded.level, areas = excluded.areas`
     )
     .run(userId, level, areas.join(","));
+}
+
+// Recomeça a contagem da sugestão de subir de nível (usado logo depois de sugerir).
+function clearRecent(userId) {
+  connection().prepare("UPDATE users SET recent = '' WHERE id = ?").run(userId);
 }
 
 // Registra uma resposta. guildId é null quando vem de DM. `extra.difficulty` (opcional) é o nível
@@ -225,7 +239,9 @@ function setPreferences(userId, { level, areas }) {
 //   combo         acertos seguidos agora; comboBroken = combo (>= 3) que acabou de ser perdido, ou 0
 //   goal          { count, target, completed }: meta do dia (completed = acabou de ser cumprida)
 //   milestone     { days, bonus } se um marco de sequência foi atingido hoje, senão null
-//   levelUp       { from, to } se subiu de nível, senão null
+//   levelUp       { from, to } se subiu de nível (de XP), senão null
+//   levelProgress { answered, correct } dos resultados recentes no nível escolhido em "configurar", ou
+//                 null se esta resposta não conta (pergunta de outro nível, sem configuração ou recurso desligado)
 //   achievements  conquistas desbloqueadas agora (objetos de achievements.js)
 function recordAnswer(userId, guildId, correct, xpReward, now = new Date(), extra = {}) {
   const today = todayKey(now);
@@ -271,6 +287,14 @@ function recordAnswer(userId, guildId, correct, xpReward, now = new Date(), extr
     const levelBefore = levelOf(xpBefore);
     const level = levelOf(xp);
 
+    // Resultados recentes no nível escolhido em "configurar" (perguntas de outro nível não entram).
+    // Fica só a janela mais nova, então o campo nunca passa de levelUpWindow caracteres.
+    const counts = config.levelUpWindow > 0 && Boolean(row?.level) && extra.difficulty === row.level;
+    const recent = counts ? `${row.recent ?? ""}${correct ? 1 : 0}`.slice(-config.levelUpWindow) : (row?.recent ?? "");
+    const levelProgress = counts
+      ? { answered: recent.length, correct: [...recent].filter((c) => c === "1").length }
+      : null;
+
     const stats = {
       answered: (row?.answered ?? 0) + 1,
       correct: (row?.correct ?? 0) + (correct ? 1 : 0),
@@ -285,18 +309,18 @@ function recordAnswer(userId, guildId, correct, xpReward, now = new Date(), extr
     conn
       .prepare(
         `INSERT INTO users (id, xp, streak, best_streak, last_day, daily_day, daily_xp, answered, correct,
-                            expert_correct, combo, best_combo, goal_day, goal_count, goal_done_days)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                            expert_correct, combo, best_combo, goal_day, goal_count, goal_done_days, recent)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
          ON CONFLICT(id) DO UPDATE SET
            xp = excluded.xp, streak = excluded.streak, best_streak = excluded.best_streak,
            last_day = excluded.last_day, daily_day = excluded.daily_day, daily_xp = excluded.daily_xp,
            answered = excluded.answered, correct = excluded.correct, expert_correct = excluded.expert_correct,
            combo = excluded.combo, best_combo = excluded.best_combo, goal_day = excluded.goal_day,
-           goal_count = excluded.goal_count, goal_done_days = excluded.goal_done_days`
+           goal_count = excluded.goal_count, goal_done_days = excluded.goal_done_days, recent = excluded.recent`
       )
       .run(
         userId, xp, streak, bestStreak, today, today, dailyXp, stats.answered, stats.correct,
-        stats.expertCorrect, combo, stats.bestCombo, today, goalCount, stats.goalDoneDays
+        stats.expertCorrect, combo, stats.bestCombo, today, goalCount, stats.goalDoneDays, recent
       );
 
     if (guildId && gained + bonusTotal > 0) {
@@ -333,6 +357,7 @@ function recordAnswer(userId, guildId, correct, xpReward, now = new Date(), extr
       goal: { count: goalCount, target: config.dailyGoal, completed: goalCompleted },
       milestone: milestoneBonus > 0 ? { days: streak, bonus: milestoneBonus } : null,
       levelUp: level > levelBefore ? { from: levelBefore, to: level } : null,
+      levelProgress,
       achievements: unlocked,
     };
   });
@@ -478,6 +503,7 @@ module.exports = {
   getUser,
   getPreferences,
   setPreferences,
+  clearRecent,
   recordAnswer,
   getStats,
   getAchievements,
