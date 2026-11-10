@@ -54,5 +54,19 @@
     "emoji": "🐳",
     "description": "Terminal, permissões, imagens e contêineres: a base para entregar software.",
     "modules": ["linux-shell", "docker-basics"]
+  },
+  {
+    "id": "seguranca",
+    "name": "Segurança web",
+    "emoji": "🔐",
+    "description": "XSS, SQL injection, CSRF, senhas e cabeçalhos: como proteger um site.",
+    "modules": ["web-security"]
+  },
+  {
+    "id": "testes",
+    "name": "Testes automatizados",
+    "emoji": "🧪",
+    "description": "Asserts, mocks, isolamento e cobertura: confie no que você escreve.",
+    "modules": ["testing-basics"]
   }
 ]

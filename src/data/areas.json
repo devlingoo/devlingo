@@ -4,7 +4,16 @@
     "label": "Frontend",
     "emoji": "🎨",
     "description": "O que roda no navegador: lógica e interface",
-    "topics": ["html-css", "dom-events", "http-rest", "javascript-fundamentals", "javascript-functions", "javascript-arrays"]
+    "topics": [
+      "html-css",
+      "dom-events",
+      "http-rest",
+      "web-security",
+      "testing-basics",
+      "javascript-fundamentals",
+      "javascript-functions",
+      "javascript-arrays"
+    ]
   },
   {
     "id": "backend",
@@ -13,6 +22,8 @@
     "description": "Servidores, regras de negócio e APIs",
     "topics": [
       "http-rest",
+      "web-security",
+      "testing-basics",
       "javascript-fundamentals",
       "javascript-functions",
       "javascript-arrays",

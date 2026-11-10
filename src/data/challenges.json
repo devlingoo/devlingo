@@ -4238,5 +4238,645 @@
       "label": "Docker e contêineres",
       "description": "Imagens, contêineres, Dockerfile e Compose"
     }
+  },
+  {
+    "id": "tst-001",
+    "language": "javascript",
+    "question": "Para que serve um teste automatizado?",
+    "code": "",
+    "options": [
+      "Gerar a documentação do projeto sem precisar escrever nada",
+      "Deixar o programa mais rápido na hora de executar em produção",
+      "Dispensar a revisão de código feita pelas outras pessoas do time",
+      "Conferir, a cada mudança, que o código segue funcionando"
+    ],
+    "answer": 3,
+    "explanation": "O teste roda o código e compara o resultado com o esperado. Executado a cada mudança, ele avisa na hora quando algo que funcionava quebrou (uma regressão). Ele não deixa o programa mais rápido nem substitui a revisão.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "testing-basics",
+      "label": "Testes automatizados",
+      "description": "Escrever, organizar e confiar em testes"
+    }
+  },
+  {
+    "id": "tst-002",
+    "language": "javascript",
+    "question": "O que acontece se `soma(2, 3)` devolver 6?",
+    "code": "const assert = require(\"node:assert\");\n\nassert.strictEqual(soma(2, 3), 5);",
+    "options": [
+      "Lança um AssertionError e o teste falha",
+      "Nada: o assert só avisa no console e segue",
+      "Retorna false e o teste continua normalmente",
+      "O Node corrige o valor para 5 automaticamente"
+    ],
+    "answer": 0,
+    "explanation": "`assert.strictEqual(atual, esperado)` compara com `===` e, se os valores forem diferentes, lança um `AssertionError` com os dois valores. É essa exceção que faz o executor marcar o teste como falho.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "testing-basics",
+      "label": "Testes automatizados",
+      "description": "Escrever, organizar e confiar em testes"
+    }
+  },
+  {
+    "id": "tst-003",
+    "language": "javascript",
+    "question": "Em que ordem o padrão AAA organiza um teste?",
+    "code": "",
+    "options": [
+      "Act, Arrange, Assert: executar, preparar e verificar",
+      "Arrange, Assert, Act: preparar, verificar e executar",
+      "Assert, Act, Arrange: verificar, executar e preparar",
+      "Arrange, Act, Assert: preparar, executar e verificar"
+    ],
+    "answer": 3,
+    "explanation": "Arrange monta os dados e o cenário, Act executa a ação testada (uma só) e Assert confere o resultado. Separar as três partes deixa o teste legível e mostra de onde veio a falha.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "testing-basics",
+      "label": "Testes automatizados",
+      "description": "Escrever, organizar e confiar em testes"
+    }
+  },
+  {
+    "id": "tst-004",
+    "language": "javascript",
+    "question": "Qual comando roda os testes nativos do Node.js?",
+    "code": "// soma.test.js\nconst { test } = require(\"node:test\");\nconst assert = require(\"node:assert\");\n\ntest(\"soma\", () => assert.strictEqual(2 + 3, 5));",
+    "options": [
+      "node --check",
+      "node --test",
+      "node test",
+      "npm install test"
+    ],
+    "answer": 1,
+    "explanation": "A opção `--test` ativa o executor embutido: ele procura arquivos `*.test.js` (e a pasta `test/`), roda cada um e resume o resultado. `node test` tentaria executar um arquivo chamado `test`, e `--check` só confere a sintaxe.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "testing-basics",
+      "label": "Testes automatizados",
+      "description": "Escrever, organizar e confiar em testes"
+    }
+  },
+  {
+    "id": "tst-005",
+    "language": "javascript",
+    "question": "O que acontece nessa comparação?",
+    "code": "assert.strictEqual({ a: 1 }, { a: 1 });",
+    "options": [
+      "Falha: são dois objetos distintos; use deepStrictEqual",
+      "Passa: os dois objetos têm exatamente o mesmo conteúdo",
+      "Passa, mas o Node mostra um aviso sobre a comparação",
+      "Dá erro de sintaxe, pois objetos exigem outra função"
+    ],
+    "answer": 0,
+    "explanation": "`strictEqual` usa `===`, que compara objetos pela referência (o endereço na memória) e não pelo conteúdo. Para comparar o conteúdo, inclusive de objetos e arrays aninhados, use `assert.deepStrictEqual`.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "testing-basics",
+      "label": "Testes automatizados",
+      "description": "Escrever, organizar e confiar em testes"
+    }
+  },
+  {
+    "id": "tst-006",
+    "language": "javascript",
+    "question": "Se `buscarUsuario` devolver outro nome, o que o teste mostra?",
+    "code": "test(\"busca o usuário\", () => {\n  buscarUsuario(1).then((u) => {\n    assert.strictEqual(u.nome, \"Ana\");\n  });\n});",
+    "options": [
+      "Falha só se o Node estiver rodando em modo estrito (use strict)",
+      "Fica travado esperando até o then terminar, sem nunca acabar",
+      "Falha na hora, mostrando a mensagem do assert que está dentro do then",
+      "Passa: o teste acaba antes da verificação; falta await ou return"
+    ],
+    "answer": 3,
+    "explanation": "O executor só espera o que a função de teste devolve. Sem `await` nem `return` na Promise, o teste termina antes do `then` rodar e é marcado como passou; a falha chega depois, como uma rejeição não tratada que derruba o processo. Use `async` e `await`.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "testing-basics",
+      "label": "Testes automatizados",
+      "description": "Escrever, organizar e confiar em testes"
+    }
+  },
+  {
+    "id": "tst-007",
+    "language": "javascript",
+    "question": "Rodando os dois testes em sequência, o que acontece?",
+    "code": "let contador = 0;\n\ntest(\"a\", () => {\n  contador++;\n  assert.strictEqual(contador, 1);\n});\n\ntest(\"b\", () => {\n  contador++;\n  assert.strictEqual(contador, 1);\n});",
+    "options": [
+      "Os dois passam, pois cada teste roda em um processo separado",
+      "Só o b passa, pois o a prepara o estado que ele precisa",
+      "O a passa e o b falha, porque o estado do a vazou para o b",
+      "Os dois falham, porque contador começa como undefined"
+    ],
+    "answer": 2,
+    "explanation": "Variáveis fora dos testes são compartilhadas. Um teste que depende da ordem, ou do que outro deixou para trás, é frágil e difícil de diagnosticar. Cada teste deve montar o próprio cenário (por exemplo, num `beforeEach`).",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "testing-basics",
+      "label": "Testes automatizados",
+      "description": "Escrever, organizar e confiar em testes"
+    }
+  },
+  {
+    "id": "tst-008",
+    "language": "javascript",
+    "question": "O que esse teste verifica?",
+    "code": "const enviar = mock.fn();\n\nregistrar(\"ana@exemplo.com\", enviar);\n\nassert.strictEqual(enviar.mock.callCount(), 1);",
+    "options": [
+      "Que o e-mail de ana@exemplo.com chegou na caixa de entrada",
+      "Que registrar chamou o envio uma vez, sem e-mail de verdade",
+      "Que registrar devolve o número 1 quando o envio dá certo",
+      "Que a função enviar foi escrita sem nenhum erro de sintaxe"
+    ],
+    "answer": 1,
+    "explanation": "`mock.fn()` cria uma função falsa que grava como foi chamada (quantas vezes, com quais argumentos). Assim o teste isola `registrar` da dependência real (rede, e-mail), fica rápido e sem efeito colateral, e ainda confere a interação.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "testing-basics",
+      "label": "Testes automatizados",
+      "description": "Escrever, organizar e confiar em testes"
+    }
+  },
+  {
+    "id": "tst-009",
+    "language": "javascript",
+    "question": "Qual é o problema desse teste?",
+    "code": "test(\"divisão por zero\", () => {\n  try {\n    dividir(1, 0);\n  } catch (e) {\n    assert.match(e.message, /zero/);\n  }\n});",
+    "options": [
+      "O assert.match só aceita textos e não funciona com e.message",
+      "Passa mesmo que dividir nunca lance erro; use assert.throws",
+      "assert.match foi removido, por isso o teste sempre falha",
+      "Falta um bloco finally para o teste conseguir terminar de rodar"
+    ],
+    "answer": 1,
+    "explanation": "Se `dividir` não lançar nada (em JavaScript, `1 / 0` dá `Infinity`), o `catch` não roda, nenhuma verificação acontece e o teste passa. `assert.throws(() => dividir(1, 0), /zero/)` falha nesse caso, que é o que se quer.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "testing-basics",
+      "label": "Testes automatizados",
+      "description": "Escrever, organizar e confiar em testes"
+    }
+  },
+  {
+    "id": "tst-010",
+    "language": "javascript",
+    "question": "Por que esse teste é instável (flaky), e como corrigir?",
+    "code": "test(\"saudação\", () => {\n  assert.strictEqual(saudar(), \"Bom dia\");\n});\n// saudar() olha new Date().getHours()",
+    "options": [
+      "Depende da hora em que roda; congele o relógio com mock.timers",
+      "Depende da memória livre; rode-o em um processo separado",
+      "Depende da rede; troque o assert por um que espere mais",
+      "Depende da ordem em que os outros testes rodam; rode um por vez"
+    ],
+    "answer": 0,
+    "explanation": "Um teste que ora passa, ora falha sem o código mudar é instável. Aqui o resultado muda com a hora real. `t.mock.timers.enable({ apis: [\"Date\"], now })` fixa o `Date`, e o teste passa a dar sempre o mesmo resultado.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "testing-basics",
+      "label": "Testes automatizados",
+      "description": "Escrever, organizar e confiar em testes"
+    }
+  },
+  {
+    "id": "tst-011",
+    "language": "javascript",
+    "question": "Qual é a ordem do ciclo do TDD?",
+    "code": "",
+    "options": [
+      "Escrever um teste que falha, fazer passar, refatorar",
+      "Refatorar, escrever o teste e só então escrever o código",
+      "Fazer passar, escrever o teste que falha e depois refatorar",
+      "Escrever o código, depois o teste, depois a documentação"
+    ],
+    "answer": 0,
+    "explanation": "Red (o teste falha, provando que ele realmente testa algo), Green (o código mínimo para passar) e Refactor (melhorar o código com a rede de proteção dos testes). O teste vem antes do código.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "testing-basics",
+      "label": "Testes automatizados",
+      "description": "Escrever, organizar e confiar em testes"
+    }
+  },
+  {
+    "id": "tst-012",
+    "language": "javascript",
+    "question": "O relatório mostra 100% de cobertura. O que isso garante?",
+    "code": "// calc.js tem soma() e dobro()\ntest(\"roda tudo\", () => {\n  soma(1, 2);\n  dobro(4);\n});",
+    "options": [
+      "Que cada função devolve o valor correto para qualquer entrada",
+      "Que o código está livre de defeitos conhecidos e desconhecidos",
+      "Que os testes cobrem todos os casos de borda que podem existir",
+      "Que as linhas rodaram, não que os resultados foram conferidos"
+    ],
+    "answer": 3,
+    "explanation": "Cobertura mede quais linhas foram executadas, não se os resultados foram verificados. O teste acima executa tudo e não tem nenhum `assert`: 100% de cobertura e nenhuma garantia. Ela mostra bem o que NÃO foi testado, mas não a qualidade.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "testing-basics",
+      "label": "Testes automatizados",
+      "description": "Escrever, organizar e confiar em testes"
+    }
+  },
+  {
+    "id": "tst-013",
+    "language": "javascript",
+    "question": "Por que usar `t.mock` em vez do `mock` global?",
+    "code": "test(\"A\", () => {\n  mock.method(Math, \"random\", () => 0.5);\n});\n\ntest(\"B\", () => {\n  // usa o Math.random() de verdade...\n});",
+    "options": [
+      "O t.mock aceita funções assíncronas; o global só aceita síncronas",
+      "O t.mock é a única forma de contar quantas vezes foi chamado",
+      "O t.mock é desfeito sozinho no fim do teste; o global pode vazar",
+      "O mock global não funciona em métodos de objetos nativos"
+    ],
+    "answer": 2,
+    "explanation": "O mock do contexto (`t.mock`) é desfeito automaticamente quando o teste termina. O `mock` global continua ativo até um `mock.restoreAll()` e pode alterar testes seguintes (aqui o `Math.random` do B continuaria falso), causando falhas à distância.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "testing-basics",
+      "label": "Testes automatizados",
+      "description": "Escrever, organizar e confiar em testes"
+    }
+  },
+  {
+    "id": "tst-014",
+    "language": "javascript",
+    "question": "Na pirâmide de testes, por que há mais testes unitários que de ponta a ponta (E2E)?",
+    "code": "",
+    "options": [
+      "Os testes E2E não conseguem cobrir nenhuma parte do código da aplicação",
+      "Os E2E são proibidos em projetos com integração contínua",
+      "Unitários são rápidos e apontam o defeito; E2E são lentos e frágeis",
+      "Os unitários testam o sistema inteiro de ponta a ponta, então bastam"
+    ],
+    "answer": 2,
+    "explanation": "Quanto mais alto na pirâmide, mais o teste envolve (navegador, rede, banco) e mais lento, caro e sujeito a falhas intermitentes fica. Muitos unitários na base dão feedback em segundos e localizam o erro; poucos E2E no topo garantem os fluxos críticos.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "testing-basics",
+      "label": "Testes automatizados",
+      "description": "Escrever, organizar e confiar em testes"
+    }
+  },
+  {
+    "id": "tst-015",
+    "language": "javascript",
+    "question": "Quantos testes o relatório mostra, e qual a vantagem?",
+    "code": "const casos = [\n  [1, 2, 3],\n  [2, 2, 4],\n  [0, 5, 5],\n];\n\nfor (const [a, b, esperado] of casos) {\n  test(`soma ${a}+${b}`, () => assert.strictEqual(soma(a, b), esperado));\n}",
+    "options": [
+      "3, mas todos falham se um único caso estiver errado",
+      "0, porque test() não pode ser chamado dentro de um laço",
+      "3, um por caso; um caso novo é só mais uma linha",
+      "1 só, que para no primeiro caso que falhar e esconde os outros"
+    ],
+    "answer": 2,
+    "explanation": "Cada volta do laço registra um teste, então cada caso aparece (e falha) separadamente, com o nome mostrando os valores. Esse padrão, de testes em tabela, evita copiar e colar e deixa óbvio quais entradas estão cobertas.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "testing-basics",
+      "label": "Testes automatizados",
+      "description": "Escrever, organizar e confiar em testes"
+    }
+  },
+  {
+    "id": "tst-016",
+    "language": "javascript",
+    "question": "Se trocarmos `a + b` por `a - b`, o que acontece com esse teste, e o que isso revela?",
+    "code": "function soma(a, b) {\n  return a + b;\n}\n\ntest(\"soma devolve um número\", () => {\n  assert.strictEqual(typeof soma(2, 3), \"number\");\n});",
+    "options": [
+      "Passa a falhar, mas só porque o Node reclama do operador",
+      "Continua passando: é um teste fraco, que não confere o resultado",
+      "Continua passando, o que prova que a soma está correta e completa",
+      "Passa a falhar, o que prova que ele é um bom teste de verdade"
+    ],
+    "answer": 1,
+    "explanation": "O teste só confere o tipo do retorno, então passa com a soma certa e com o código sabotado. Essa é a ideia dos testes de mutação: alterar o código de propósito e ver se algum teste percebe. Um teste forte confere o valor: `soma(2, 3) === 5`.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "testing-basics",
+      "label": "Testes automatizados",
+      "description": "Escrever, organizar e confiar em testes"
+    }
+  },
+  {
+    "id": "sec-001",
+    "language": "javascript",
+    "question": "O que é XSS (cross-site scripting)?",
+    "code": "comentario.innerHTML = textoDigitadoPorOutraPessoa;",
+    "options": [
+      "Interceptar o tráfego de uma rede Wi-Fi que não usa criptografia",
+      "Injetar um script malicioso na página que outras pessoas abrem",
+      "Derrubar um site enviando milhões de acessos ao mesmo tempo",
+      "Descobrir uma senha testando combinações até acertar a certa"
+    ],
+    "answer": 1,
+    "explanation": "No XSS o atacante faz o site entregar um script dele aos outros visitantes (por exemplo, num comentário mostrado com `innerHTML`). O script roda com as permissões do site e pode ler dados da página e agir em nome da pessoa.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "web-security",
+      "label": "Segurança web",
+      "description": "Ataques comuns e como se defender"
+    }
+  },
+  {
+    "id": "sec-002",
+    "language": "http",
+    "question": "O que o HTTPS acrescenta ao HTTP?",
+    "code": "https://www.exemplo.com.br/",
+    "options": [
+      "Um servidor mais rápido, porque a conexão fica comprimida",
+      "Anonimato total: ninguém descobre qual site você visitou",
+      "Criptografia da conversa e prova de quem é o site",
+      "Proteção contra falhas no código da aplicação do site"
+    ],
+    "answer": 2,
+    "explanation": "O HTTPS é o HTTP dentro de uma conexão TLS: o conteúdo viaja criptografado (ninguém no caminho lê ou altera) e o certificado confirma a identidade do site. Ele não corrige falhas do código do site nem esconde o domínio visitado.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "web-security",
+      "label": "Segurança web",
+      "description": "Ataques comuns e como se defender"
+    }
+  },
+  {
+    "id": "sec-003",
+    "language": "javascript",
+    "question": "Como guardar a senha de uma pessoa no banco de dados?",
+    "code": "",
+    "options": [
+      "Em Base64, que deixa o texto ilegível para quem for curioso",
+      "Só o hash com sal, gerado por bcrypt, scrypt ou argon2",
+      "Em texto puro, mas com o banco protegido por firewall",
+      "Criptografada com AES, para poder recuperá-la depois"
+    ],
+    "answer": 1,
+    "explanation": "Guarde apenas um hash lento e com sal (bcrypt, scrypt, argon2): ele não pode ser revertido, e o login compara o hash da senha digitada. Criptografia (AES) pode ser desfeita por quem roubar a chave, e Base64 é só uma codificação, qualquer um desfaz.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "web-security",
+      "label": "Segurança web",
+      "description": "Ataques comuns e como se defender"
+    }
+  },
+  {
+    "id": "sec-004",
+    "language": "javascript",
+    "question": "Qual o risco de montar a consulta assim?",
+    "code": "db.exec(`SELECT * FROM usuarios WHERE nome = '${nome}'`);",
+    "options": [
+      "O servidor pode ficar sem memória com nomes muito grandes",
+      "Nenhum, se o nome vier de um formulário do próprio site",
+      "SQL injection: quem controla o nome altera a consulta",
+      "A consulta fica mais lenta, pois o banco não usa índices"
+    ],
+    "answer": 2,
+    "explanation": "O texto digitado é colado dentro do SQL, então `x' OR '1'='1` vira parte do comando e devolve todos os usuários. Qualquer dado vindo do usuário pode ser malicioso, mesmo que tenha passado por um formulário seu.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "web-security",
+      "label": "Segurança web",
+      "description": "Ataques comuns e como se defender"
+    }
+  },
+  {
+    "id": "sec-005",
+    "language": "javascript",
+    "question": "Qual é a defesa correta contra SQL injection?",
+    "code": "db.exec(`SELECT * FROM usuarios WHERE nome = '${nome}'`);",
+    "options": [
+      "Consultas parametrizadas, que separam o código SQL dos dados",
+      "Trocar as aspas simples por duplas dentro do valor digitado",
+      "Esconder as mensagens de erro do banco da pessoa",
+      "Validar o campo apenas no front-end, com JavaScript do navegador"
+    ],
+    "answer": 0,
+    "explanation": "Com `db.prepare('... WHERE nome = ?').all(nome)`, o banco recebe o SQL e os valores separadamente: o texto digitado nunca é interpretado como comando. Validação no front-end é contornável, e esconder erros só dificulta a exploração.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "web-security",
+      "label": "Segurança web",
+      "description": "Ataques comuns e como se defender"
+    }
+  },
+  {
+    "id": "sec-006",
+    "language": "http",
+    "question": "O que esse cabeçalho faz?",
+    "code": "Content-Security-Policy: script-src 'self'",
+    "options": [
+      "Obriga o navegador a usar HTTPS em todas as requisições do site",
+      "Criptografa os scripts do site para que ninguém consiga lê-los",
+      "Só roda scripts do próprio site; inline injetado é bloqueado",
+      "Impede que o site carregue imagens e fontes de outros domínios"
+    ],
+    "answer": 2,
+    "explanation": "A CSP (Content-Security-Policy) diz ao navegador de onde pode vir cada tipo de conteúdo. Com `script-src 'self'`, só rodam scripts de arquivos do próprio site: um `<script>` ou `onerror=` injetado é bloqueado. É uma segunda barreira contra XSS.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "web-security",
+      "label": "Segurança web",
+      "description": "Ataques comuns e como se defender"
+    }
+  },
+  {
+    "id": "sec-007",
+    "language": "http",
+    "question": "O que o atributo HttpOnly faz?",
+    "code": "Set-Cookie: sessao=abc123; HttpOnly; Secure; SameSite=Lax",
+    "options": [
+      "Faz o cookie ser enviado ao servidor só quando a conexão usa HTTPS",
+      "Apaga o cookie automaticamente assim que a aba do navegador é fechada",
+      "Impede o cookie de ser enviado em requisições vindas de outros sites",
+      "O JavaScript não lê o cookie, mas ele continua indo ao servidor"
+    ],
+    "answer": 3,
+    "explanation": "`HttpOnly` esconde o cookie de `document.cookie`, então um XSS não consegue roubar o token de sessão (o navegador ainda o envia nas requisições). Quem exige HTTPS é o `Secure`, e quem limita o envio entre sites é o `SameSite`.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "web-security",
+      "label": "Segurança web",
+      "description": "Ataques comuns e como se defender"
+    }
+  },
+  {
+    "id": "sec-008",
+    "language": "javascript",
+    "question": "Qual a diferença entre hash e criptografia?",
+    "code": "",
+    "options": [
+      "Hash é de mão única; a criptografia pode ser desfeita com a chave",
+      "Hash usa uma chave secreta; a criptografia nunca usa nenhuma chave",
+      "Os dois são desfeitos com a chave, mas o hash é bem mais lento",
+      "Hash serve para arquivos; criptografia só serve para textos"
+    ],
+    "answer": 0,
+    "explanation": "O hash (SHA-256, por exemplo) transforma qualquer dado num resumo fixo e não tem volta: serve para verificar integridade e guardar senhas. A criptografia (AES) usa uma chave para embaralhar e, com a chave, desembaralhar.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "web-security",
+      "label": "Segurança web",
+      "description": "Ataques comuns e como se defender"
+    }
+  },
+  {
+    "id": "sec-009",
+    "language": "http",
+    "question": "Um site malicioso faz o navegador de quem está logado no seu banco enviar um POST de transferência. Que ataque é esse, e qual defesa ajuda?",
+    "code": "",
+    "options": [
+      "SQL injection; usar consultas parametrizadas em todo o acesso ao banco",
+      "XSS; escapar o HTML mostrado nas páginas e usar uma CSP restritiva",
+      "Clickjacking; enviar o cabeçalho X-Frame-Options nas respostas",
+      "CSRF; cookie de sessão com SameSite e um token anti-CSRF no formulário"
+    ],
+    "answer": 3,
+    "explanation": "No CSRF, o navegador anexa o cookie de sessão a qualquer requisição para o seu site, inclusive as disparadas por outro site. `SameSite=Lax`/`Strict` impede o envio do cookie nesses casos, e um token anti-CSRF (que o atacante não consegue adivinhar) confirma que o formulário veio da sua página.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "web-security",
+      "label": "Segurança web",
+      "description": "Ataques comuns e como se defender"
+    }
+  },
+  {
+    "id": "sec-010",
+    "language": "javascript",
+    "question": "Um JWT assinado com HS256 tem o payload {\"id\": 7, \"admin\": false}. Quem tem o token consegue ler esse conteúdo?",
+    "code": "",
+    "options": [
+      "Não: o token vem comprimido, e só o servidor sabe descomprimir",
+      "Sim: o payload é só Base64; a assinatura não impede a leitura",
+      "Só consegue ler quem conhecer o algoritmo e a chave HS256 usados",
+      "Não: o JWT é sempre criptografado com a chave secreta do servidor"
+    ],
+    "answer": 1,
+    "explanation": "Um JWT comum (JWS) tem três partes em Base64URL: cabeçalho, payload e assinatura. Qualquer pessoa decodifica o payload; a assinatura só garante que ele não foi alterado. Por isso não ponha segredos no payload (ou use JWE, que criptografa).",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "web-security",
+      "label": "Segurança web",
+      "description": "Ataques comuns e como se defender"
+    }
+  },
+  {
+    "id": "sec-011",
+    "language": "javascript",
+    "question": "Qual destes é adequado para gerar o token de redefinição de senha?",
+    "code": "",
+    "options": [
+      "Date.now() convertido para texto em base 36",
+      "O id do usuário somado a um número pequeno",
+      "crypto.randomBytes(32).toString('hex')",
+      "Math.random().toString(36).slice(2)"
+    ],
+    "answer": 2,
+    "explanation": "Tokens de segurança precisam ser imprevisíveis, então devem vir de um gerador criptograficamente seguro (`crypto.randomBytes`, `crypto.randomUUID`). `Math.random()` não é feito para isso, e a hora ou o id são fáceis de adivinhar.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "web-security",
+      "label": "Segurança web",
+      "description": "Ataques comuns e como se defender"
+    }
+  },
+  {
+    "id": "sec-012",
+    "language": "javascript",
+    "question": "Para que serve o sal (salt) ao gerar o hash de senhas?",
+    "code": "",
+    "options": [
+      "Faz a mesma senha gerar hashes diferentes por pessoa",
+      "Criptografa o hash com a chave secreta do servidor",
+      "Permite recuperar a senha original quando ela é esquecida",
+      "Deixa o hash mais curto e mais rápido de comparar no login"
+    ],
+    "answer": 0,
+    "explanation": "O sal é um valor aleatório, único por usuário, misturado à senha antes do hash. Duas pessoas com a mesma senha acabam com hashes diferentes, e tabelas pré-calculadas (rainbow tables) deixam de servir. Ele não é secreto: fica ao lado do hash.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "web-security",
+      "label": "Segurança web",
+      "description": "Ataques comuns e como se defender"
+    }
+  },
+  {
+    "id": "sec-013",
+    "language": "javascript",
+    "question": "Por que comparar um token secreto com `===` pode ser inseguro?",
+    "code": "if (tokenRecebido === tokenEsperado) {\n  liberarAcesso();\n}",
+    "options": [
+      "O === converte tipos e aceita tokens parecidos como iguais",
+      "O tempo vaza quantos caracteres batem; use timingSafeEqual",
+      "O === deixa o token no cache do navegador depois de comparar",
+      "O === só funciona com números, nunca com textos longos"
+    ],
+    "answer": 1,
+    "explanation": "A comparação com `===` para no primeiro caractere diferente, então o tempo de resposta pode vazar quantos caracteres do início estavam certos (timing attack). `crypto.timingSafeEqual` leva o mesmo tempo qualquer que seja a diferença, e exige buffers do mesmo tamanho.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "web-security",
+      "label": "Segurança web",
+      "description": "Ataques comuns e como se defender"
+    }
+  },
+  {
+    "id": "sec-014",
+    "language": "javascript",
+    "question": "Qual o risco de o servidor baixar qualquer URL informada pela pessoa?",
+    "code": "const url = req.query.imagem; // vem do usuário\nconst resposta = await fetch(url);",
+    "options": [
+      "SSRF: pedir endereços internos (localhost, metadados) e vazar dados",
+      "XSS: a imagem baixada pode conter um script que passa a rodar no servidor",
+      "Nenhum, desde que o servidor use HTTPS ao baixar a imagem",
+      "CSRF: a URL leva o cookie de sessão do usuário para o servidor"
+    ],
+    "answer": 0,
+    "explanation": "No SSRF o servidor faz a requisição por conta do atacante, e o servidor enxerga o que o atacante não enxerga: serviços internos, `localhost` e o endereço de metadados da nuvem (169.254.169.254). Defesas: lista de domínios permitidos e bloqueio de IPs privados e de loopback após resolver o DNS.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "web-security",
+      "label": "Segurança web",
+      "description": "Ataques comuns e como se defender"
+    }
+  },
+  {
+    "id": "sec-015",
+    "language": "http",
+    "question": "O que o navegador faz com uma resposta que traz os dois cabeçalhos abaixo, numa requisição com cookies?",
+    "code": "Access-Control-Allow-Origin: *\nAccess-Control-Allow-Credentials: true",
+    "options": [
+      "Aceita, pois o curinga * vale para qualquer origem e credencial",
+      "Aceita, mas descarta os cookies e envia a requisição sem eles",
+      "Aceita apenas se a API e o site também usarem HTTPS",
+      "Rejeita: com credenciais é preciso devolver a origem exata"
+    ],
+    "answer": 3,
+    "explanation": "Com `credentials: 'include'`, o navegador não aceita `*` em `Access-Control-Allow-Origin`: a API precisa responder com a origem exata (por exemplo, `https://meusite.com`) e validar essa origem numa lista, senão qualquer site leria respostas autenticadas.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "web-security",
+      "label": "Segurança web",
+      "description": "Ataques comuns e como se defender"
+    }
+  },
+  {
+    "id": "sec-016",
+    "language": "http",
+    "question": "Qual cabeçalho impede que o seu site seja exibido dentro de um iframe de outro site (clickjacking)?",
+    "code": "",
+    "options": [
+      "Strict-Transport-Security: max-age=31536000 em todas as páginas",
+      "Access-Control-Allow-Origin definido como 'none' nas respostas",
+      "X-Content-Type-Options: nosniff nas respostas do site",
+      "X-Frame-Options: DENY (ou frame-ancestors 'none' na CSP)"
+    ],
+    "answer": 3,
+    "explanation": "No clickjacking, o atacante põe o seu site num iframe transparente sobre um botão falso, e a pessoa clica sem saber. `X-Frame-Options: DENY` (ou `Content-Security-Policy: frame-ancestors 'none'`) faz o navegador recusar o iframe.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "web-security",
+      "label": "Segurança web",
+      "description": "Ataques comuns e como se defender"
+    }
   }
 ]
