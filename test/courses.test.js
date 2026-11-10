@@ -323,6 +323,21 @@ test("as telas de cursos e certificados respeitam os limites do Discord, vazias 
   assert.ok(menu.options.length <= 25, "o menu cabe 25 opções");
 });
 
+test("a lista de cursos aguenta o limite (MAX_COURSES) com nomes e descrições do tamanho máximo", () => {
+  const base = courses.get("javascript");
+  const rows = courses.progress(OWNER, base);
+  // O pior caso que o courses.json deixa existir: nome de 50 caracteres, descrição de 100 e o máximo de módulos.
+  const synthetic = Array.from({ length: 20 }, (_, i) => ({
+    course: { id: `c${i}`, name: `N${i}`.padEnd(50, "x"), emoji: "🧮", description: `D${i}`.padEnd(100, "y"), modules: Array(8).fill("javascript-fundamentals") },
+    rows,
+  }));
+  const view = courseUi.coursesList({ ownerId: OWNER, items: synthetic, certificateCount: 999 });
+  assertWithinDiscordLimits(view, "lista com 20 cursos no tamanho máximo", assert);
+  const menu = flatten(view).find((n) => n.type === TYPE.StringSelect);
+  assert.equal(menu.options.length, 20);
+  assert.ok(menu.options.length <= 25, "o menu do Discord aceita no máximo 25 opções");
+});
+
 test("a tela de um curso aponta o próximo módulo a praticar e some quando tudo foi concluído", () => {
   const first = views.courseDetail(OWNER, "javascript");
   assert.ok(customIds(first).includes(`learn:go:${OWNER}:beginner:javascript-fundamentals`));

