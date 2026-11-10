@@ -12,9 +12,10 @@ No servidor, marque o bot no começo da mensagem. Na DM, escreva direto.
 
 | Servidor | DM | O que faz |
 | --- | --- | --- |
-| `@Devlingo aprender` | `aprender` | trilha de estudo: escolhe o nível e o assunto exato, e só pergunta sobre ele |
-| `@Devlingo desafio` | `desafio` | desafio aleatório (ou `desafio python`, `javascript`, `sql`, `git`) |
-| `@Devlingo perfil` | `perfil` | XP, nível e sequência de dias |
+| `@Devlingo configurar` | `configurar` | escolhe suas áreas (Frontend, Backend...) e seu nível; dá para mudar quando quiser |
+| `@Devlingo aprender` | `aprender` | trilha de estudo: escolhe o assunto exato e só pergunta sobre ele |
+| `@Devlingo desafio` | `desafio` | desafio aleatório do seu nível e das suas áreas (ou `desafio python`, `javascript`, `sql`, `git`) |
+| `@Devlingo perfil` | `perfil` | XP, nível, sequência de dias e trilha |
 | `@Devlingo ranking` | `ranking` | top 10 do servidor (na DM, ranking global) |
 | `@Devlingo ajuda` | `ajuda` | lista de comandos |
 
@@ -22,11 +23,22 @@ O XP e a sequência são globais por pessoa; o ranking do servidor conta só o X
 
 **Limite diário:** cada pessoa ganha no máximo 200 XP por dia. Depois disso ainda dá para treinar e ler as explicações, mas o XP só volta no dia seguinte (o `perfil` mostra o XP de hoje). O "dia" muda à meia-noite de `America/Sao_Paulo`, não do servidor onde o bot roda.
 
+### Configuração inicial (`configurar`)
+
+Na **primeira vez** que alguém usa `aprender` ou `desafio`, o bot pede a configuração antes de qualquer pergunta (são dois passos, uns 10 segundos):
+
+1. **Áreas**, uma ou mais: 🎨 Frontend, ⚙️ Backend, 🗄️ Banco de dados, 🛠️ Ferramentas e DevOps.
+2. **Nível** (🟢 Iniciante, 🟡 Intermediário, 🟠 Avançado, 🔴 Especialista), o ponto de partida.
+
+Depois disso, `aprender` já abre nos assuntos do seu nível e das suas áreas, e `desafio` sorteia só dali. Dá para mudar a qualquer momento com `configurar` (ou pelo botão **Alterar minha trilha**); XP e sequência não mudam. `perfil`, `ranking` e `ajuda` funcionam sem configurar.
+
+A configuração fica salva por pessoa (vale em todos os servidores e na DM). Só aparecem áreas e níveis que já têm desafios cadastrados.
+
 ### Trilha de estudo (`aprender`)
 
-1. Escolha o **nível** (🟢 Iniciante, 🟡 Intermediário, 🟠 Avançado, 🔴 Especialista). Só aparecem os níveis que já têm desafios cadastrados.
-2. Escolha o **assunto exato** (por exemplo, "Funções em JavaScript" ou "Consultas SQL").
-3. Responda. Depois de cada resposta, **Próxima pergunta** sorteia outra do mesmo nível e assunto (sem repetir a que acabou de sair), **Trocar assunto** volta à lista de assuntos do nível e **Trocar nível** volta ao início.
+1. O menu mostra os assuntos do seu nível, só das suas áreas. **Ver todas as áreas** mostra os de fora, sem mexer na sua configuração.
+2. Escolha o **assunto exato** (por exemplo, "Funções em JavaScript" ou "Consultas SQL"): você só recebe perguntas dele.
+3. Responda. Depois de cada resposta, **Próxima pergunta** sorteia outra do mesmo nível e assunto (sem repetir a que acabou de sair), **Trocar assunto** volta à lista de assuntos do nível e **Trocar nível** escolhe outro nível só para essa sessão.
 
 ## Como rodar
 
@@ -70,8 +82,9 @@ src/
   events/               um arquivo por evento do Discord
   buttons/              um arquivo por tipo de botão ou menu (prefixo do customId)
   handlers/             carregam commands/, events/ e buttons/
-  utils/                ui (Components V2), db (SQLite), challenges, time, parse, logger
+  utils/                ui (Components V2), db (SQLite), challenges, areas, study, time, parse, logger
   data/challenges.json  os desafios
+  data/areas.json       quais assuntos pertencem a cada área (Frontend, Backend...)
 test/                   testes automáticos (npm test), sem precisar de token nem de internet
 data/                   banco SQLite em runtime (fora do git)
 .github/                CI (testes em cada PR), template de PR e o workflow manual de teste do bot
@@ -112,8 +125,13 @@ Regras que a validação cobra, porque vêm de limites do Discord:
 - Use o mesmo `label` e `description` para o mesmo `topic.id` em todos os níveis. Para o assunto aparecer em mais de um nível, basta cadastrar desafios dele em cada nível.
 - Tente ter pelo menos 4 desafios por assunto e nível, para o "Próxima pergunta" não ficar repetitivo.
 
+### Áreas (`src/data/areas.json`)
+
+Cada área lista os `topics` (ids de assunto) que pertencem a ela. Um assunto pode estar em várias áreas: JavaScript está em Frontend e em Backend. **Todo assunto novo precisa entrar em pelo menos uma área**, senão ninguém o encontra depois da configuração (`npm test` confere). Uma área nova precisa de `id` (até 10 caracteres), `label`, `emoji`, `description` e `topics`, com no máximo 6 áreas no total.
+
 ## Próximos passos
 
-- Mais desafios e mais assuntos (hoje são 116 desafios em 7 assuntos, com 4 em cada nível; `npm test` exige esse mínimo)
+- Mais desafios e mais assuntos (hoje são 116 desafios em 7 assuntos, com 4 em cada nível; `npm test` exige esse mínimo). Frontend ainda só tem JavaScript: faltam HTML/CSS e DOM. Backend ainda não tem HTTP/APIs, Banco de dados não tem modelagem, e DevOps só tem Git (faltam Linux e Docker).
+- Avisar quando a pessoa vai bem num nível (por exemplo, 90% de acerto) e sugerir subir; hoje o nível só muda se ela mudar em `configurar`.
 - Se o bot passar de ~2.500 servidores, o Discord exige sharding; o SQLite em arquivo único também deixa de servir (Postgres)
 - Evitar repetir perguntas já acertadas recentemente na mesma trilha (hoje só a última é excluída)
