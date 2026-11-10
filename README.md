@@ -24,12 +24,15 @@ No servidor, marque o bot no começo da mensagem. Na DM, escreva direto.
 | `@Devlingo configurar` | `configurar` | escolhe suas áreas (Frontend, Backend...) e seu nível; dá para mudar quando quiser |
 | `@Devlingo aprender` | `aprender` | trilha de estudo: escolhe o assunto exato e só pergunta sobre ele |
 | `@Devlingo desafio` | `desafio` | desafio aleatório do seu nível e das suas áreas (ou `desafio python`, `javascript`, `sql`, `git`) |
+| `@Devlingo cursos` | `cursos` | cursos com certificado: o seu progresso em cada módulo e o que praticar a seguir |
+| `@Devlingo certificados` | `certificados` | seus certificados (a imagem em PNG) e o nome que sai neles: `certificados nome Ana Souza` |
+| `@Devlingo verificar DVL-XXXX-XXXX` | `verificar DVL-XXXX-XXXX` | confere se um certificado é verdadeiro e de quem é |
 | `@Devlingo perfil` | `perfil` | nível, XP, sequência, meta do dia, estatísticas e trilha |
 | `@Devlingo ranking` | `ranking` | top 10 do servidor (na DM, ranking global) e a sua posição |
 | `@Devlingo conquistas` | `conquistas` | suas medalhas: as que você já ganhou e as que faltam |
 | `@Devlingo ajuda` | `ajuda` | lista de comandos, agrupada por tipo |
 
-As telas têm botões de atalho (📚 Estudar, 👤 Perfil, 🏆 Ranking, 🏅 Conquistas, ⚙️ Configurar) para andar entre elas sem digitar.
+As telas têm botões de atalho (📚 Estudar, 🎓 Cursos, 👤 Perfil, 🏆 Ranking, 🏅 Conquistas, ⚙️ Configurar) para andar entre elas sem digitar.
 
 O XP e a sequência são globais por pessoa; o ranking do servidor conta só o XP ganho naquele servidor. Cada desafio expira em 5 minutos e só quem pediu pode responder.
 
@@ -63,7 +66,21 @@ A configuração fica salva por pessoa (vale em todos os servidores e na DM). S�
 
 1. O menu mostra os assuntos do seu nível, só das suas áreas. **Ver todas as áreas** mostra os de fora, sem mexer na sua configuração.
 2. Escolha o **assunto exato** (por exemplo, "Funções em JavaScript" ou "Consultas SQL"): você só recebe perguntas dele.
-3. Responda. Depois de cada resposta, **Próxima pergunta** sorteia outra do mesmo nível e assunto (sem repetir a que acabou de sair), **Trocar assunto** volta à lista de assuntos do nível e **Trocar nível** escolhe outro nível só para essa sessão.
+3. Responda. Depois de cada resposta, **Próxima pergunta** sorteia outra do mesmo nível e assunto, **Trocar assunto** volta à lista de assuntos do nível e **Trocar nível** escolhe outro nível só para essa sessão.
+
+**Sem repetição à toa:** o bot lembra de cada pergunta que você já viu. O sorteio vai primeiro às que você **nunca viu**, depois às que viu mas **ainda não acertou**, e só no fim volta às que você já acertou (as acertadas há mais tempo primeiro, para servir de revisão). A pergunta que acabou de sair nunca repete em seguida.
+
+### Cursos e certificados (`cursos`)
+
+Cada curso junta alguns assuntos (os **módulos**) e tem um certificado **por nível**, então um curso rende até quatro: Iniciante, Intermediário, Avançado e Especialista. Hoje são quatro cursos: 🟨 JavaScript do zero, 🐍 Python do zero, 🗄️ SQL essencial e 🔀 Git na prática.
+
+- **Como conclui um módulo:** acertar **75% das perguntas diferentes** daquele assunto e nível (arredondado para cima). Acertar a mesma pergunta de novo não conta, e errar não tira o que já foi acertado. O nível do curso fecha quando **todos** os módulos dele passam, e o certificado sai na hora, na própria resposta que fechou, com um botão **Ver meu certificado**.
+- **Quem estuda de qualquer jeito também avança:** o progresso conta pelas perguntas acertadas em `aprender`, `desafio` ou pelo botão **Praticar** da tela do curso. Cada resposta mostra uma linha com quanto falta para o certificado.
+- **O certificado:** uma imagem PNG (1600×1131) com o seu nome, o curso, o nível, os módulos, a data e um código `DVL-XXXX-XXXX`. Só você consegue pedir a imagem (a resposta vai escondida, só para você), mas o código serve para qualquer pessoa conferir com `verificar`.
+- **O nome:** o primeiro certificado usa o seu nome do Discord (só letras; emoji, números e símbolos saem). Para trocar: `certificados nome Ana Beatriz Almeida`. A troca vale para todos os certificados, inclusive os antigos.
+- **Custa nada:** é tudo gerado pelo próprio bot, sem serviço externo.
+
+O mínimo de 75% muda com `COURSE_PASS_PERCENT` no `.env`. Diferente do XP, o certificado **não** tem limite diário.
 
 ## Como rodar
 
@@ -89,6 +106,7 @@ Variáveis opcionais do `.env` (todas explicadas no `.env.example`):
 | `ALLOWED_CHANNEL_ID` | vazio | nos servidores, o bot só responde nesse canal |
 | `DAILY_XP_CAP` | `200` | máximo de XP por pessoa por dia (`0` = sem limite) |
 | `DAILY_GOAL` | `5` | respostas por dia que cumprem a meta diária (`0` = sem meta) |
+| `COURSE_PASS_PERCENT` | `75` | % das perguntas de um módulo que precisa acertar para concluí-lo (de 1 a 100) |
 | `TIMEZONE` | `America/Sao_Paulo` | fuso que define "o dia" da sequência e do limite diário |
 | `DB_PATH` | `data/devlingo.db` | onde fica o banco |
 
@@ -108,9 +126,12 @@ src/
   events/               um arquivo por evento do Discord
   buttons/              um arquivo por tipo de botão ou menu (prefixo do customId)
   handlers/             carregam commands/, events/ e buttons/
-  utils/                ui (Components V2), db (SQLite), challenges, areas, study, time, parse, logger
+  utils/                ui e courseUi (Components V2), db (SQLite), challenges, areas, study, courses,
+                        certificate (gera o PNG), time, parse, logger
+  assets/fonts/         as fontes (Nunito, licença OFL) que desenham o texto do certificado
   data/challenges.json  os desafios
   data/areas.json       quais assuntos pertencem a cada área (Frontend, Backend...)
+  data/courses.json     os cursos: quais assuntos são os módulos de cada um
 test/                   testes automáticos (npm test), sem precisar de token nem de internet
 brand/                  identidade visual: logotipo, cores, fontes, ícones, avatar e banner (veja brand/guide.html)
 data/                   banco SQLite em runtime (fora do git)
@@ -156,10 +177,13 @@ Regras que a validação cobra, porque vêm de limites do Discord:
 
 Cada área lista os `topics` (ids de assunto) que pertencem a ela. Um assunto pode estar em várias áreas: JavaScript está em Frontend e em Backend. **Todo assunto novo precisa entrar em pelo menos uma área**, senão ninguém o encontra depois da configuração (`npm test` confere). Uma área nova precisa de `id` (até 10 caracteres), `label`, `emoji`, `description` e `topics`, com no máximo 6 áreas no total.
 
+### Cursos (`src/data/courses.json`)
+
+Cada curso tem `id` (até 12 caracteres), `name`, `emoji`, `description` e `modules`, a lista de ids de assunto (`topic.id` de `challenges.json`) que formam o curso, na ordem em que aparecem. Os quatro níveis vêm sozinhos, mas um nível sem desafios em algum módulo não dá certificado. No máximo 10 cursos e 8 módulos por curso (limites do menu do Discord e do certificado). O bot valida ao iniciar, e `npm test` confere que todo assunto com desafios está em algum curso.
+
 ## Próximos passos
 
 - Mais desafios e mais assuntos (hoje são 116 desafios em 7 assuntos, com 4 em cada nível; `npm test` exige esse mínimo). Frontend ainda só tem JavaScript: faltam HTML/CSS e DOM. Backend ainda não tem HTTP/APIs, Banco de dados não tem modelagem, e DevOps só tem Git (faltam Linux e Docker).
 - Avisar quando a pessoa vai bem num nível (por exemplo, 90% de acerto) e sugerir subir; hoje o nível só muda se ela mudar em `configurar`.
 - Mais estímulos de hábito, ainda não feitos: "desafio do dia" igual para todo mundo, "congelar" a sequência por um dia, ligas semanais de ranking e lembretes por DM (esses só com **opt-in** da pessoa, nunca por padrão)
-- Se o bot passar de ~2.500 servidores, o Discord exige sharding; o SQLite em arquivo único também deixa de servir (Postgres)
-- Evitar repetir perguntas já acertadas recentemente na mesma trilha (hoje só a última é excluída)
+- Escala: ao chegar perto de ~2.500 servidores o Discord exige sharding (`ShardingManager`), e o SQLite em arquivo único passa a ser o gargalo (a troca natural é Postgres). Hoje quase nada atrapalha: os dados ficam por pessoa e não por servidor. O que precisa mudar na hora é a memória de cada processo (trava de clique duplo, cooldown), que teria de ir para o banco compartilhado.

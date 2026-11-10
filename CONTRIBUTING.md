@@ -27,6 +27,14 @@ Para rodar o bot de verdade, copie `.env.example` para `.env` e preencha o `DISC
 - Assunto novo? Coloque o id dele em pelo menos uma área de `src/data/areas.json`.
 - `npm test` valida o formato, os limites do Discord e se todo assunto pertence a alguma área.
 
+## Cursos e certificados
+
+- Os cursos ficam em `src/data/courses.json` (regras no README). Assunto novo com desafios **precisa** entrar em algum curso, senão ninguém ganharia certificado dele; `npm test` confere.
+- O progresso do curso vem de perguntas **diferentes** acertadas (tabela `seen`), não de contagem de acertos: acertar a mesma pergunta cinco vezes vale uma. Por isso, **não apague nem renomeie o `id` de um desafio** já publicado: quem acertou perde o progresso. Pode corrigir o texto à vontade.
+- Certificado já emitido nunca é apagado nem refeito (`UNIQUE (user_id, course_id, level)`); se um curso ganhar módulos depois, quem já tem o certificado do nível continua com ele.
+- O PNG é desenhado em `src/utils/certificate.js` com o texto convertido em curvas (`opentype.js` + `@resvg/resvg-js`), então não depende de fonte instalada na máquina. Mexeu no layout? Gere um exemplo e **olhe a imagem** com nomes curtos, longos e com acento antes de abrir o PR: o `npm test` só garante que o PNG sai, não que está bonito.
+- Quando dá para evitar, o nome da pessoa entra no certificado **só como curva**, nunca como texto do SVG. Texto que entra como texto (como o `<title>`) passa por `xml()`.
+
 ## Banco de dados
 
 O progresso fica em SQLite (`src/utils/db.js`). Para mudar as tabelas, **acrescente** uma migração nova ao fim da lista `MIGRATIONS`; nunca edite as anteriores, porque bancos que já existem já passaram por elas.
