@@ -35,8 +35,11 @@ function sendV2(channel, components) {
 
 const isDM = (message) => message.channel.type === ChannelType.DM;
 
-// Como a pessoa deve chamar o bot: marcando-o no servidor, direto na DM
-const callPrefix = (client, inGuild) => (inGuild ? `${client.user} ` : "");
+// Como a pessoa chama um comando: no servidor, marcando o bot ("@Devlingo `ajuda`"); na DM, só o comando.
+// A menção fica FORA das crases de propósito: dentro de código o Discord não a resolve e mostra
+// o número do bot (<@1569...>) em vez do nome.
+const commandRef = (client, inGuild, command) =>
+  inGuild ? `${client.user} \`${command}\`` : `\`${command}\``;
 
 // ---------- mensagens simples ----------
 
@@ -44,10 +47,14 @@ function notice(content, color = config.colors.brand) {
   return [new ContainerBuilder().setAccentColor(color).addTextDisplayComponents(text(content))];
 }
 
-function helpMessage(lines, footer) {
+function helpMessage(lines, footer, intro) {
   const container = new ContainerBuilder()
     .setAccentColor(config.colors.brand)
-    .addTextDisplayComponents(text("## 📚 Devlingo — aprenda programação jogando"), text(lines.join("\n")))
+    .addTextDisplayComponents(
+      text("## 📚 Devlingo — aprenda programação jogando"),
+      ...(intro ? [text(intro)] : []),
+      text(lines.join("\n"))
+    )
     .addSeparatorComponents(divider())
     .addTextDisplayComponents(text(`-# ${footer}`));
   return [container];
@@ -396,7 +403,7 @@ function challengeMessage(ch, ownerId, issuedAt, state = { type: "open" }) {
 module.exports = {
   sendV2,
   isDM,
-  callPrefix,
+  commandRef,
   notice,
   helpMessage,
   rankingMessage,
