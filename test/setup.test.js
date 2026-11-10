@@ -102,12 +102,16 @@ test("preferencesOf descarta áreas e níveis que não existem mais; sem nada ut
 
 // ---------- menu de assuntos filtrado pelas áreas ----------
 
-test("quem escolheu Banco de dados só vê assuntos de SQL, com botão para ver todas as áreas", async () => {
+test("quem escolheu Banco de dados só vê os assuntos dessa área, com botão para ver todas as áreas", async () => {
   db.setPreferences(OWNER, { level: "beginner", areas: ["banco"] });
 
   const i = fakeInteraction({ customId: `learn:topics:${OWNER}:beginner`, userId: OWNER, kind: "button" });
   await run(learn, i);
-  assert.deepEqual(optionValues(lastCall(i)), ["sql-queries"]);
+  // Os assuntos vêm de areas.json (assunto novo da área não quebra o teste), mas SQL sempre está lá e Git nunca.
+  const doBanco = challenges.topics("beginner", areas.topicIdsFor(["banco"])).map((t) => t.id);
+  assert.deepEqual([...optionValues(lastCall(i))].sort(), [...doBanco].sort());
+  assert.ok(doBanco.includes("sql-queries"));
+  assert.ok(!doBanco.includes("git-versioning"));
   assert.match(textOf(lastCall(i)), /Suas áreas: .*Banco de dados/);
   const ids = customIds(lastCall(i).payload.components);
   assert.ok(ids.includes(`learn:topics:${OWNER}:beginner:all`), "botão 'Ver todas as áreas'");
@@ -139,14 +143,16 @@ test("áreas sobrepostas: Frontend e Backend dividem JavaScript sem duplicar o a
 
 test("se as áreas da pessoa não têm nada no nível, mostra tudo com um aviso (menu nunca fica vazio)", async () => {
   db.setPreferences(OWNER, { level: "expert", areas: ["banco"] });
-  // Tira temporariamente os desafios SQL do nível expert; a área Banco continua existindo nos outros níveis.
-  const removed = challenges.list.filter((c) => c.difficulty === "expert" && c.topic.id === "sql-queries");
+  // Tira temporariamente os desafios do nível expert de TODOS os assuntos da área Banco; ela continua existindo nos outros níveis.
+  const doBanco = areas.topicIdsFor(["banco"]);
+  const removed = challenges.list.filter((c) => c.difficulty === "expert" && doBanco.has(c.topic.id));
+  assert.ok(removed.length > 0);
   for (const c of removed) challenges.list.splice(challenges.list.indexOf(c), 1);
   try {
     const i = fakeInteraction({ customId: `learn:topics:${OWNER}:expert`, userId: OWNER, kind: "button" });
     await run(learn, i);
     assert.ok(optionValues(lastCall(i)).length > 0);
-    assert.ok(!optionValues(lastCall(i)).includes("sql-queries"));
+    assert.ok(!optionValues(lastCall(i)).some((id) => doBanco.has(id)));
     assert.match(textOf(lastCall(i)), /Ainda não há perguntas das suas áreas nesse nível/);
   } finally {
     challenges.list.push(...removed);
@@ -166,9 +172,14 @@ test("quem escolhe um assunto fora das suas áreas (via 'Ver todas') consegue es
 
 test("o pool do 'desafio' sem argumento é o nível e as áreas da pessoa", () => {
   const prefs = { level: "advanced", areas: ["banco"] };
-  for (let n = 0; n < 40; n++) {
-    const ch = challenges.random({ difficulty: prefs.level, topicIds: areas.topicIdsFor(prefs.areas) });
+  const doBanco = areas.topicIdsFor(prefs.areas);
+  const sorteados = new Set();
+  for (let n = 0; n < 200; n++) {
+    const ch = challenges.random({ difficulty: prefs.level, topicIds: doBanco });
     assert.equal(ch.difficulty, "advanced");
-    assert.equal(ch.topic.id, "sql-queries");
+    assert.ok(doBanco.has(ch.topic.id), `${ch.topic.id} não é da área Banco`);
+    sorteados.add(ch.topic.id);
   }
+  assert.ok(sorteados.has("sql-queries"));
+
 });
