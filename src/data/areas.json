@@ -29,7 +29,8 @@
       "javascript-arrays",
       "python-fundamentals",
       "python-collections",
-      "data-structures"
+      "data-structures",
+      "networking-basics"
     ]
   },
   {
@@ -44,6 +45,6 @@
     "label": "Ferramentas e DevOps",
     "emoji": "🛠️",
     "description": "Versionamento, entrega e infraestrutura",
-    "topics": ["linux-shell", "docker-basics", "git-versioning"]
+    "topics": ["linux-shell", "docker-basics", "git-versioning", "ci-cd", "networking-basics"]
   }
 ]

