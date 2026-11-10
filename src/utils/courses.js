@@ -12,7 +12,7 @@ const list = require("../data/courses.json");
 
 // ---------- validação (como a dos desafios: dado inválido impede o bot de iniciar) ----------
 
-const MAX_COURSES = 10;
+const MAX_COURSES = 20; // o menu de cursos do Discord aceita 25 opções; o resto da folga fica para a tela caber em 4000 caracteres
 const MAX_MODULES = 8;
 const ID_PATTERN = /^[a-z0-9-]{1,12}$/;
 const knownTopics = new Set(challenges.list.map((c) => c.topic.id));
