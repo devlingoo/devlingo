@@ -1,7 +1,7 @@
 // Telas completas do bot (o que cada comando mostra). Os comandos e os botões de atalho (nav)
 // usam as mesmas funções daqui, então "digitar o comando" e "clicar no botão" dão o mesmo resultado.
-const { escapeMarkdown } = require("discord.js");
 const db = require("./db");
+const { safeText } = require("./text");
 const challenges = require("./challenges");
 const progress = require("./progress");
 const study = require("./study");
@@ -68,7 +68,8 @@ const achievementsView = (ownerId) => ui.achievementsMessage({ unlockedKeys: db.
 async function displayName(client, guild, userId) {
   const member = await guild?.members.fetch(userId).catch(() => null);
   const name = member?.displayName ?? (await client.users.fetch(userId).catch(() => null))?.username;
-  return escapeMarkdown(name ?? `usuário ${userId}`);
+  // O apelido é escolhido por cada pessoa e aparece para todo mundo no ranking: nunca entra cru.
+  return safeText(name ?? `usuário ${userId}`);
 }
 
 // Top 10 do servidor (ou global, na DM), com a posição de quem pediu.

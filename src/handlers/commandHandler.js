@@ -2,6 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const { Collection } = require("discord.js");
 const logger = require("../utils/logger");
+const { normalizeName } = require("../utils/parse");
 
 // Carrega todo arquivo .js de src/commands. Cada um exporta:
 // { name, aliases?, description, usage?, execute({ message, args, client }) }
@@ -19,11 +20,14 @@ module.exports = (client) => {
     }
 
     client.commands.set(command.name, command);
-    for (const alias of command.aliases ?? []) aliases.set(alias, command.name);
+    // O nome e os apelidos são comparados sem acento, sem maiúsculas e sem pontuação no fim.
+    for (const key of [command.name, ...(command.aliases ?? [])]) aliases.set(normalizeName(key), command.name);
   }
 
-  client.findCommand = (name) =>
-    client.commands.get(name) ?? client.commands.get(aliases.get(name));
+  client.findCommand = (name) => {
+    const commandName = aliases.get(normalizeName(name));
+    return commandName ? client.commands.get(commandName) : undefined;
+  };
 
   logger.info(`${client.commands.size} comando(s) carregado(s).`);
 };

@@ -36,6 +36,8 @@ O progresso fica em SQLite (`src/utils/db.js`). Para mudar as tabelas, **acresce
 - Conquista nova: acrescente na lista de `src/utils/achievements.js` (a `key` nunca muda, porque é o que fica gravado no banco). Se a regra precisa de uma estatística nova, ela entra em `recordAnswer` (`src/utils/db.js`) junto com uma migração.
 - As telas (o que cada comando mostra) ficam em `src/utils/views.js`; os comandos e os botões de atalho usam as mesmas funções. Comando novo entra na ajuda sozinho: defina `category` (`estudar`, `voce` ou `ajuda`) e, se quiser, `order`.
 - Em mensagens com menção ao bot, deixe a menção **fora** de crases (`commandRef` em `ui.js` já faz isso): dentro de código o Discord mostra o número, não o nome.
+- **Texto de pessoas nunca entra cru numa mensagem** (apelido, nome de usuário, o que elas digitaram): passe por `safeText` (`src/utils/text.js`). O `escapeMarkdown` do discord.js não cobre link mascarado (`[texto](url)`), autolink nem menção, e um apelido assim apareceria clicável no ranking.
+- Botões que mexem em dados: se a gravação falhar, solte a trava de clique duplo (veja `buttons/challenge.js`), senão a pessoa não consegue tentar de novo.
 
 ## Segredos
 

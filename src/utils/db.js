@@ -129,7 +129,9 @@ function open(file = config.dbPath) {
   if (!inMemory) fs.mkdirSync(path.dirname(file), { recursive: true });
 
   db = new DatabaseSync(file);
-  if (!inMemory) db.exec("PRAGMA journal_mode = WAL; PRAGMA synchronous = NORMAL;");
+  // busy_timeout: com outro processo usando o mesmo arquivo (duas instâncias do bot, reinício do
+  // `npm run dev`), espera até 5 s pelo travamento em vez de falhar na hora com "database is locked".
+  if (!inMemory) db.exec("PRAGMA busy_timeout = 5000; PRAGMA journal_mode = WAL; PRAGMA synchronous = NORMAL;");
   migrate(db);
   if (!inMemory) importLegacyJson(path.join(path.dirname(file), "data.json"));
   return db;
