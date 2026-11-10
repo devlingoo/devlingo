@@ -114,7 +114,7 @@ Regras que a validação cobra, porque vêm de limites do Discord:
 
 ## Próximos passos
 
-- Mais desafios, principalmente do nível Especialista (hoje ele fica escondido por não ter conteúdo)
+- Mais desafios e mais assuntos (hoje são 116 desafios em 7 assuntos, com 4 em cada nível; `npm test` exige esse mínimo)
 - Se o bot passar de ~2.500 servidores, o Discord exige sharding; o SQLite em arquivo único também deixa de servir (Postgres)
 - Evitar repetir perguntas já acertadas recentemente na mesma trilha (hoje só a última é excluída)
 
