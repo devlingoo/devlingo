@@ -22,7 +22,9 @@ function fakeInteraction({ customId, userId = "100", kind, values = [], messageI
   return {
     calls,
     customId,
-    user: { id: userId },
+    user: { id: userId, displayName: "Ana", displayAvatarURL: () => "https://cdn.example/avatar.png" },
+    member: null,
+    guild: null,
     guildId: "g1",
     message: { id: messageId },
     values,
@@ -32,9 +34,23 @@ function fakeInteraction({ customId, userId = "100", kind, values = [], messageI
     update: async (payload) => calls.push({ method: "update", payload }),
     reply: async (payload) => calls.push({ method: "reply", payload }),
     deferUpdate: async () => calls.push({ method: "deferUpdate" }),
+    editReply: async (payload) => calls.push({ method: "editReply", payload }),
   };
 }
 
-const fakeClient = { user: { toString: () => "<@1>" } };
+const fakeClient = { user: { toString: () => "<@1>" }, users: { fetch: async (id) => ({ username: `usuario-${id}` }) } };
 
-module.exports = { TYPE, flatten, customIds, fakeInteraction, fakeClient };
+// Limites do Discord para mensagens Components V2: até 40 componentes e 4000 caracteres de texto.
+function assertWithinDiscordLimits(components, label, assert) {
+  const nodes = flatten(components);
+  assert.ok(nodes.length <= 40, `${label}: ${nodes.length} componentes (limite 40)`);
+  const texts = nodes.filter((n) => n.type === TYPE.TextDisplay);
+  assert.ok(texts.every((t) => t.content.trim().length > 0), `${label}: texto vazio`);
+  const chars = texts.reduce((sum, t) => sum + t.content.length, 0);
+  assert.ok(chars <= 4000, `${label}: ${chars} caracteres de texto (limite 4000)`);
+  for (const n of nodes) {
+    if (n.custom_id) assert.ok(n.custom_id.length <= 100, `${label}: custom_id longo: ${n.custom_id}`);
+  }
+}
+
+module.exports = { TYPE, flatten, customIds, fakeInteraction, fakeClient, assertWithinDiscordLimits };

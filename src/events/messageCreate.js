@@ -2,7 +2,7 @@ const { Events } = require("discord.js");
 const config = require("../config");
 const logger = require("../utils/logger");
 const { parseCommand } = require("../utils/parse");
-const { sendV2, notice, isDM, callPrefix } = require("../utils/ui");
+const { sendV2, notice, isDM, commandRef } = require("../utils/ui");
 
 const lastUse = new Map(); // userId -> momento do último comando
 
@@ -20,10 +20,9 @@ module.exports = {
 
     const command = client.findCommand(parsed.name);
     if (!command) {
-      const call = callPrefix(client, !dm);
       return sendV2(
         message.channel,
-        notice(`Não conheci esse comando. Use \`${call}ajuda\` para ver a lista.`)
+        notice(`Não conheci esse comando. Use ${commandRef(client, !dm, "ajuda")} para ver a lista.`)
       );
     }
 

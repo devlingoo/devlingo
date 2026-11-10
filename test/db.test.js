@@ -35,11 +35,14 @@ test("quem nunca jogou aparece zerado", () => {
 });
 
 test("acerto dá XP e conta no ranking do servidor; erro não dá XP mas conta como atividade", () => {
+  // O retorno tem mais campos (bônus, meta, conquistas...), testados mais abaixo; aqui só o básico.
+  const basics = ({ xp, streak, gained, capped, dailyXp }) => ({ xp, streak, gained, capped, dailyXp });
+
   const right = db.recordAnswer("ana", "g1", true, 10, D1);
-  assert.deepEqual(right, { xp: 10, streak: 1, gained: 10, capped: false, dailyXp: 10 });
+  assert.deepEqual(basics(right), { xp: 10, streak: 1, gained: 10, capped: false, dailyXp: 10 });
 
   const wrong = db.recordAnswer("bia", "g1", false, 10, D1);
-  assert.deepEqual(wrong, { xp: 0, streak: 1, gained: 0, capped: false, dailyXp: 0 });
+  assert.deepEqual(basics(wrong), { xp: 0, streak: 1, gained: 0, capped: false, dailyXp: 0 });
 
   assert.deepEqual(db.top("g1"), [{ userId: "ana", xp: 10 }]);
 });
@@ -92,8 +95,9 @@ test("DAILY_XP_CAP=0 desliga o limite", () => {
   config.dailyXpCap = 0;
   let last;
   for (let i = 0; i < 40; i++) last = db.recordAnswer("ana", null, true, 10, D1);
-  assert.equal(last.xp, 400);
+  assert.equal(last.dailyXp, 400, "40 acertos x 10 XP, sem nada segurado (bônus não entram na conta do limite)");
   assert.equal(last.capped, false);
+  assert.ok(last.xp > 400, "o XP total inclui os bônus de combo e de meta");
 });
 
 test("ranking: global soma tudo (inclusive DM), servidor só o XP ganho nele; ordem estável", () => {

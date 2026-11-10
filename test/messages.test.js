@@ -96,13 +96,57 @@ test("'perfil' e 'ranking' leem o banco SQLite de verdade", async () => {
 
   const profile = fakeMessage({ content: "perfil", authorId: "302", dm: true });
   await messageCreate.execute(client, profile);
-  assert.match(textOf(profile), /20 XP/);
-  assert.match(textOf(profile), /Hoje: \*\*20\/\d+\*\* XP/);
-  assert.match(textOf(profile), /1\*\* dia\(s\) de sequência/);
+  assert.match(textOf(profile), /Semente · Nível 1\*\* — ⭐ \*\*20 XP\*\*/);
+  assert.match(textOf(profile), /XP de hoje: \*\*20\/\d+\*\*/);
+  assert.match(textOf(profile), /Sequência: \*\*1 dia\*\*/);
+  assert.match(textOf(profile), /Meta de hoje: .*\*\*2\/5\*\*/);
+  assert.match(textOf(profile), /\*\*2\*\* respostas • \*\*2\*\* acertos \(\*\*100%\*\*\)/);
+  assert.match(textOf(profile), /Conquistas: \*\*1\/\d+\*\*/);
 
   const ranking = fakeMessage({ content: "ranking", authorId: "303", dm: true });
   await messageCreate.execute(client, ranking);
   assert.match(textOf(ranking), /usuario-302.*20 XP/);
+  assert.match(textOf(ranking), /Você ainda não pontuou/, "quem não tem XP é convidado a entrar no ranking");
+});
+
+test("o ranking mostra a posição de quem pediu e marca a própria linha", async () => {
+  db.recordAnswer("311", null, true, 10);
+  db.recordAnswer("311", null, true, 10);
+  db.recordAnswer("312", null, true, 10);
+
+  const mine = fakeMessage({ content: "ranking", authorId: "312", dm: true });
+  await messageCreate.execute(client, mine);
+  const text = textOf(mine);
+  assert.match(text, /Sua posição: \*\*#\d+\*\* • 10 XP/);
+  assert.match(text, /usuario-312.*◀ você/);
+  assert.doesNotMatch(text.split("\n").find((l) => l.includes("usuario-311")), /◀ você/);
+  assert.match(text, /🌱 Nv 1/, "no ranking global aparece o emoji do título e o nível");
+});
+
+test("'conquistas' lista as conquistas, com as ganhas em cima", async () => {
+  db.recordAnswer("321", null, true, 10); // desbloqueia "Primeiro passo"
+  const msg = fakeMessage({ content: "conquistas", authorId: "321", dm: true });
+  await messageCreate.execute(client, msg);
+  const lines = textOf(msg).split("\n");
+  assert.match(lines[0], /Conquistas — 1\/\d+/);
+  assert.ok(lines.some((l) => l.startsWith("✅") && l.includes("Primeiro passo")));
+  assert.ok(lines.some((l) => l.startsWith("🔒") && l.includes("Mira afiada")));
+  assert.ok(lines.findIndex((l) => l.startsWith("✅")) < lines.findIndex((l) => l.startsWith("🔒")), "ganhas primeiro");
+});
+
+test("a ajuda agrupa os comandos por categoria e traz os atalhos", async () => {
+  const msg = fakeMessage({ content: "ajuda", authorId: "331", dm: true });
+  await messageCreate.execute(client, msg);
+  const text = textOf(msg);
+  assert.ok(text.indexOf("📚 Estudar") < text.indexOf("👤 Você"), "grupos na ordem certa");
+  assert.ok(text.indexOf("👤 Você") < text.indexOf("💬 Ajuda"));
+  for (const cmd of ["configurar", "aprender", "desafio", "perfil", "ranking", "conquistas", "ajuda"]) {
+    assert.match(text, new RegExp(`\`${cmd}`), `lista ${cmd}`);
+  }
+  const ids = customIds(msg.sent[0].components);
+  for (const target of ["estudar", "perfil", "ranking", "conquistas"]) {
+    assert.ok(ids.includes(`nav:331:${target}`), `atalho ${target}`);
+  }
 });
 
 test("'aprender' de quem já configurou abre direto nos assuntos do nível e das áreas dela", async () => {
@@ -153,6 +197,44 @@ test("'ajuda' lista o comando configurar", async () => {
   const msg = fakeMessage({ content: "ajuda", authorId: "407", dm: true });
   await messageCreate.execute(client, msg);
   assert.match(textOf(msg), /configurar/);
+});
+
+// O Discord não resolve menção dentro de crases (código inline): aparece o número do bot, tipo
+// <@1569442084426092686>, em vez do nome. A menção tem que ficar sempre fora do código.
+const mentionInsideCode = /`[^`\n]*<@!?\d+>[^`\n]*`/;
+
+test("a menção ao bot nunca fica dentro de crases (a ajuda no servidor mostra o nome, não o número)", async () => {
+  const help = fakeMessage({ content: "<@1> ajuda", authorId: "501" });
+  await messageCreate.execute(client, help);
+  assert.doesNotMatch(textOf(help), mentionInsideCode);
+  assert.match(textOf(help), /Marque <@1> e escreva o comando\. Exemplo: <@1> `aprender`/);
+  assert.equal(textOf(help).split("<@1>").length - 1, 2, "a menção aparece só no texto de como usar, não em cada comando");
+});
+
+test("na DM a ajuda não menciona o bot em lugar nenhum", async () => {
+  const help = fakeMessage({ content: "ajuda", authorId: "502", dm: true });
+  await messageCreate.execute(client, help);
+  assert.doesNotMatch(textOf(help), /<@/);
+  assert.match(textOf(help), /Exemplo: `aprender`/);
+});
+
+test("'não conheci esse comando' também mostra a menção fora das crases", async () => {
+  const inGuild = fakeMessage({ content: "<@1> xyzzy", authorId: "503" });
+  await messageCreate.execute(client, inGuild);
+  assert.doesNotMatch(textOf(inGuild), mentionInsideCode);
+  assert.match(textOf(inGuild), /Use <@1> `ajuda` para ver a lista/);
+
+  const dm = fakeMessage({ content: "xyzzy", authorId: "504", dm: true });
+  await messageCreate.execute(client, dm);
+  assert.match(textOf(dm), /Use `ajuda` para ver a lista/);
+});
+
+test("'ranking' vazio ensina a começar sem deixar a menção dentro de crases", async () => {
+  db.open(":memory:");
+  const msg = fakeMessage({ content: "<@1> ranking", authorId: "505" });
+  await messageCreate.execute(client, msg);
+  assert.doesNotMatch(textOf(msg), mentionInsideCode);
+  assert.match(textOf(msg), /Comece com <@1> `desafio`!/);
 });
 
 test.after(() => db.close());

@@ -2,7 +2,7 @@ const { MessageFlags } = require("discord.js");
 const config = require("../config");
 const db = require("../utils/db");
 const challenges = require("../utils/challenges");
-const { callPrefix, challengeMessage } = require("../utils/ui");
+const { commandRef, challengeMessage } = require("../utils/ui");
 
 // Desafios já respondidos (evita duplo clique e XP em dobro). Limitado para não crescer sem fim.
 // A chave é mensagem + momento da pergunta: na trilha de estudo a mesma mensagem recebe
@@ -26,9 +26,8 @@ module.exports = {
     const study = mode === "s"; // veio do comando aprender: oferece "Próxima pergunta"
 
     if (interaction.user.id !== ownerId) {
-      const call = callPrefix(client, interaction.inGuild());
       return interaction.reply(
-        ephemeral(`Esse desafio é de outra pessoa. Peça o seu com \`${call}desafio\`.`)
+        ephemeral(`Esse desafio é de outra pessoa. Peça o seu com ${commandRef(client, interaction.inGuild(), "desafio")}.`)
       );
     }
 
@@ -51,17 +50,20 @@ module.exports = {
 
     const chosen = Number(chosenText);
     const correct = chosen === ch.answer;
-    // `gained` já considera o limite diário de XP (pode ser menor que o prêmio, ou 0).
-    const { xp, streak, gained, capped } = db.recordAnswer(
+    // O resultado traz tudo o que a mensagem mostra: XP que entrou (já com o limite diário), bônus,
+    // combo, meta do dia, marcos de sequência, subida de nível e conquistas novas.
+    const result = db.recordAnswer(
       interaction.user.id,
       interaction.guildId,
       correct,
-      config.xpCorrect
+      config.xpCorrect,
+      new Date(),
+      { difficulty: ch.difficulty }
     );
 
     return update(
       interaction,
-      challengeMessage(ch, ownerId, issuedAt, { type: "answered", chosen, correct, gained, capped, xp, streak, study })
+      challengeMessage(ch, ownerId, issuedAt, { type: "answered", chosen, correct, study, ...result })
     );
   },
 };
