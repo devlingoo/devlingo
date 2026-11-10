@@ -51,6 +51,11 @@ module.exports = {
   comboEvery: 5, // a cada N acertos seguidos, o combo dá um bônus
   comboBonusXp: 5,
 
+  // ---- Cursos e certificados. Um módulo (assunto) de um nível está concluído quando a pessoa
+  // acertou pelo menos esta porcentagem das perguntas DIFERENTES dele. Acertar a mesma pergunta
+  // várias vezes não conta mais de uma vez. 1 a 100.
+  coursePassPercent: Math.min(100, Math.max(1, nonNegativeInt(process.env.COURSE_PASS_PERCENT, 75) || 75)),
+
   // Cores da marca (a paleta completa e o porquê de cada uma estão em brand/guide.html).
   // Os valores são os mesmos de brand/tokens/colors.json.
   colors: {

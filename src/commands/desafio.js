@@ -1,5 +1,6 @@
 const areas = require("../utils/areas");
 const challenges = require("../utils/challenges");
+const db = require("../utils/db");
 const study = require("../utils/study");
 const { safeText } = require("../utils/text");
 const { sendV2, notice, challengeMessage, setupAreasMenu } = require("../utils/ui");
@@ -24,10 +25,11 @@ module.exports = {
     if (language) {
       ch = challenges.random(language);
     } else {
-      // Do nível e das áreas dela; se não houver nada, afrouxa aos poucos para sempre ter um desafio.
+      // Do nível e das áreas dela, evitando repetir; se não houver nada, afrouxa aos poucos para sempre ter um desafio.
+      const history = db.getSeen(ownerId);
       ch =
-        challenges.random({ difficulty: prefs.level, topicIds: areas.topicIdsFor(prefs.areas) }) ??
-        challenges.random({ difficulty: prefs.level }) ??
+        challenges.random({ difficulty: prefs.level, topicIds: areas.topicIdsFor(prefs.areas) }, undefined, history) ??
+        challenges.random({ difficulty: prefs.level }, undefined, history) ??
         challenges.random();
     }
 

@@ -262,7 +262,7 @@ test("todo botão de atalho gerado pelas telas tem um destino que o handler conh
   db.recordAnswer(OWNER, null, true, 10);
   screens.push(await views.ranking({ client: fakeClient, guild: null, guildId: null, ownerId: OWNER }));
 
-  const known = ["estudar", "perfil", "ranking", "conquistas", "configurar"];
+  const known = ["estudar", "cursos", "perfil", "ranking", "conquistas", "configurar"];
   for (const components of screens) {
     for (const id of customIds(components).filter((id) => id.startsWith("nav:"))) {
       assert.ok(known.includes(id.split(":")[2]), id);

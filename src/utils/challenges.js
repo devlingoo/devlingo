@@ -76,12 +76,29 @@ module.exports = {
   availableDifficulties: () => DIFFICULTIES.filter((d) => topics(d.id).length > 0),
   difficultyLabel: (id) => DIFFICULTIES.find((d) => d.id === id)?.label ?? id,
   // `excludeId` evita repetir o desafio que acabou de ser respondido (se houver outro no grupo).
-  random(filters, excludeId) {
+  // `history` (Map id -> { lastAt, solved }, de db.getSeen) faz o sorteio evitar repetição, nesta ordem:
+  //   1) perguntas que a pessoa nunca viu;
+  //   2) as que já viu mas ainda não acertou (vale tentar de novo);
+  //   3) as que já acertou, começando pelas vistas há mais tempo (revisão).
+  // Dentro de um grupo (2 ou 3), sorteia entre a metade mais antiga, para ainda variar.
+  random(filters, excludeId, history) {
     // Mantém compatibilidade com o comando antigo: random("python").
     const normalized = typeof filters === "string" ? { language: filters } : filters;
     const pool = matches(normalized);
-    const fresh = excludeId ? pool.filter((c) => c.id !== excludeId) : pool;
-    const source = fresh.length ? fresh : pool;
+    let source = excludeId ? pool.filter((c) => c.id !== excludeId) : pool;
+    if (source.length === 0) source = pool;
+    if (source.length > 1 && history?.size) {
+      const tier = (c) => {
+        const h = history.get(c.id);
+        return h ? (h.solved ? 2 : 1) : 0;
+      };
+      const best = Math.min(...source.map(tier));
+      source = source.filter((c) => tier(c) === best);
+      if (best > 0 && source.length > 1) {
+        source.sort((a, b) => history.get(a.id).lastAt - history.get(b.id).lastAt);
+        source = source.slice(0, Math.ceil(source.length / 2));
+      }
+    }
     return source.length ? source[Math.floor(Math.random() * source.length)] : null;
   },
 };

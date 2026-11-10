@@ -54,6 +54,31 @@ const MIGRATIONS = [
     PRIMARY KEY (user_id, key)
   );
   `,
+  // v4: cursos e certificados. "seen" lembra de cada pergunta que a pessoa já respondeu: quando foi
+  // a última vez e se ela já acertou (cada pergunta acertada conta uma vez só no progresso dos
+  // cursos, e o sorteio usa isso para não repetir à toa); "certificates" tem um registro por curso e
+  // nível concluído, com um código único que qualquer pessoa pode conferir.
+  `
+  CREATE TABLE seen (
+    user_id      TEXT NOT NULL,
+    challenge_id TEXT NOT NULL,
+    last_at      INTEGER NOT NULL,
+    solved       INTEGER NOT NULL DEFAULT 0,
+    PRIMARY KEY (user_id, challenge_id)
+  );
+
+  CREATE TABLE certificates (
+    code      TEXT PRIMARY KEY,
+    user_id   TEXT NOT NULL,
+    course_id TEXT NOT NULL,
+    level     TEXT NOT NULL,
+    issued_at INTEGER NOT NULL,
+    UNIQUE (user_id, course_id, level)
+  );
+  CREATE INDEX certificates_user ON certificates (user_id, issued_at);
+
+  ALTER TABLE users ADD COLUMN cert_name TEXT;
+  `,
 ];
 
 let db = null;
@@ -283,6 +308,9 @@ function recordAnswer(userId, guildId, correct, xpReward, now = new Date(), extr
         .run(guildId, userId, gained + bonusTotal);
     }
 
+    // Lembra da pergunta (quando foi vista e se já foi acertada): alimenta os cursos e o sorteio.
+    if (extra.challengeId) markSeen(userId, extra.challengeId, correct, now);
+
     // Conquistas: grava as que a pessoa passou a merecer e devolve só as novas.
     const unlocked = [];
     for (const key of achievements.earned(stats)) {
@@ -338,6 +366,84 @@ function getAchievements(userId) {
     .map((r) => r.key);
 }
 
+// ---------- cursos e certificados ----------
+
+// Registra que a pessoa respondeu a pergunta agora. "solved" nunca volta atrás: depois de acertar
+// uma vez, errar de novo não desfaz o progresso.
+function markSeen(userId, challengeId, correct, now = new Date()) {
+  connection()
+    .prepare(
+      `INSERT INTO seen (user_id, challenge_id, last_at, solved) VALUES (?, ?, ?, ?)
+       ON CONFLICT(user_id, challenge_id) DO UPDATE SET last_at = excluded.last_at, solved = MAX(solved, excluded.solved)`
+    )
+    .run(userId, challengeId, now.getTime(), correct ? 1 : 0);
+}
+
+// Atalho: marca como acertada.
+const markSolved = (userId, challengeId, now = new Date()) => markSeen(userId, challengeId, true, now);
+
+// Ids das perguntas que a pessoa já acertou.
+function getSolved(userId) {
+  return new Set(
+    connection()
+      .prepare("SELECT challenge_id FROM seen WHERE user_id = ? AND solved = 1")
+      .all(userId)
+      .map((r) => r.challenge_id)
+  );
+}
+
+// Tudo o que a pessoa já respondeu: Map(id da pergunta -> { lastAt, solved }). Serve ao sorteio.
+function getSeen(userId) {
+  return new Map(
+    connection()
+      .prepare("SELECT challenge_id, last_at, solved FROM seen WHERE user_id = ?")
+      .all(userId)
+      .map((r) => [r.challenge_id, { lastAt: r.last_at, solved: r.solved === 1 }])
+  );
+}
+
+// Grava um certificado. Devolve false se o código já existia (colisão) ou se a pessoa já tem
+// o certificado desse curso e nível.
+function addCertificate({ code, userId, courseId, level, now = new Date() }) {
+  const { changes } = connection()
+    .prepare("INSERT OR IGNORE INTO certificates (code, user_id, course_id, level, issued_at) VALUES (?, ?, ?, ?, ?)")
+    .run(code, userId, courseId, level, now.getTime());
+  return changes > 0;
+}
+
+const certificateOf = (row) =>
+  row ? { code: row.code, userId: row.user_id, courseId: row.course_id, level: row.level, issuedAt: row.issued_at } : null;
+
+// Certificados da pessoa, do mais antigo para o mais novo.
+function getCertificates(userId) {
+  return connection()
+    .prepare("SELECT * FROM certificates WHERE user_id = ? ORDER BY issued_at, course_id, level")
+    .all(userId)
+    .map(certificateOf);
+}
+
+function getCertificate(userId, courseId, level) {
+  return certificateOf(
+    connection().prepare("SELECT * FROM certificates WHERE user_id = ? AND course_id = ? AND level = ?").get(userId, courseId, level)
+  );
+}
+
+// Busca pelo código (para o comando verificar). O código é comparado sem diferenciar maiúsculas.
+function findCertificate(code) {
+  return certificateOf(connection().prepare("SELECT * FROM certificates WHERE code = ?").get(String(code).toUpperCase()));
+}
+
+// Nome que aparece nos certificados da pessoa (ela mesma escolhe).
+function getCertificateName(userId) {
+  return connection().prepare("SELECT cert_name FROM users WHERE id = ?").get(userId)?.cert_name ?? null;
+}
+
+function setCertificateName(userId, name) {
+  connection()
+    .prepare("INSERT INTO users (id, cert_name) VALUES (?, ?) ON CONFLICT(id) DO UPDATE SET cert_name = excluded.cert_name")
+    .run(userId, name);
+}
+
 // Posição da pessoa no ranking do servidor (guildId) ou global (guildId nulo): { position, xp },
 // ou null se ela ainda não tem XP. Empates dividem a mesma posição.
 function rankOf(userId, guildId) {
@@ -375,6 +481,16 @@ module.exports = {
   recordAnswer,
   getStats,
   getAchievements,
+  markSeen,
+  markSolved,
+  getSolved,
+  getSeen,
+  addCertificate,
+  getCertificates,
+  getCertificate,
+  findCertificate,
+  getCertificateName,
+  setCertificateName,
   rankOf,
   top,
   open,

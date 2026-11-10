@@ -1,5 +1,6 @@
 const { MessageFlags } = require("discord.js");
 const challenges = require("../utils/challenges");
+const db = require("../utils/db");
 const study = require("../utils/study");
 const { learningLevelMenu, challengeMessage } = require("../utils/ui");
 
@@ -13,6 +14,7 @@ const show = (interaction, components) =>
 //   learn:next:<dono>:<nível>:<assunto>:<últimoDesafio>   botão "Próxima pergunta"
 //   learn:topics:<dono>:<nível>[:all]                     botão "Trocar assunto" (":all" = todas as áreas)
 //   learn:levels:<dono>                                   botão "Trocar nível"
+//   learn:go:<dono>:<nível>:<assunto>                     botão "Praticar" (vem da tela de um curso)
 module.exports = {
   prefix: "learn",
 
@@ -45,6 +47,9 @@ module.exports = {
 
     // "Próxima pergunta": mais uma do mesmo nível e assunto.
     if (stage === "next" && isButton) return ask(interaction, ownerId, difficulty, topicId, lastId);
+
+    // "Praticar" na tela de um curso: vai direto a uma pergunta do módulo e nível que faltam.
+    if (stage === "go" && isButton) return ask(interaction, ownerId, difficulty, topicId);
   },
 };
 
@@ -63,7 +68,8 @@ async function ask(interaction, ownerId, difficulty, topicId, lastId) {
     return interaction.reply(ephemeral("Esse assunto não está disponível nessa trilha. Use aprender para começar novamente."));
   }
 
-  const challenge = challenges.random({ difficulty, topic: topicId }, lastId);
+  // Evita repetir: primeiro as nunca vistas, depois as que ainda não acertou, por fim as acertadas há mais tempo.
+  const challenge = challenges.random({ difficulty, topic: topicId }, lastId, db.getSeen(ownerId));
   if (!challenge) return interaction.reply(ephemeral("Ainda não há perguntas para esse assunto."));
 
   const issuedAt = Date.now().toString(36);
