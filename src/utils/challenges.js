@@ -52,15 +52,17 @@ for (const c of list) {
 }
 
 const byId = new Map(list.map((c) => [c.id, c]));
-const matches = ({ language, difficulty, topic } = {}) => list.filter((c) =>
+const matches = ({ language, difficulty, topic, topicIds } = {}) => list.filter((c) =>
   (!language || c.language === language.toLowerCase()) &&
   (!difficulty || c.difficulty === difficulty) &&
-  (!topic || c.topic.id === topic)
+  (!topic || c.topic.id === topic) &&
+  (!topicIds || topicIds.has(c.topic.id))
 );
 
-function topics(difficulty) {
+// `only` (opcional) é um Set de ids de assunto: lista só esses assuntos.
+function topics(difficulty, only) {
   const unique = new Map();
-  for (const c of matches({ difficulty })) unique.set(c.topic.id, c.topic);
+  for (const c of matches({ difficulty, topicIds: only })) unique.set(c.topic.id, c.topic);
   return [...unique.values()].sort((a, b) => a.label.localeCompare(b.label, "pt-BR"));
 }
 

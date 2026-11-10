@@ -1,10 +1,11 @@
 const db = require("../utils/db");
+const study = require("../utils/study");
 const { sendV2, profileMessage } = require("../utils/ui");
 
 module.exports = {
   name: "perfil",
   aliases: ["profile", "xp"],
-  description: "seu XP, nível e sequência de dias",
+  description: "seu XP, nível, sequência de dias e trilha",
   usage: "perfil",
 
   async execute({ message }) {
@@ -15,6 +16,7 @@ module.exports = {
         name: message.member?.displayName ?? message.author.displayName,
         avatarUrl: message.author.displayAvatarURL({ extension: "png", size: 128 }),
         user,
+        prefs: study.preferencesOf(message.author.id),
       })
     );
   },

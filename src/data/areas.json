@@ -1,0 +1,36 @@
+[
+  {
+    "id": "frontend",
+    "label": "Frontend",
+    "emoji": "🎨",
+    "description": "O que roda no navegador: lógica e interface",
+    "topics": ["javascript-fundamentals", "javascript-functions", "javascript-arrays"]
+  },
+  {
+    "id": "backend",
+    "label": "Backend",
+    "emoji": "⚙️",
+    "description": "Servidores, regras de negócio e APIs",
+    "topics": [
+      "javascript-fundamentals",
+      "javascript-functions",
+      "javascript-arrays",
+      "python-fundamentals",
+      "python-collections"
+    ]
+  },
+  {
+    "id": "banco",
+    "label": "Banco de dados",
+    "emoji": "🗄️",
+    "description": "Guardar, consultar e manter dados",
+    "topics": ["sql-queries"]
+  },
+  {
+    "id": "devops",
+    "label": "Ferramentas e DevOps",
+    "emoji": "🛠️",
+    "description": "Versionamento, entrega e infraestrutura",
+    "topics": ["git-versioning"]
+  }
+]

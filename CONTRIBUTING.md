@@ -24,7 +24,8 @@ Para rodar o bot de verdade, copie `.env.example` para `.env` e preencha o `DISC
 
 - Cadastre em `src/data/challenges.json` seguindo as regras do README e confira **cada resposta**. Se o desafio tem código em JavaScript ou Python, execute-o e compare com a alternativa marcada como certa.
 - Para cada assunto e nível, tenha pelo menos 4 desafios, senão o "Próxima pergunta" repete.
-- `npm test` valida o formato e os limites do Discord.
+- Assunto novo? Coloque o id dele em pelo menos uma área de `src/data/areas.json`.
+- `npm test` valida o formato, os limites do Discord e se todo assunto pertence a alguma área.
 
 ## Banco de dados
 

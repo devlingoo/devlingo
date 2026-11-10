@@ -17,6 +17,7 @@ const {
 } = require("discord.js");
 const config = require("../config");
 const challenges = require("./challenges");
+const areas = require("./areas");
 
 const LETTERS = "ABCD";
 const FENCE = { git: "bash" }; // linguagem -> bloco de código do Discord
@@ -66,7 +67,7 @@ function progressBar(value, max, size = 10) {
   return "▰".repeat(filled) + "▱".repeat(size - filled);
 }
 
-function profileMessage({ name, avatarUrl, user }) {
+function profileMessage({ name, avatarUrl, user, prefs = null }) {
   const level = Math.floor(user.xp / config.xpPerLevel) + 1;
   const into = user.xp % config.xpPerLevel;
 
@@ -79,6 +80,7 @@ function profileMessage({ name, avatarUrl, user }) {
           `${progressBar(into, config.xpPerLevel)} ${into}/${config.xpPerLevel}`,
           `🔥 **${user.streak}** dia(s) de sequência`,
           ...(config.dailyXpCap > 0 ? [`📅 Hoje: **${user.dailyXp ?? 0}/${config.dailyXpCap}** XP`] : []),
+          ...(prefs ? [`🧭 Trilha: ${areas.labels(prefs.areas)} • ${levelTag(prefs.level)}`] : []),
         ].join("\n")
       )
     )
@@ -114,12 +116,19 @@ function learningLevelMenu(ownerId) {
 
 // Passo 2 da trilha: escolher o assunto exato dentro do nível.
 // customId do menu: learn:topic:<idDoDono>:<nível>
-function learningTopicMenu(ownerId, difficulty, topics) {
+//   prefs    configuração da pessoa ({ level, areas }) ou null
+//   filtered true se a lista está limitada às áreas dela
+//   note     aviso extra (por exemplo, "mostrando todas as áreas")
+function learningTopicMenu(ownerId, difficulty, topics, { prefs = null, filtered = false, note = null } = {}) {
   const lines = topics.map((topic) => `• **${topic.label}** — ${topic.description}`);
+  const scope = filtered
+    ? `Suas áreas: ${areas.labels(prefs.areas)}`
+    : note ?? (prefs ? "Mostrando os assuntos de todas as áreas." : null);
   const container = new ContainerBuilder()
     .setAccentColor(config.colors.brand)
     .addTextDisplayComponents(
       text(`## 📚 ${challenges.difficultyLabel(difficulty)}`),
+      ...(scope ? [text(`-# ${scope}`)] : []),
       text("Agora escolha exatamente o assunto que deseja estudar:"),
       text(lines.join("\n"))
     )
@@ -137,17 +146,148 @@ function learningTopicMenu(ownerId, difficulty, topics) {
       }))
     );
 
-  const back = new ButtonBuilder()
-    .setCustomId(`learn:levels:${ownerId}`)
-    .setLabel("Trocar nível")
-    .setEmoji("🔄")
-    .setStyle(ButtonStyle.Secondary);
+  const buttons = [
+    new ButtonBuilder()
+      .setCustomId(`learn:levels:${ownerId}`)
+      .setLabel("Trocar nível")
+      .setEmoji("🔄")
+      .setStyle(ButtonStyle.Secondary),
+  ];
+  if (prefs) {
+    // Alterna entre "só as minhas áreas" e "todas as áreas" (sem mexer na configuração salva).
+    buttons.push(
+      filtered
+        ? new ButtonBuilder()
+            .setCustomId(`learn:topics:${ownerId}:${difficulty}:all`)
+            .setLabel("Ver todas as áreas")
+            .setEmoji("🌐")
+            .setStyle(ButtonStyle.Secondary)
+        : new ButtonBuilder()
+            .setCustomId(`learn:topics:${ownerId}:${difficulty}`)
+            .setLabel("Só as minhas áreas")
+            .setEmoji("🧭")
+            .setStyle(ButtonStyle.Secondary),
+      new ButtonBuilder()
+        .setCustomId(`setup:start:${ownerId}`)
+        .setLabel("Alterar minha trilha")
+        .setEmoji("⚙️")
+        .setStyle(ButtonStyle.Secondary)
+    );
+  }
 
   return [
     container,
     new ActionRowBuilder().addComponents(menu),
-    new ActionRowBuilder().addComponents(back),
+    new ActionRowBuilder().addComponents(...buttons),
   ];
+}
+
+// ---------- configuração inicial (comando configurar) ----------
+
+const levelTag = (id) => {
+  const level = challenges.DIFFICULTIES.find((d) => d.id === id);
+  return level ? `${level.emoji} ${level.label}` : id;
+};
+
+// Passo 1: escolher as áreas (uma ou mais). `intro` é o convite da primeira vez; `current`
+// são as escolhas atuais (aparecem já marcadas quando a pessoa vem alterar).
+// customId do menu: setup:areas:<idDoDono>
+function setupAreasMenu(ownerId, { intro = false, current = null } = {}) {
+  const available = areas.available();
+  const header = intro
+    ? [
+        "## 👋 Antes de estudar, vamos configurar sua trilha",
+        "Leva uns 10 segundos. Assim eu só pergunto o que importa para você, e você muda tudo isso quando quiser com `configurar`.",
+      ]
+    : [
+        "## ⚙️ Configurar minha trilha",
+        ...(current ? [`Configuração atual: ${areas.labels(current.areas)} • ${levelTag(current.level)}`] : []),
+      ];
+
+  const container = new ContainerBuilder()
+    .setAccentColor(config.colors.brand)
+    .addTextDisplayComponents(
+      ...header.map(text),
+      text("**Passo 1 de 2** — o que você quer aprender? Escolha uma ou mais áreas:"),
+      text(available.map((a) => `${a.emoji} **${a.label}** — ${a.description}`).join("\n"))
+    )
+    .addSeparatorComponents(divider())
+    .addTextDisplayComponents(text("-# Um assunto pode estar em mais de uma área (JavaScript serve para Frontend e Backend)."));
+
+  const menu = new StringSelectMenuBuilder()
+    .setCustomId(`setup:areas:${ownerId}`)
+    .setPlaceholder("Escolha suas áreas")
+    .setMinValues(1)
+    .setMaxValues(available.length)
+    .addOptions(
+      available.map((a) => ({
+        label: a.label,
+        value: a.id,
+        description: a.description,
+        emoji: a.emoji,
+        default: Boolean(current?.areas.includes(a.id)),
+      }))
+    );
+
+  return [container, new ActionRowBuilder().addComponents(menu)];
+}
+
+// Passo 2: escolher o nível, já sabendo as áreas (elas viajam no customId, sem guardar nada ainda).
+// customId do menu: setup:level:<idDoDono>:<áreas separadas por vírgula>
+function setupLevelMenu(ownerId, areaIds, { current = null } = {}) {
+  const levels = challenges.availableDifficulties();
+  const container = new ContainerBuilder()
+    .setAccentColor(config.colors.brand)
+    .addTextDisplayComponents(
+      text("## ⚙️ Configurar minha trilha"),
+      text(`Áreas: ${areas.labels(areaIds)}`),
+      text("**Passo 2 de 2** — qual é o seu nível hoje?"),
+      text(levels.map((d) => `${d.emoji} **${d.label}** — ${d.description}`).join("\n"))
+    )
+    .addSeparatorComponents(divider())
+    .addTextDisplayComponents(text("-# Na dúvida, comece pelo Iniciante. Dá para mudar quando quiser."));
+
+  const menu = new StringSelectMenuBuilder()
+    .setCustomId(`setup:level:${ownerId}:${areaIds.join(",")}`)
+    .setPlaceholder("Escolha seu nível")
+    .addOptions(
+      levels.map((d) => ({
+        label: d.label,
+        value: d.id,
+        description: d.description,
+        emoji: d.emoji,
+        default: current?.level === d.id,
+      }))
+    );
+
+  return [container, new ActionRowBuilder().addComponents(menu)];
+}
+
+// Resumo depois de salvar, com atalho para começar a estudar.
+function setupDoneMessage(ownerId, prefs) {
+  const container = new ContainerBuilder()
+    .setAccentColor(config.colors.success)
+    .addTextDisplayComponents(
+      text("## ✅ Tudo pronto!"),
+      text(`🧭 Áreas: ${areas.labels(prefs.areas)}\n🎚️ Nível inicial: ${levelTag(prefs.level)}`),
+      text("-# Quer mudar? Use `configurar` a qualquer momento.")
+    )
+    .addSeparatorComponents(divider())
+    .addActionRowComponents(
+      new ActionRowBuilder().addComponents(
+        new ButtonBuilder()
+          .setCustomId(`learn:topics:${ownerId}:${prefs.level}`)
+          .setLabel("Começar a estudar")
+          .setEmoji("📚")
+          .setStyle(ButtonStyle.Primary),
+        new ButtonBuilder()
+          .setCustomId(`setup:start:${ownerId}`)
+          .setLabel("Alterar")
+          .setEmoji("✏️")
+          .setStyle(ButtonStyle.Secondary)
+      )
+    );
+  return [container];
 }
 
 // Botões que continuam a sessão de estudo depois de uma resposta (ou de o desafio expirar).
@@ -264,4 +404,7 @@ module.exports = {
   challengeMessage,
   learningLevelMenu,
   learningTopicMenu,
+  setupAreasMenu,
+  setupLevelMenu,
+  setupDoneMessage,
 };
