@@ -25,7 +25,7 @@
     "label": "Banco de dados",
     "emoji": "🗄️",
     "description": "Guardar, consultar e manter dados",
-    "topics": ["sql-queries"]
+    "topics": ["sql-queries", "db-modeling"]
   },
   {
     "id": "devops",

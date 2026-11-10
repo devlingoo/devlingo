@@ -40,5 +40,12 @@
     "emoji": "🔌",
     "description": "Métodos, status, cache e CORS: como front e back conversam.",
     "modules": ["http-rest"]
+  },
+  {
+    "id": "modelagem",
+    "name": "Modelagem de dados",
+    "emoji": "🧱",
+    "description": "Chaves, relacionamentos, normalização e índices: o desenho por trás das tabelas.",
+    "modules": ["db-modeling"]
   }
 ]

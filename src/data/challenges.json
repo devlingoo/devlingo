@@ -3278,5 +3278,325 @@
       "label": "HTTP e APIs REST",
       "description": "Métodos, status e boas práticas de APIs"
     }
+  },
+  {
+    "id": "mod-001",
+    "language": "sql",
+    "question": "Em um banco relacional, qual é a função da chave primária (PRIMARY KEY)?",
+    "code": "CREATE TABLE clientes (\n  id INTEGER PRIMARY KEY,\n  nome TEXT\n);",
+    "options": [
+      "Deixar a tabela mais rápida de apagar e de copiar",
+      "Ligar o banco de dados atual a um segundo banco de dados",
+      "Guardar a senha usada para acessar o banco de dados",
+      "Identificar cada linha da tabela de forma única"
+    ],
+    "answer": 3,
+    "explanation": "A chave primária identifica cada linha sem ambiguidade: não pode se repetir nem ser nula. É por ela que outras tabelas apontam para a linha.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "db-modeling",
+      "label": "Modelagem de dados",
+      "description": "Tabelas, chaves, relacionamentos e normalização"
+    }
+  },
+  {
+    "id": "mod-002",
+    "language": "sql",
+    "question": "O que é uma chave estrangeira (FOREIGN KEY)?",
+    "code": "CREATE TABLE pedidos (\n  id INTEGER PRIMARY KEY,\n  cliente_id INTEGER REFERENCES clientes(id)\n);",
+    "options": [
+      "Uma coluna que aponta para a chave primária de outra tabela",
+      "Uma coluna criptografada com a chave mestra do próprio banco",
+      "Uma chave primária que, nessa tabela, aceita valores repetidos",
+      "Uma cópia de segurança automática de outra tabela do banco"
+    ],
+    "answer": 0,
+    "explanation": "A chave estrangeira cria o vínculo entre tabelas e protege a integridade: o banco recusa um `cliente_id` que não exista em `clientes`.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "db-modeling",
+      "label": "Modelagem de dados",
+      "description": "Tabelas, chaves, relacionamentos e normalização"
+    }
+  },
+  {
+    "id": "mod-003",
+    "language": "sql",
+    "question": "Um cliente faz vários pedidos, e cada pedido pertence a um só cliente. Que tipo de relacionamento é esse?",
+    "code": "",
+    "options": [
+      "Nenhum: é só um atributo do cliente",
+      "Um para um (1:1)",
+      "Muitos para muitos (N:N)",
+      "Um para muitos (1:N)"
+    ],
+    "answer": 3,
+    "explanation": "Um cliente para vários pedidos é 1:N. Na modelagem, o lado \"muitos\" (`pedidos`) leva a chave estrangeira (`cliente_id`) apontando para o lado \"um\" (`clientes`).",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "db-modeling",
+      "label": "Modelagem de dados",
+      "description": "Tabelas, chaves, relacionamentos e normalização"
+    }
+  },
+  {
+    "id": "mod-004",
+    "language": "sql",
+    "question": "Qual restrição impede que duas pessoas se cadastrem com o mesmo e-mail?",
+    "code": "CREATE TABLE usuarios (\n  id INTEGER PRIMARY KEY,\n  email TEXT ____\n);",
+    "options": [
+      "DEFAULT",
+      "UNIQUE",
+      "NOT NULL",
+      "DISTINCT"
+    ],
+    "answer": 1,
+    "explanation": "`UNIQUE` faz o banco recusar valores repetidos na coluna. `DISTINCT` existe, mas só em consultas (`SELECT DISTINCT`); `NOT NULL` impede vazio, não repetição.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "db-modeling",
+      "label": "Modelagem de dados",
+      "description": "Tabelas, chaves, relacionamentos e normalização"
+    }
+  },
+  {
+    "id": "mod-005",
+    "language": "sql",
+    "question": "Alunos fazem várias disciplinas, e cada disciplina tem vários alunos. Como modelar isso?",
+    "code": "",
+    "options": [
+      "Uma coluna em alunos com os nomes das disciplinas separados por vírgula",
+      "Uma chave primária única compartilhada pelas duas tabelas",
+      "Uma tabela de ligação com as chaves estrangeiras das duas tabelas",
+      "Repetindo a linha do aluno na própria tabela, uma vez por disciplina"
+    ],
+    "answer": 2,
+    "explanation": "Relacionamento N:N vira uma terceira tabela (`matriculas`) com `aluno_id` e `disciplina_id`, e a combinação dos dois costuma ser a chave primária. Cada matrícula é uma linha.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "db-modeling",
+      "label": "Modelagem de dados",
+      "description": "Tabelas, chaves, relacionamentos e normalização"
+    }
+  },
+  {
+    "id": "mod-006",
+    "language": "sql",
+    "question": "O que acontece com os pedidos quando o cliente é apagado?",
+    "code": "CREATE TABLE pedidos (\n  id INTEGER PRIMARY KEY,\n  cliente_id INTEGER\n    REFERENCES clientes(id)\n    ON DELETE CASCADE\n);",
+    "options": [
+      "Os pedidos desse cliente também são apagados",
+      "A exclusão do cliente é bloqueada pelo banco",
+      "Nada: os pedidos ficam apontando para um cliente que não existe",
+      "O cliente_id dos pedidos vira NULL"
+    ],
+    "answer": 0,
+    "explanation": "`ON DELETE CASCADE` propaga a exclusão aos filhos. Sem ele, o padrão é bloquear (`RESTRICT`/`NO ACTION`); `ON DELETE SET NULL` seria a opção que zera a referência.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "db-modeling",
+      "label": "Modelagem de dados",
+      "description": "Tabelas, chaves, relacionamentos e normalização"
+    }
+  },
+  {
+    "id": "mod-007",
+    "language": "sql",
+    "question": "Vários clientes estão com o telefone vazio (NULL). Qual o resultado dessa consulta?",
+    "code": "SELECT * FROM clientes\nWHERE telefone = NULL;",
+    "options": [
+      "Todos os clientes cujo telefone está vazio (NULL)",
+      "Todos os clientes, porque NULL é igual a qualquer valor",
+      "Um erro de sintaxe, porque NULL não aceita o sinal de igual",
+      "Nenhuma linha: comparar com NULL nunca é verdadeiro; use IS NULL"
+    ],
+    "answer": 3,
+    "explanation": "`NULL` significa \"desconhecido\", e `x = NULL` resulta em desconhecido (nem verdadeiro nem falso), então nenhuma linha passa. Para achar os vazios, use `WHERE telefone IS NULL`.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "db-modeling",
+      "label": "Modelagem de dados",
+      "description": "Tabelas, chaves, relacionamentos e normalização"
+    }
+  },
+  {
+    "id": "mod-008",
+    "language": "sql",
+    "question": "Qual é a forma mais segura de guardar valores em reais, como o preço de um produto?",
+    "code": "",
+    "options": [
+      "REAL, porque ocupa menos espaço e soma mais rápido",
+      "Inteiro em centavos (ou DECIMAL, nos bancos que o oferecem)",
+      "TEXT, com o símbolo R$ junto do número, como 'R$ 9,90'",
+      "FLOAT, porque aceita casas decimais e é rápido de somar"
+    ],
+    "answer": 1,
+    "explanation": "Números de ponto flutuante não representam 0,1 exatamente, e os erros se acumulam nas somas. Centavos em inteiro (ou `DECIMAL`/`NUMERIC` no Postgres e no MySQL) mantêm as contas exatas.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "db-modeling",
+      "label": "Modelagem de dados",
+      "description": "Tabelas, chaves, relacionamentos e normalização"
+    }
+  },
+  {
+    "id": "mod-009",
+    "language": "sql",
+    "question": "O que há de errado com essa tabela do ponto de vista da 1ª forma normal (1FN)?",
+    "code": "id | nome | telefones\n1  | Ana  | 11 9999-0001, 11 8888-0002",
+    "options": [
+      "A coluna nome deveria ser única, para não repetir pessoas",
+      "Falta uma chave estrangeira apontando para outra tabela",
+      "A coluna telefones guarda vários valores numa só célula",
+      "O id não deveria ser numérico, e sim um texto longo"
+    ],
+    "answer": 2,
+    "explanation": "A 1FN pede um valor atômico por célula. A solução é uma tabela `telefones (cliente_id, numero)`, com uma linha por telefone: aí dá para buscar, validar e contar com SQL simples.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "db-modeling",
+      "label": "Modelagem de dados",
+      "description": "Tabelas, chaves, relacionamentos e normalização"
+    }
+  },
+  {
+    "id": "mod-010",
+    "language": "sql",
+    "question": "Por que a coluna `produto_nome` fere a 2ª forma normal (2FN)?",
+    "code": "-- chave primária: (pedido_id, produto_id)\npedido_itens (\n  pedido_id, produto_id,\n  produto_nome, quantidade\n)",
+    "options": [
+      "Porque a quantidade já guarda o nome do produto vendido",
+      "Depende só do produto_id, que é apenas parte da chave composta",
+      "Porque chaves compostas não são permitidas na 2FN",
+      "Porque é do tipo texto, e texto não pode repetir"
+    ],
+    "answer": 1,
+    "explanation": "Na 2FN, toda coluna deve depender da chave INTEIRA. O nome depende só de `produto_id`, então se repete a cada item e pode ficar inconsistente. Ele pertence à tabela `produtos`.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "db-modeling",
+      "label": "Modelagem de dados",
+      "description": "Tabelas, chaves, relacionamentos e normalização"
+    }
+  },
+  {
+    "id": "mod-011",
+    "language": "sql",
+    "question": "Qual o principal efeito de criar um índice na coluna `email` da tabela `clientes`?",
+    "code": "CREATE INDEX idx_email\n  ON clientes (email);",
+    "options": [
+      "Buscas por email ficam mais rápidas; escritas, um pouco mais lentas",
+      "Todas as colunas da tabela passam a ser buscadas mais rápido",
+      "A tabela passa a ocupar menos espaço em disco",
+      "Os e-mails passam a ser únicos, sem precisar de UNIQUE"
+    ],
+    "answer": 0,
+    "explanation": "O índice é uma estrutura extra (uma árvore) que evita varrer a tabela inteira. O preço: ocupa espaço e cada `INSERT`/`UPDATE`/`DELETE` também precisa atualizá-lo. Unicidade exige `UNIQUE`.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "db-modeling",
+      "label": "Modelagem de dados",
+      "description": "Tabelas, chaves, relacionamentos e normalização"
+    }
+  },
+  {
+    "id": "mod-012",
+    "language": "sql",
+    "question": "Depois do ROLLBACK, qual o saldo das duas contas?",
+    "code": "BEGIN;\nUPDATE contas SET saldo = saldo - 100 WHERE id = 1;\nUPDATE contas SET saldo = saldo + 100 WHERE id = 2;\n-- algo deu errado aqui\nROLLBACK;",
+    "options": [
+      "Só a conta 2 fica 100 a mais",
+      "Voltam ao valor de antes do BEGIN",
+      "Ficam bloqueadas até alguém dar COMMIT",
+      "Só a conta 1 fica 100 a menos"
+    ],
+    "answer": 1,
+    "explanation": "Uma transação é tudo ou nada (atomicidade). `ROLLBACK` desfaz todas as mudanças feitas desde o `BEGIN`, então nenhum dinheiro some ou aparece. Só o `COMMIT` as confirma.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "db-modeling",
+      "label": "Modelagem de dados",
+      "description": "Tabelas, chaves, relacionamentos e normalização"
+    }
+  },
+  {
+    "id": "mod-013",
+    "language": "sql",
+    "question": "A tabela usa `deleted_at` para apagar \"de mentira\". O que acontece ao recriar uma conta com o e-mail de uma já apagada?",
+    "code": "CREATE TABLE usuarios (\n  id INTEGER PRIMARY KEY,\n  email TEXT UNIQUE,\n  deleted_at TEXT\n);",
+    "options": [
+      "Funciona, e o e-mail da conta antiga é apagado de vez do banco",
+      "Falha somente se a conta antiga tiver pedidos ligados a ela",
+      "Falha: a linha apagada ainda ocupa o e-mail; use índice único parcial",
+      "Funciona: o banco ignora as linhas que têm deleted_at preenchido"
+    ],
+    "answer": 2,
+    "explanation": "O `UNIQUE` enxerga todas as linhas, inclusive as \"apagadas\". A saída é um índice único parcial: `CREATE UNIQUE INDEX ... ON usuarios (email) WHERE deleted_at IS NULL`, que só vale para contas ativas.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "db-modeling",
+      "label": "Modelagem de dados",
+      "description": "Tabelas, chaves, relacionamentos e normalização"
+    }
+  },
+  {
+    "id": "mod-014",
+    "language": "sql",
+    "question": "Quais consultas esse índice composto ajuda de verdade?",
+    "code": "CREATE INDEX idx_pedidos\n  ON pedidos (cliente_id, criado_em);",
+    "options": [
+      "Qualquer filtro, em qualquer ordem das colunas",
+      "Filtros por criado_em, ou por criado_em e cliente_id; só por cliente_id, não",
+      "Filtros por cliente_id, ou por cliente_id e criado_em; só por criado_em, não",
+      "Só as que filtram por criado_em e cliente_id ao mesmo tempo"
+    ],
+    "answer": 2,
+    "explanation": "Um índice composto é ordenado pela primeira coluna e, dentro dela, pela segunda (como uma lista telefônica por sobrenome e nome). Ele serve ao prefixo mais à esquerda; filtrar só pela segunda coluna não aproveita a ordenação.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "db-modeling",
+      "label": "Modelagem de dados",
+      "description": "Tabelas, chaves, relacionamentos e normalização"
+    }
+  },
+  {
+    "id": "mod-015",
+    "language": "sql",
+    "question": "Quando faz sentido desnormalizar, ou seja, guardar um dado repetido de propósito?",
+    "code": "",
+    "options": [
+      "Quando ler precisa ser bem mais rápido e você mantém as cópias em dia",
+      "Sempre, porque normalizar deixa o banco mais lento em todas as consultas",
+      "Nunca: desnormalizar é sempre um erro grave de modelagem de dados",
+      "Quando a tabela tem menos de dez colunas e poucas linhas"
+    ],
+    "answer": 0,
+    "explanation": "Normalizar evita repetição e anomalias; desnormalizar troca isso por leitura mais barata (menos `JOIN`s, totais prontos). O custo é manter as cópias coerentes, então é uma decisão consciente, geralmente guiada por medição.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "db-modeling",
+      "label": "Modelagem de dados",
+      "description": "Tabelas, chaves, relacionamentos e normalização"
+    }
+  },
+  {
+    "id": "mod-016",
+    "language": "sql",
+    "question": "Por que `pedido_itens` guarda uma cópia do preço, se `produtos` já tem a coluna `preco`?",
+    "code": "produtos     (id, nome, preco)\npedido_itens (pedido_id, produto_id, quantidade, preco_unitario)",
+    "options": [
+      "É um erro de normalização: o preço deveria ser lido sempre de produtos",
+      "Porque o JOIN com a tabela produtos é proibido em tabelas de itens",
+      "Para o banco não precisar de uma chave estrangeira em produto_id",
+      "Para o pedido manter o preço da época, mesmo que o produto mude depois"
+    ],
+    "answer": 3,
+    "explanation": "Essa cópia não é redundância acidental: é um registro histórico (\"snapshot\"). Se o preço do produto subir amanhã, o total de um pedido antigo não pode mudar. O mesmo vale para endereço de entrega e nome do cliente na hora da compra.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "db-modeling",
+      "label": "Modelagem de dados",
+      "description": "Tabelas, chaves, relacionamentos e normalização"
+    }
   }
 ]
