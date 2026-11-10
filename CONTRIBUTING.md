@@ -39,20 +39,9 @@ Para rodar o bot de verdade, copie `.env.example` para `.env` e preencha o `DISC
 
 O progresso fica em SQLite (`src/utils/db.js`). Para mudar as tabelas, **acrescente** uma migração nova ao fim da lista `MIGRATIONS`; nunca edite as anteriores, porque bancos que já existem já passaram por elas.
 
-## Conquistas e telas
+## Uma instância por token
 
-- Conquista nova: acrescente na lista de `src/utils/achievements.js` (a `key` nunca muda, porque é o que fica gravado no banco). Se a regra precisa de uma estatística nova, ela entra em `recordAnswer` (`src/utils/db.js`) junto com uma migração.
-- As telas (o que cada comando mostra) ficam em `src/utils/views.js`; os comandos e os botões de atalho usam as mesmas funções. Comando novo entra na ajuda sozinho: defina `category` (`estudar`, `voce` ou `ajuda`) e, se quiser, `order`.
-- Em mensagens com menção ao bot, deixe a menção **fora** de crases (`commandRef` em `ui.js` já faz isso): dentro de código o Discord mostra o número, não o nome.
-- **Texto de pessoas nunca entra cru numa mensagem** (apelido, nome de usuário, o que elas digitaram): passe por `safeText` (`src/utils/text.js`). O `escapeMarkdown` do discord.js não cobre link mascarado (`[texto](url)`), autolink nem menção, e um apelido assim apareceria clicável no ranking.
-- Botões que mexem em dados: se a gravação falhar, solte a trava de clique duplo (veja `buttons/challenge.js`), senão a pessoa não consegue tentar de novo.
-
-## Marca
-
-- A identidade visual (logotipo, cores, fontes, ícones, avatar, banner) está em `brand/`; o resumo e o guia visual estão em `brand/README.md` e `brand/guide.html`.
-- Os arquivos de `brand/` são **gerados**: não edite à mão. Mude em `brand/tools` e rode `npm run build` (e `npm run guide`) lá dentro.
-- As cores das mensagens do bot (`colors` em `src/config.js`) precisam bater com `brand/tokens/colors.json`; o `npm test` confere.
-- Para atualizar o avatar e o banner do bot no Discord: `brand/tools/apply-discord.js` (mostra o que muda antes de alterar).
+Se o bot rodar em dois lugares ao mesmo tempo com o mesmo token, cada mensagem é respondida duas vezes (e uma das instâncias pode estar com código antigo). Antes de rodar `npm start`, confira se o workflow "Testar bot no Discord" não está em execução (aba Actions) e se não há outro terminal com o bot aberto. O ideal é cada pessoa ter o **próprio bot de teste** (outro token no `.env`) e deixar o token do bot de verdade só onde ele roda de fato.
 
 ## Segredos
 

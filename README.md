@@ -99,6 +99,8 @@ npm start                # ou npm run dev para reiniciar ao salvar
 
 **Nunca** suba o `.env` para o GitHub (já está no `.gitignore`).
 
+**Uma instância por token.** Cada instância ligada responde a todas as mensagens, então, se o bot rodar em dois lugares com o mesmo token (por exemplo, no seu computador e no workflow manual do GitHub Actions), **toda mensagem é respondida duas vezes**. Para desenvolver, crie um segundo bot de teste no Developer Portal (outro token, no seu `.env`) e deixe o token do bot de verdade só no lugar onde ele roda de fato.
+
 Variáveis opcionais do `.env` (todas explicadas no `.env.example`):
 
 | Variável | Padrão | Para quê |
