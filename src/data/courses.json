@@ -33,5 +33,12 @@
     "emoji": "🎨",
     "description": "HTML, CSS e DOM: monte uma página e dê vida a ela.",
     "modules": ["html-css", "dom-events"]
+  },
+  {
+    "id": "http",
+    "name": "HTTP e APIs REST",
+    "emoji": "🔌",
+    "description": "Métodos, status, cache e CORS: como front e back conversam.",
+    "modules": ["http-rest"]
   }
 ]

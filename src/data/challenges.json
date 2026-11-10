@@ -2958,5 +2958,325 @@
       "label": "DOM e eventos",
       "description": "Selecionar, alterar e reagir a eventos na página"
     }
+  },
+  {
+    "id": "http-001",
+    "language": "http",
+    "question": "Qual método HTTP é usado para buscar (ler) um recurso, sem alterá-lo?",
+    "code": "____ /usuarios/42 HTTP/1.1\nHost: api.exemplo.com",
+    "options": [
+      "POST",
+      "DELETE",
+      "GET",
+      "PUT"
+    ],
+    "answer": 2,
+    "explanation": "`GET` só lê: não deve alterar nada no servidor. `POST` cria, `PUT` substitui e `DELETE` remove.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "http-rest",
+      "label": "HTTP e APIs REST",
+      "description": "Métodos, status e boas práticas de APIs"
+    }
+  },
+  {
+    "id": "http-002",
+    "language": "http",
+    "question": "Qual método HTTP costuma ser usado para criar um novo recurso?",
+    "code": "____ /usuarios HTTP/1.1\nContent-Type: application/json\n\n{\"nome\": \"Ana\"}",
+    "options": [
+      "GET",
+      "POST",
+      "HEAD",
+      "DELETE"
+    ],
+    "answer": 1,
+    "explanation": "O `POST` envia dados para o servidor criar algo novo (normalmente ele escolhe o id). O `HEAD` é um `GET` que devolve só os cabeçalhos, sem corpo.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "http-rest",
+      "label": "HTTP e APIs REST",
+      "description": "Métodos, status e boas práticas de APIs"
+    }
+  },
+  {
+    "id": "http-003",
+    "language": "http",
+    "question": "O que significa o status 404?",
+    "code": "",
+    "options": [
+      "Erro interno do servidor",
+      "Você não tem permissão para acessar",
+      "O recurso pedido não foi encontrado",
+      "A requisição foi bem-sucedida"
+    ],
+    "answer": 2,
+    "explanation": "`404 Not Found`: o servidor está no ar, mas não existe nada naquele endereço. Erro interno é `500`, falta de permissão é `403` e sucesso é `200`.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "http-rest",
+      "label": "HTTP e APIs REST",
+      "description": "Métodos, status e boas práticas de APIs"
+    }
+  },
+  {
+    "id": "http-004",
+    "language": "http",
+    "question": "Qual faixa de status indica que o erro foi do servidor?",
+    "code": "",
+    "options": [
+      "2xx",
+      "3xx",
+      "4xx",
+      "5xx"
+    ],
+    "answer": 3,
+    "explanation": "`2xx` é sucesso, `3xx` é redirecionamento, `4xx` é erro do cliente (pedido errado, sem permissão, não encontrado) e `5xx` é erro do servidor, como o `500` e o `503`.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "http-rest",
+      "label": "HTTP e APIs REST",
+      "description": "Métodos, status e boas práticas de APIs"
+    }
+  },
+  {
+    "id": "http-005",
+    "language": "http",
+    "question": "Para mudar só o e-mail de um usuário, sem reenviar o recurso inteiro, qual método é o mais adequado?",
+    "code": "____ /usuarios/42 HTTP/1.1\nContent-Type: application/json\n\n{\"email\": \"ana@exemplo.com\"}",
+    "options": [
+      "HEAD",
+      "PUT",
+      "POST",
+      "PATCH"
+    ],
+    "answer": 3,
+    "explanation": "`PATCH` altera só o que foi enviado. `PUT` substitui o recurso por completo: os campos que ficarem de fora podem ser perdidos.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "http-rest",
+      "label": "HTTP e APIs REST",
+      "description": "Métodos, status e boas práticas de APIs"
+    }
+  },
+  {
+    "id": "http-006",
+    "language": "http",
+    "question": "Uma API acabou de criar um usuário a partir de um POST. Qual status é o mais adequado na resposta?",
+    "code": "POST /usuarios HTTP/1.1\nContent-Type: application/json\n\n{\"nome\": \"Ana\"}",
+    "options": [
+      "201 Created",
+      "202 Accepted",
+      "204 No Content",
+      "302 Found"
+    ],
+    "answer": 0,
+    "explanation": "O `201` diz que o recurso foi criado e costuma vir com o cabeçalho `Location` apontando para a URL dele. O `202` é para trabalho aceito mas ainda não feito; o `204` é sucesso sem corpo; o `302` é um redirecionamento.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "http-rest",
+      "label": "HTTP e APIs REST",
+      "description": "Métodos, status e boas práticas de APIs"
+    }
+  },
+  {
+    "id": "http-007",
+    "language": "http",
+    "question": "Uma pessoa logada abre a área de administração, mas não tem permissão. Qual status a API deve devolver?",
+    "code": "",
+    "options": [
+      "400 Bad Request",
+      "401 Unauthorized",
+      "403 Forbidden",
+      "405 Method Not Allowed"
+    ],
+    "answer": 2,
+    "explanation": "`403`: o servidor sabe quem é a pessoa, mas ela não pode. O `401` (apesar do nome) é para quem não está autenticado: sem credencial ou com credencial inválida.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "http-rest",
+      "label": "HTTP e APIs REST",
+      "description": "Métodos, status e boas práticas de APIs"
+    }
+  },
+  {
+    "id": "http-008",
+    "language": "javascript",
+    "question": "O servidor responde 404. O que o código imprime?",
+    "code": "const res = await fetch(\"/api/usuarios/999\");\nconsole.log(res.ok);",
+    "options": [
+      "O fetch lança um erro e cai no catch",
+      "undefined, porque não há corpo",
+      "true, porque chegou uma resposta",
+      "false: o fetch não rejeita por causa do 404"
+    ],
+    "answer": 3,
+    "explanation": "O `fetch` só rejeita quando não consegue completar a requisição (rede fora do ar, CORS...). Respostas 4xx e 5xx resolvem normalmente: confira `res.ok` ou `res.status` antes de usar o corpo.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "http-rest",
+      "label": "HTTP e APIs REST",
+      "description": "Métodos, status e boas práticas de APIs"
+    }
+  },
+  {
+    "id": "http-009",
+    "language": "http",
+    "question": "Qual destes métodos NÃO é idempotente?",
+    "code": "",
+    "options": [
+      "POST",
+      "DELETE",
+      "PUT",
+      "GET"
+    ],
+    "answer": 0,
+    "explanation": "Idempotente é o método que, repetido com a mesma requisição, deixa o servidor no mesmo estado. `GET`, `PUT` e `DELETE` são. Dois `POST` de criação geram dois recursos, por isso um `POST` repetido exige cuidado.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "http-rest",
+      "label": "HTTP e APIs REST",
+      "description": "Métodos, status e boas práticas de APIs"
+    }
+  },
+  {
+    "id": "http-010",
+    "language": "http",
+    "question": "Qual valor de `Cache-Control` proíbe guardar a resposta em qualquer cache (por exemplo, dados sensíveis)?",
+    "code": "HTTP/1.1 200 OK\nCache-Control: ____",
+    "options": [
+      "no-cache",
+      "no-store",
+      "max-age=0",
+      "private"
+    ],
+    "answer": 1,
+    "explanation": "O `no-store` proíbe armazenar a resposta. O `no-cache` pode guardar, mas exige revalidar com o servidor antes de usar; o `private` só impede caches compartilhados (como CDNs).",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "http-rest",
+      "label": "HTTP e APIs REST",
+      "description": "Métodos, status e boas práticas de APIs"
+    }
+  },
+  {
+    "id": "http-011",
+    "language": "http",
+    "question": "O front em localhost:3000 chama a API em localhost:4000 e o console mostra erro de CORS. Quem bloqueia e como resolver?",
+    "code": "",
+    "options": [
+      "O servidor; o front deve enviar um header Origin diferente",
+      "O firewall; libere a porta 4000 no servidor",
+      "O navegador; a API deve enviar Access-Control-Allow-Origin",
+      "O navegador; basta trocar fetch por XMLHttpRequest"
+    ],
+    "answer": 2,
+    "explanation": "O CORS é uma regra do navegador: ele só deixa o JavaScript ler a resposta de outra origem se a API autorizar com `Access-Control-Allow-Origin`. A requisição chega à API; o bloqueio é na leitura da resposta.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "http-rest",
+      "label": "HTTP e APIs REST",
+      "description": "Métodos, status e boas práticas de APIs"
+    }
+  },
+  {
+    "id": "http-012",
+    "language": "javascript",
+    "question": "O servidor respondeu 204. O que acontece na segunda linha?",
+    "code": "const res = await fetch(\"/api/tarefas/7\", { method: \"DELETE\" }); // 204\nconst dados = await res.json();",
+    "options": [
+      "Rejeita com SyntaxError: não há corpo para ler como JSON",
+      "dados vira null",
+      "dados vira undefined",
+      "dados vira {} (um objeto vazio)"
+    ],
+    "answer": 0,
+    "explanation": "O `204 No Content` vem sem corpo, e `res.json()` tenta interpretar um texto vazio como JSON, o que falha com `SyntaxError`. Antes de ler o corpo, confira o status ou o `Content-Length`.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "http-rest",
+      "label": "HTTP e APIs REST",
+      "description": "Métodos, status e boas práticas de APIs"
+    }
+  },
+  {
+    "id": "http-013",
+    "language": "http",
+    "question": "Numa lista que recebe itens novos o tempo todo, por que `?page=2` pode falhar, e o que é mais robusto?",
+    "code": "",
+    "options": [
+      "Inserções deslocam as páginas e repetem itens; use paginação por cursor",
+      "O servidor ignora ?page; mande o número num header",
+      "O número da página estoura o inteiro; use texto",
+      "A página 2 deixa de existir; use sempre ?limit=1000"
+    ],
+    "answer": 0,
+    "explanation": "Com `page`/`offset`, um item novo no começo empurra os demais: o último item da página 1 reaparece na 2 (ou um item é pulado, se algo for removido). O cursor (`?depois=id`) diz de onde continuar e não sofre com isso.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "http-rest",
+      "label": "HTTP e APIs REST",
+      "description": "Métodos, status e boas práticas de APIs"
+    }
+  },
+  {
+    "id": "http-014",
+    "language": "http",
+    "question": "O cliente repete um POST /pagamentos após um timeout, e o servidor não sabe se o primeiro chegou. Como evitar a cobrança dupla?",
+    "code": "",
+    "options": [
+      "Aumentar o timeout para o cliente nunca repetir",
+      "Enviar um Idempotency-Key único; o servidor reaproveita o resultado",
+      "Responder sempre 200, mesmo que cobre duas vezes",
+      "Trocar o POST por GET, que é idempotente"
+    ],
+    "answer": 1,
+    "explanation": "O cliente manda um identificador único por operação (`Idempotency-Key`). Se a mesma chave chegar de novo, o servidor devolve o resultado já guardado em vez de cobrar outra vez, e o retry deixa de ser perigoso.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "http-rest",
+      "label": "HTTP e APIs REST",
+      "description": "Métodos, status e boas práticas de APIs"
+    }
+  },
+  {
+    "id": "http-015",
+    "language": "http",
+    "question": "A requisição traz `If-None-Match` e o servidor responde 304. O que isso significa?",
+    "code": "GET /relatorio HTTP/1.1\nIf-None-Match: \"v42\"",
+    "options": [
+      "O recurso foi movido: o corpo traz o novo endereço",
+      "A requisição é inválida: o corpo traz o erro",
+      "O recurso mudou: o corpo traz a nova versão",
+      "Seu cache ainda vale: a resposta vem sem corpo"
+    ],
+    "answer": 3,
+    "explanation": "O `ETag` identifica a versão do recurso. O cliente pergunta \"ainda é a `v42`?\" e, se for, o servidor responde `304 Not Modified` sem corpo, economizando a transferência: o cliente usa a cópia que já tem.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "http-rest",
+      "label": "HTTP e APIs REST",
+      "description": "Métodos, status e boas práticas de APIs"
+    }
+  },
+  {
+    "id": "http-016",
+    "language": "http",
+    "question": "Um cliente passou do limite de requisições por minuto. Qual resposta é a mais adequada?",
+    "code": "",
+    "options": [
+      "429 Too Many Requests, com o header Retry-After",
+      "413 Payload Too Large, porque há requisições demais",
+      "408 Request Timeout, para o cliente tentar de novo",
+      "403 Forbidden, com o IP do cliente no corpo"
+    ],
+    "answer": 0,
+    "explanation": "O `429` é o status feito para limite de uso, e o `Retry-After` diz em quantos segundos (ou até quando) o cliente pode tentar de novo. O `408` é para quando o cliente demora a enviar a requisição.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "http-rest",
+      "label": "HTTP e APIs REST",
+      "description": "Métodos, status e boas práticas de APIs"
+    }
   }
 ]
