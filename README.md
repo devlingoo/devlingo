@@ -72,7 +72,7 @@ A configuração fica salva por pessoa (vale em todos os servidores e na DM). S�
 
 ### Cursos e certificados (`cursos`)
 
-Cada curso junta alguns assuntos (os **módulos**) e tem um certificado **por nível**, então um curso rende até quatro: Iniciante, Intermediário, Avançado e Especialista. Hoje são quatro cursos: 🟨 JavaScript do zero, 🐍 Python do zero, 🗄️ SQL essencial e 🔀 Git na prática.
+Cada curso junta alguns assuntos (os **módulos**) e tem um certificado **por nível**, então um curso rende até quatro: Iniciante, Intermediário, Avançado e Especialista. Hoje são cinco cursos: 🟨 JavaScript do zero, 🎨 Frontend na prática (HTML, CSS e DOM), 🐍 Python do zero, 🗄️ SQL essencial e 🔀 Git na prática.
 
 - **Como conclui um módulo:** acertar **75% das perguntas diferentes** daquele assunto e nível (arredondado para cima). Acertar a mesma pergunta de novo não conta, e errar não tira o que já foi acertado. O nível do curso fecha quando **todos** os módulos dele passam, e o certificado sai na hora, na própria resposta que fechou, com um botão **Ver meu certificado**.
 - **Quem estuda de qualquer jeito também avança:** o progresso conta pelas perguntas acertadas em `aprender`, `desafio` ou pelo botão **Praticar** da tela do curso. Cada resposta mostra uma linha com quanto falta para o certificado.
@@ -183,7 +183,7 @@ Cada curso tem `id` (até 12 caracteres), `name`, `emoji`, `description` e `modu
 
 ## Próximos passos
 
-- Mais desafios e mais assuntos (hoje são 116 desafios em 7 assuntos, com 4 em cada nível; `npm test` exige esse mínimo). Frontend ainda só tem JavaScript: faltam HTML/CSS e DOM. Backend ainda não tem HTTP/APIs, Banco de dados não tem modelagem, e DevOps só tem Git (faltam Linux e Docker).
+- Mais desafios e mais assuntos (hoje são 148 desafios em 9 assuntos, com 4 em cada nível; `npm test` exige esse mínimo). Backend ainda não tem HTTP/APIs, Banco de dados não tem modelagem, e DevOps só tem Git (faltam Linux e Docker).
 - Avisar quando a pessoa vai bem num nível (por exemplo, 90% de acerto) e sugerir subir; hoje o nível só muda se ela mudar em `configurar`.
 - Mais estímulos de hábito, ainda não feitos: "desafio do dia" igual para todo mundo, "congelar" a sequência por um dia, ligas semanais de ranking e lembretes por DM (esses só com **opt-in** da pessoa, nunca por padrão)
 - Escala: ao chegar perto de ~2.500 servidores o Discord exige sharding (`ShardingManager`), e o SQLite em arquivo único passa a ser o gargalo (a troca natural é Postgres). Hoje quase nada atrapalha: os dados ficam por pessoa e não por servidor. O que precisa mudar na hora é a memória de cada processo (trava de clique duplo, cooldown), que teria de ir para o banco compartilhado.

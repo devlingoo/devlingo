@@ -26,5 +26,12 @@
     "emoji": "🔀",
     "description": "Commits, branches e o fluxo de trabalho do dia a dia.",
     "modules": ["git-versioning"]
+  },
+  {
+    "id": "frontend",
+    "name": "Frontend na prática",
+    "emoji": "🎨",
+    "description": "HTML, CSS e DOM: monte uma página e dê vida a ela.",
+    "modules": ["html-css", "dom-events"]
   }
 ]
