@@ -12,7 +12,8 @@
       "testing-basics",
       "javascript-fundamentals",
       "javascript-functions",
-      "javascript-arrays"
+      "javascript-arrays",
+      "typescript"
     ]
   },
   {
@@ -27,6 +28,7 @@
       "javascript-fundamentals",
       "javascript-functions",
       "javascript-arrays",
+      "typescript",
       "python-fundamentals",
       "python-collections",
       "data-structures",

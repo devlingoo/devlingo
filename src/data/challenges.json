@@ -5838,5 +5838,325 @@
       "label": "CI/CD",
       "description": "Integração e entrega contínuas com GitHub Actions"
     }
+  },
+  {
+    "id": "ts-001",
+    "language": "typescript",
+    "question": "O que acontece com os tipos quando o TypeScript gera o JavaScript?",
+    "code": "function dobro(n: number): number {\n  return n * 2;\n}",
+    "options": [
+      "Eles são apagados: o JavaScript gerado não contém nenhum tipo",
+      "Cada tipo vira uma checagem que roda de novo durante a execução",
+      "number vira Number, e o JavaScript passa a validar os argumentos",
+      "Eles ficam num arquivo à parte, que o navegador consulta ao executar"
+    ],
+    "answer": 0,
+    "explanation": "Os tipos existem só para o compilador e para o editor: depois da checagem, o `tsc` os apaga e entrega JavaScript puro. Por isso o TypeScript não protege o programa em execução: se chegar um texto de fora (de uma API, por exemplo), nada confere o tipo na hora.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "typescript",
+      "label": "TypeScript",
+      "description": "Tipos, inferência, generics e as armadilhas do compilador"
+    }
+  },
+  {
+    "id": "ts-002",
+    "language": "typescript",
+    "question": "O que o compilador diz sobre esse código?",
+    "code": "let cidade = \"Recife\";\ncidade = 42;",
+    "options": [
+      "Nenhum erro: o TypeScript converte 42 para \"42\" ao atribuir",
+      "Erro: 42 não é string, que é o tipo inferido para cidade",
+      "Nenhum erro: sem anotação de tipo, a variável aceita qualquer valor",
+      "Erro: o let exige que o tipo seja escrito, como em let cidade: string"
+    ],
+    "answer": 1,
+    "explanation": "Sem anotação, o TypeScript infere o tipo pelo valor inicial: `let cidade = \"Recife\"` vira `string`. A partir daí, `cidade = 42` é recusado (TS2322). Só o tipo `any` aceitaria qualquer coisa. Quando a inferência já acerta, não precisa escrever o tipo.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "typescript",
+      "label": "TypeScript",
+      "description": "Tipos, inferência, generics e as armadilhas do compilador"
+    }
+  },
+  {
+    "id": "ts-003",
+    "language": "typescript",
+    "question": "O que o compilador diz sobre esse código?",
+    "code": "const notas: number[] = [8, 9.5];\nnotas.push(\"10\");",
+    "options": [
+      "Erro: um array declarado com const não aceita mais o push",
+      "Nenhum erro: o push aceita qualquer tipo de valor em qualquer array",
+      "Nenhum erro: \"10\" é convertido para o número 10 ao entrar no array",
+      "Erro: o argumento \"10\" é string, mas o array só aceita number"
+    ],
+    "answer": 3,
+    "explanation": "`number[]` é um array só de números, então `push(\"10\")` é recusado (TS2345). O `const` não tem nada a ver com isso: ele impede trocar a variável por outro array, mas não impede mexer no conteúdo do array, e `notas.push(10)` compila normalmente.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "typescript",
+      "label": "TypeScript",
+      "description": "Tipos, inferência, generics e as armadilhas do compilador"
+    }
+  },
+  {
+    "id": "ts-004",
+    "language": "typescript",
+    "question": "O que acontece ao compilar esse código?",
+    "code": "function somar(a: number, b: number) {\n  return a + b;\n}\nsomar(1);",
+    "options": [
+      "Erro: a função espera 2 argumentos e recebeu só 1",
+      "Nenhum erro: b vira undefined e o resultado é NaN, como no JavaScript",
+      "Erro: toda função precisa declarar o tipo do valor que devolve",
+      "Nenhum erro: b assume 0, o valor padrão do tipo number"
+    ],
+    "answer": 0,
+    "explanation": "O TypeScript confere a quantidade de argumentos (TS2554). No JavaScript puro a chamada rodaria e devolveria `NaN`, porque `b` seria `undefined`. Para a chamada com um argumento ser válida, dê um valor padrão: `function somar(a: number, b = 0)`.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "typescript",
+      "label": "TypeScript",
+      "description": "Tipos, inferência, generics e as armadilhas do compilador"
+    }
+  },
+  {
+    "id": "ts-005",
+    "language": "typescript",
+    "question": "Por que o compilador recusa o acesso a x.length?",
+    "code": "function tamanho(x: string | number) {\n  return x.length;\n}",
+    "options": [
+      "number não tem length e x pode ser number; falta estreitar o tipo",
+      "length só existe em arrays, nunca em textos",
+      "Parâmetros de união só podem ser lidos depois de receber um valor padrão",
+      "O acesso precisa ser opcional: escrever x?.length resolve o problema"
+    ],
+    "answer": 0,
+    "explanation": "Com uma união, só dá para usar o que existe em todos os tipos: `string` tem `length`, `number` não (TS2339). Dentro de `if (typeof x === \"string\")`, o TypeScript estreita (narrowing) `x` para `string` e a propriedade passa a valer. O `?.` não ajuda: ele só trata `null` e `undefined`, e o problema aqui é o tipo.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "typescript",
+      "label": "TypeScript",
+      "description": "Tipos, inferência, generics e as armadilhas do compilador"
+    }
+  },
+  {
+    "id": "ts-006",
+    "language": "typescript",
+    "question": "Com strict ligado, o que o compilador diz sobre esse código?",
+    "code": "interface Usuario {\n  nome: string;\n  email?: string;\n}\n\nfunction dominio(u: Usuario) {\n  return u.email.split(\"@\")[1];\n}",
+    "options": [
+      "Nenhum erro: email é string, e o ? só vale na criação do objeto",
+      "Erro: u.email pode ser undefined, então não dá para chamar split",
+      "Erro: propriedades opcionais não podem ser lidas dentro de funções",
+      "Nenhum erro: o split trata undefined e devolve um array vazio"
+    ],
+    "answer": 1,
+    "explanation": "`email?: string` significa `string | undefined`. Com `strictNullChecks` (incluso no `strict`), usar o valor sem checar é erro (TS18048). Resolva com `u.email?.split(\"@\")[1]`, que devolve `undefined` se faltar, ou com um `if (u.email)` antes. Com o strict desligado (o padrão até o TypeScript 5.9; do 6.0 em diante ele já vem ligado), o mesmo código passaria sem aviso e quebraria na execução.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "typescript",
+      "label": "TypeScript",
+      "description": "Tipos, inferência, generics e as armadilhas do compilador"
+    }
+  },
+  {
+    "id": "ts-007",
+    "language": "typescript",
+    "question": "O que o compilador diz sobre esse código?",
+    "code": "function ler(valor: unknown) {\n  return valor.toUpperCase();\n}",
+    "options": [
+      "Erro: unknown só pode ser usado como tipo de retorno, nunca de parâmetro",
+      "Nenhum erro: unknown funciona como any e libera qualquer método",
+      "Nenhum erro: toUpperCase existe em todo valor do JavaScript",
+      "Erro: valor é unknown, e é preciso checar o tipo antes de usá-lo"
+    ],
+    "answer": 3,
+    "explanation": "`unknown` é a versão segura de `any`: aceita qualquer valor, mas não deixa usar nada dele até você provar o tipo (TS18046). Já o `any` desliga a checagem e deixa passar o erro para a execução. Depois de `if (typeof valor === \"string\")`, o `toUpperCase` passa a valer.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "typescript",
+      "label": "TypeScript",
+      "description": "Tipos, inferência, generics e as armadilhas do compilador"
+    }
+  },
+  {
+    "id": "ts-008",
+    "language": "typescript",
+    "question": "O que o compilador diz sobre esse código?",
+    "code": "const cores = [\"azul\", \"verde\"] as const;\ncores.push(\"rosa\");",
+    "options": [
+      "Erro: o as const só pode ser usado com valores numéricos",
+      "Erro: com as const o array fica somente leitura, sem o push",
+      "Nenhum erro: o as const só afeta cada texto, não o array",
+      "Nenhum erro: o const já permitia o push, e o as const não muda isso"
+    ],
+    "answer": 1,
+    "explanation": "O `as const` congela o tipo: o array vira a tupla `readonly [\"azul\", \"verde\"]` e cada texto vira um literal (`\"azul\"`, não `string`). Métodos que alteram, como `push`, deixam de existir no tipo (TS2339). Dá para tirar a união das opções com `typeof cores[number]`, que vale `\"azul\" | \"verde\"`.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "typescript",
+      "label": "TypeScript",
+      "description": "Tipos, inferência, generics e as armadilhas do compilador"
+    }
+  },
+  {
+    "id": "ts-009",
+    "language": "typescript",
+    "question": "Qual é o tipo de primeiro depois dessa chamada?",
+    "code": "function pegar<T>(lista: T[]): T | undefined {\n  return lista[0];\n}\n\nconst primeiro = pegar([\"a\", \"b\"]);",
+    "options": [
+      "T | undefined",
+      "string[] | undefined",
+      "string",
+      "string | undefined"
+    ],
+    "answer": 3,
+    "explanation": "O `T` é um parâmetro de tipo: o TypeScript descobre o valor dele pela chamada. Como `[\"a\", \"b\"]` é `string[]`, o `T` vira `string`, e o retorno `T | undefined` vira `string | undefined` (a lista pode estar vazia). Não precisa escrever `pegar<string>(...)`: a inferência faz isso sozinha.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "typescript",
+      "label": "TypeScript",
+      "description": "Tipos, inferência, generics e as armadilhas do compilador"
+    }
+  },
+  {
+    "id": "ts-010",
+    "language": "typescript",
+    "question": "Qual tipo descreve um Usuario sem o campo senha?",
+    "code": "interface Usuario {\n  id: number;\n  nome: string;\n  senha: string;\n}",
+    "options": [
+      "Pick<Usuario, \"senha\">",
+      "Omit<Usuario, \"senha\">",
+      "Partial<Usuario>",
+      "Exclude<Usuario, \"senha\">"
+    ],
+    "answer": 1,
+    "explanation": "`Omit<T, K>` cria um tipo igual a `T` sem as chaves `K`. `Pick<T, K>` faz o contrário (só as chaves `K`), e `Partial<T>` deixa tudo opcional. O `Exclude<T, U>` trabalha com uniões de tipos, não com campos de um objeto: aqui devolveria o próprio `Usuario`, com a senha.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "typescript",
+      "label": "TypeScript",
+      "description": "Tipos, inferência, generics e as armadilhas do compilador"
+    }
+  },
+  {
+    "id": "ts-011",
+    "language": "typescript",
+    "question": "O que o compilador diz sobre f.lado nesse código?",
+    "code": "type Forma =\n  | { tipo: \"circulo\"; raio: number }\n  | { tipo: \"quadrado\"; lado: number };\n\nfunction descrever(f: Forma) {\n  if (f.tipo === \"circulo\") {\n    return f.lado;\n  }\n}",
+    "options": [
+      "Erro: o campo tipo precisa ser um enum para servir de filtro",
+      "Nenhum erro: lado existe em Forma, então vale em qualquer ramo",
+      "Erro: dentro do if, f já é o círculo, que não tem lado",
+      "Nenhum erro: o if só compara o valor, e f continua sendo Forma"
+    ],
+    "answer": 2,
+    "explanation": "Quando todos os membros de uma união têm um campo literal em comum (aqui, `tipo`), ele vira o discriminante. Conferir `f.tipo === \"circulo\"` estreita `f` para `{ tipo: \"circulo\"; raio: number }` dentro do `if`, e `lado` não existe nesse tipo (TS2339). Depois do `if`, `f` é o quadrado e `f.lado` vale.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "typescript",
+      "label": "TypeScript",
+      "description": "Tipos, inferência, generics e as armadilhas do compilador"
+    }
+  },
+  {
+    "id": "ts-012",
+    "language": "typescript",
+    "question": "O que o compilador diz sobre esse código?",
+    "code": "type Config = Record<string, string | number>;\n\nconst a: Config = { porta: 3000 };\nconst b = { porta: 3000 } satisfies Config;\n\na.porta.toFixed();\nb.porta.toFixed();",
+    "options": [
+      "Erro só em b.porta: o satisfies deixa o valor sem tipo definido",
+      "Nenhum erro: as duas formas dão exatamente o mesmo tipo à porta",
+      "Erro só em a.porta: a anotação alarga o tipo; o satisfies não",
+      "Erro nas duas linhas: o toFixed não existe em number"
+    ],
+    "answer": 2,
+    "explanation": "Anotar com `: Config` troca o tipo do valor pelo da anotação: `a.porta` vira `string | number`, e `toFixed` (que só existe em number) é recusado. O `satisfies Config` apenas confere se o valor cabe em `Config` e mantém o tipo inferido, mais específico: `b.porta` continua `number`. Está disponível desde o TypeScript 4.9.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "typescript",
+      "label": "TypeScript",
+      "description": "Tipos, inferência, generics e as armadilhas do compilador"
+    }
+  },
+  {
+    "id": "ts-013",
+    "language": "typescript",
+    "question": "Qual é o tipo de Resultado?",
+    "code": "type Retorno<T> = T extends (...args: any[]) => infer R ? R : never;\n\ntype Resultado = Retorno<() => Promise<string>>;",
+    "options": [
+      "() => Promise<string>",
+      "never",
+      "Promise<string>",
+      "string"
+    ],
+    "answer": 2,
+    "explanation": "O `infer R` captura o tipo de retorno da função: aqui, `Promise<string>`. Para tirar a Promise e ficar com `string`, é preciso `Awaited<Resultado>`. Esse `Retorno` é a versão simplificada do `ReturnType<T>`, que já vem pronto no TypeScript.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "typescript",
+      "label": "TypeScript",
+      "description": "Tipos, inferência, generics e as armadilhas do compilador"
+    }
+  },
+  {
+    "id": "ts-014",
+    "language": "typescript",
+    "question": "O que acontece com esse código?",
+    "code": "function ehNumero(v: unknown): v is number {\n  return true;\n}\n\nconst valor: unknown = \"texto\";\nif (ehNumero(valor)) {\n  console.log(valor.toFixed(2));\n}",
+    "options": [
+      "Compila sem erro e falha ao executar: o guard é só uma promessa",
+      "Compila sem erro e imprime texto: toFixed funciona com string",
+      "Erro de compilação: um unknown não pode ser testado dentro de um if",
+      "Erro de compilação: o corpo devolve true, e não prova que v é number"
+    ],
+    "answer": 0,
+    "explanation": "`v is number` é uma promessa que VOCÊ faz ao compilador: quando a função devolve `true`, o argumento passa a ser `number`. Ele não confere o corpo da função. Como aqui o corpo mente, o código compila, mas na execução dá `TypeError` (`toFixed` não existe em string). Um bom type guard faz a checagem de verdade: `return typeof v === \"number\"`.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "typescript",
+      "label": "TypeScript",
+      "description": "Tipos, inferência, generics e as armadilhas do compilador"
+    }
+  },
+  {
+    "id": "ts-015",
+    "language": "typescript",
+    "question": "Com strict ligado, esse código compila. O que muda ao ligar noUncheckedIndexedAccess?",
+    "code": "const nomes: string[] = [\"Ana\"];\nconst quinto: string = nomes[4];",
+    "options": [
+      "Nada muda: o strict já inclui essa opção",
+      "O array nomes passa a ser tratado como somente leitura",
+      "Dá erro: nomes[4] passa a ser string | undefined",
+      "O acesso por índice passa a lançar uma exceção quando o item não existe"
+    ],
+    "answer": 2,
+    "explanation": "Mesmo no `strict`, `nomes[4]` tem o tipo `string`, embora em execução seja `undefined`. A opção `noUncheckedIndexedAccess` (que o `strict` NÃO inclui) acrescenta `| undefined` a todo acesso por índice, e o erro obriga a tratar o item que não existe: `const quinto = nomes[4] ?? \"sem nome\"`. O JavaScript gerado continua o mesmo: a mudança é só na checagem.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "typescript",
+      "label": "TypeScript",
+      "description": "Tipos, inferência, generics e as armadilhas do compilador"
+    }
+  },
+  {
+    "id": "ts-016",
+    "language": "typescript",
+    "question": "O que acontece com esse código?",
+    "code": "const dados = JSON.parse('{\"nome\": 123}') as { nome: string };\nconsole.log(dados.nome.toUpperCase());",
+    "options": [
+      "Erro de compilação: JSON.parse só aceita tipos declarados como interface",
+      "Compila e imprime \"123\": o as converte o valor para string",
+      "Erro de compilação: 123 não é string, e o TypeScript lê o conteúdo do JSON",
+      "Compila sem erro e dá TypeError ao executar: o as não valida nada"
+    ],
+    "answer": 3,
+    "explanation": "`JSON.parse` devolve `any`, e `as` é uma asserção: você diz ao compilador qual é o tipo, mas nada é conferido na execução, porque os tipos foram apagados. Com `nome: 123`, `toUpperCase` não existe em number e dá `TypeError`. Para dados de fora (API, arquivo), valide na execução, com um type guard que confere os campos ou uma biblioteca de validação, como o Zod.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "typescript",
+      "label": "TypeScript",
+      "description": "Tipos, inferência, generics e as armadilhas do compilador"
+    }
   }
 ]
