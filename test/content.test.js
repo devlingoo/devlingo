@@ -18,6 +18,16 @@ test("todo nível com conteúdo tem assuntos, e cada assunto tem perguntas para 
   }
 });
 
+test("todos os assuntos têm pelo menos 4 desafios em cada um dos 4 níveis", () => {
+  const topicIds = [...new Set(challenges.list.map((c) => c.topic.id))];
+  for (const level of challenges.DIFFICULTIES) {
+    for (const topicId of topicIds) {
+      const n = challenges.list.filter((c) => c.difficulty === level.id && c.topic.id === topicId).length;
+      assert.ok(n >= 4, `${level.id}/${topicId} tem só ${n} desafio(s)`);
+    }
+  }
+});
+
 test("o mesmo assunto tem rótulo e descrição idênticos em todos os níveis", () => {
   const seen = new Map();
   for (const c of challenges.list) {
@@ -88,5 +98,46 @@ test("todo desafio gera mensagens válidas em todos os estados, com ou sem sess�
         assert.equal(hasNext, study && state.type !== "open", `${label}: botão "Próxima pergunta"`);
       }
     }
+  }
+});
+
+// ---------- áreas (Frontend, Backend, Banco de dados, Ferramentas e DevOps) ----------
+
+const areas = require("../src/utils/areas");
+
+test("todo assunto pertence a pelo menos uma área (senão ninguém o encontraria depois do setup)", () => {
+  const covered = new Set(areas.list.flatMap((a) => a.topics));
+  for (const topicId of new Set(challenges.list.map((c) => c.topic.id))) {
+    assert.ok(covered.has(topicId), `o assunto "${topicId}" não está em nenhuma área de src/data/areas.json`);
+  }
+});
+
+test("as quatro áreas existem e todas têm conteúdo", () => {
+  assert.deepEqual(areas.available().map((a) => a.id), ["frontend", "backend", "banco", "devops"]);
+});
+
+test("areas.parse e areas.labels ignoram o que não existe e as repetições", () => {
+  assert.deepEqual(areas.parse("backend,frontend,backend,xyz,"), ["frontend", "backend"]);
+  assert.deepEqual(areas.parse(""), []);
+  assert.deepEqual(areas.parse(undefined), []);
+  assert.equal(areas.labels(["frontend", "banco", "xyz"]), "🎨 Frontend, 🗄️ Banco de dados");
+});
+
+test("telas do setup geram mensagens válidas (com e sem configuração atual)", () => {
+  const owner = "123456789012345678";
+  const current = { level: "advanced", areas: ["frontend", "backend", "banco", "devops"] };
+  assertValidMessage(ui.setupAreasMenu(owner, { intro: true }), "setup passo 1 (primeira vez)");
+  assertValidMessage(ui.setupAreasMenu(owner, { current }), "setup passo 1 (alterar)");
+  assertValidMessage(ui.setupLevelMenu(owner, current.areas, { current }), "setup passo 2 (4 áreas)");
+  assertValidMessage(ui.setupDoneMessage(owner, current), "setup concluído");
+});
+
+test("menu de assuntos com todos os botões também respeita os limites do Discord", () => {
+  const owner = "123456789012345678";
+  const prefs = { level: "beginner", areas: ["banco"] };
+  for (const level of challenges.availableDifficulties()) {
+    const topics = challenges.topics(level.id);
+    assertValidMessage(ui.learningTopicMenu(owner, level.id, topics, { prefs, filtered: true }), `assuntos filtrado ${level.id}`);
+    assertValidMessage(ui.learningTopicMenu(owner, level.id, topics, { prefs, filtered: false }), `assuntos todos ${level.id}`);
   }
 });

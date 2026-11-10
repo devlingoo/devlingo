@@ -1,16 +1,15 @@
-const challenges = require("../utils/challenges");
-const { sendV2, notice, learningLevelMenu } = require("../utils/ui");
+const views = require("../utils/views");
+const { sendV2 } = require("../utils/ui");
 
 module.exports = {
   name: "aprender",
   aliases: ["learn", "estudar", "trilha"],
-  description: "escolha seu nível e o assunto exato que deseja estudar",
+  description: "estude o assunto exato que você escolher, no seu nível e nas suas áreas",
   usage: "aprender",
+  category: "estudar",
+  order: 2,
 
   async execute({ message }) {
-    if (challenges.availableDifficulties().length === 0) {
-      return sendV2(message.channel, notice("Ainda não há desafios cadastrados."));
-    }
-    return sendV2(message.channel, learningLevelMenu(message.author.id));
+    return sendV2(message.channel, views.studyEntry(message.author.id));
   },
 };

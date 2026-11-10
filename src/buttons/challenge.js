@@ -2,7 +2,9 @@ const { MessageFlags } = require("discord.js");
 const config = require("../config");
 const db = require("../utils/db");
 const challenges = require("../utils/challenges");
-const { callPrefix, challengeMessage } = require("../utils/ui");
+const courses = require("../utils/courses");
+const logger = require("../utils/logger");
+const { commandRef, challengeMessage } = require("../utils/ui");
 
 // Desafios já respondidos (evita duplo clique e XP em dobro). Limitado para não crescer sem fim.
 // A chave é mensagem + momento da pergunta: na trilha de estudo a mesma mensagem recebe
@@ -26,9 +28,8 @@ module.exports = {
     const study = mode === "s"; // veio do comando aprender: oferece "Próxima pergunta"
 
     if (interaction.user.id !== ownerId) {
-      const call = callPrefix(client, interaction.inGuild());
       return interaction.reply(
-        ephemeral(`Esse desafio é de outra pessoa. Peça o seu com \`${call}desafio\`.`)
+        ephemeral(`Esse desafio é de outra pessoa. Peça o seu com ${commandRef(client, interaction.inGuild(), "desafio")}.`)
       );
     }
 
@@ -51,17 +52,44 @@ module.exports = {
 
     const chosen = Number(chosenText);
     const correct = chosen === ch.answer;
-    // `gained` já considera o limite diário de XP (pode ser menor que o prêmio, ou 0).
-    const { xp, streak, gained, capped } = db.recordAnswer(
-      interaction.user.id,
-      interaction.guildId,
-      correct,
-      config.xpCorrect
-    );
+    // O resultado traz tudo o que a mensagem mostra: XP que entrou (já com o limite diário), bônus,
+    // combo, meta do dia, marcos de sequência, subida de nível e conquistas novas.
+    let result;
+    try {
+      result = db.recordAnswer(
+        interaction.user.id,
+        interaction.guildId,
+        correct,
+        config.xpCorrect,
+        new Date(),
+        { difficulty: ch.difficulty, challengeId: ch.id }
+      );
+    } catch (error) {
+      // Nada foi gravado: solta a trava para a pessoa poder tentar de novo. Sem isso, o clique
+      // seguinte seria ignorado como "duplicado" e a pergunta ficaria impossível de responder.
+      answered.delete(key);
+      throw error;
+    }
+
+    // Cursos: um acerto pode fechar um módulo e, com ele, um nível do curso (certificado novo). Se isso
+    // falhar, a resposta já foi registrada: só deixa de aparecer a parte do curso (e a próxima conferência
+    // emite o certificado, porque a emissão é idempotente).
+    let certificates = [];
+    let courseHint = null;
+    try {
+      if (correct) {
+        certificates = courses.sync(ownerId, { courseIds: courses.byTopic(ch.topic.id).map((c) => c.id) });
+        // O primeiro certificado já guarda o nome do Discord (limpo), para a pessoa poder trocar depois.
+        if (certificates.length > 0) courses.nameFor(ownerId, interaction.member?.displayName ?? interaction.user.displayName);
+      }
+      courseHint = courses.hint(ownerId, ch);
+    } catch (error) {
+      logger.error("Erro ao atualizar o progresso do curso:", error);
+    }
 
     return update(
       interaction,
-      challengeMessage(ch, ownerId, issuedAt, { type: "answered", chosen, correct, gained, capped, xp, streak, study })
+      challengeMessage(ch, ownerId, issuedAt, { type: "answered", chosen, correct, study, ...result, certificates, courseHint })
     );
   },
 };

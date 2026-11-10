@@ -26,7 +26,15 @@ function load(client) {
 async function handle(client, interaction) {
   const parts = interaction.customId.split(":");
   const button = client.buttons.get(parts[0]);
-  if (!button) return;
+  if (!button) {
+    // Sem resposta, o Discord mostra "a interação falhou". Acontece com botões de mensagens antigas,
+    // de uma versão do bot que tinha outros botões.
+    logger.warn(`Botão sem handler: "${parts[0]}"`);
+    await interaction
+      .reply({ content: "Esse botão é de uma versão antiga do bot e não funciona mais. Use o comando de novo para ter um novo.", flags: MessageFlags.Ephemeral })
+      .catch(() => {});
+    return;
+  }
 
   try {
     await button.execute(interaction, parts, client);

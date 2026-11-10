@@ -52,15 +52,17 @@ for (const c of list) {
 }
 
 const byId = new Map(list.map((c) => [c.id, c]));
-const matches = ({ language, difficulty, topic } = {}) => list.filter((c) =>
+const matches = ({ language, difficulty, topic, topicIds } = {}) => list.filter((c) =>
   (!language || c.language === language.toLowerCase()) &&
   (!difficulty || c.difficulty === difficulty) &&
-  (!topic || c.topic.id === topic)
+  (!topic || c.topic.id === topic) &&
+  (!topicIds || topicIds.has(c.topic.id))
 );
 
-function topics(difficulty) {
+// `only` (opcional) é um Set de ids de assunto: lista só esses assuntos.
+function topics(difficulty, only) {
   const unique = new Map();
-  for (const c of matches({ difficulty })) unique.set(c.topic.id, c.topic);
+  for (const c of matches({ difficulty, topicIds: only })) unique.set(c.topic.id, c.topic);
   return [...unique.values()].sort((a, b) => a.label.localeCompare(b.label, "pt-BR"));
 }
 
@@ -74,12 +76,29 @@ module.exports = {
   availableDifficulties: () => DIFFICULTIES.filter((d) => topics(d.id).length > 0),
   difficultyLabel: (id) => DIFFICULTIES.find((d) => d.id === id)?.label ?? id,
   // `excludeId` evita repetir o desafio que acabou de ser respondido (se houver outro no grupo).
-  random(filters, excludeId) {
+  // `history` (Map id -> { lastAt, solved }, de db.getSeen) faz o sorteio evitar repetição, nesta ordem:
+  //   1) perguntas que a pessoa nunca viu;
+  //   2) as que já viu mas ainda não acertou (vale tentar de novo);
+  //   3) as que já acertou, começando pelas vistas há mais tempo (revisão).
+  // Dentro de um grupo (2 ou 3), sorteia entre a metade mais antiga, para ainda variar.
+  random(filters, excludeId, history) {
     // Mantém compatibilidade com o comando antigo: random("python").
     const normalized = typeof filters === "string" ? { language: filters } : filters;
     const pool = matches(normalized);
-    const fresh = excludeId ? pool.filter((c) => c.id !== excludeId) : pool;
-    const source = fresh.length ? fresh : pool;
+    let source = excludeId ? pool.filter((c) => c.id !== excludeId) : pool;
+    if (source.length === 0) source = pool;
+    if (source.length > 1 && history?.size) {
+      const tier = (c) => {
+        const h = history.get(c.id);
+        return h ? (h.solved ? 2 : 1) : 0;
+      };
+      const best = Math.min(...source.map(tier));
+      source = source.filter((c) => tier(c) === best);
+      if (best > 0 && source.length > 1) {
+        source.sort((a, b) => history.get(a.id).lastAt - history.get(b.id).lastAt);
+        source = source.slice(0, Math.ceil(source.length / 2));
+      }
+    }
     return source.length ? source[Math.floor(Math.random() * source.length)] : null;
   },
 };

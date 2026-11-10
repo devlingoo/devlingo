@@ -35,11 +35,14 @@ test("quem nunca jogou aparece zerado", () => {
 });
 
 test("acerto dá XP e conta no ranking do servidor; erro não dá XP mas conta como atividade", () => {
+  // O retorno tem mais campos (bônus, meta, conquistas...), testados mais abaixo; aqui só o básico.
+  const basics = ({ xp, streak, gained, capped, dailyXp }) => ({ xp, streak, gained, capped, dailyXp });
+
   const right = db.recordAnswer("ana", "g1", true, 10, D1);
-  assert.deepEqual(right, { xp: 10, streak: 1, gained: 10, capped: false, dailyXp: 10 });
+  assert.deepEqual(basics(right), { xp: 10, streak: 1, gained: 10, capped: false, dailyXp: 10 });
 
   const wrong = db.recordAnswer("bia", "g1", false, 10, D1);
-  assert.deepEqual(wrong, { xp: 0, streak: 1, gained: 0, capped: false, dailyXp: 0 });
+  assert.deepEqual(basics(wrong), { xp: 0, streak: 1, gained: 0, capped: false, dailyXp: 0 });
 
   assert.deepEqual(db.top("g1"), [{ userId: "ana", xp: 10 }]);
 });
@@ -92,8 +95,9 @@ test("DAILY_XP_CAP=0 desliga o limite", () => {
   config.dailyXpCap = 0;
   let last;
   for (let i = 0; i < 40; i++) last = db.recordAnswer("ana", null, true, 10, D1);
-  assert.equal(last.xp, 400);
+  assert.equal(last.dailyXp, 400, "40 acertos x 10 XP, sem nada segurado (bônus não entram na conta do limite)");
   assert.equal(last.capped, false);
+  assert.ok(last.xp > 400, "o XP total inclui os bônus de combo e de meta");
 });
 
 test("ranking: global soma tudo (inclusive DM), servidor só o XP ganho nele; ordem estável", () => {
@@ -157,4 +161,54 @@ test("data.json corrompido é ignorado sem derrubar o bot nem apagar o arquivo",
   db.open(path.join(dir, "devlingo.db"));
   assert.equal(db.getUser("ana", D1).xp, 0);
   assert.ok(fs.existsSync(path.join(dir, "data.json")));
+});
+
+// ---------- configuração inicial (nível e áreas) ----------
+
+test("preferências: nulas até configurar; salvar cria a pessoa sem XP; trocar não mexe em XP nem sequência", () => {
+  assert.equal(db.getPreferences("ana"), null);
+
+  db.setPreferences("ana", { level: "beginner", areas: ["frontend", "banco"] });
+  assert.deepEqual(db.getPreferences("ana"), { level: "beginner", areas: ["frontend", "banco"] });
+  assert.deepEqual(db.getUser("ana", D1), { xp: 0, streak: 0, lastDay: null, dailyXp: 0 });
+  assert.deepEqual(db.top(null), [], "quem só configurou, sem XP, não aparece no ranking");
+
+  db.recordAnswer("ana", "g1", true, 10, D1);
+  db.setPreferences("ana", { level: "advanced", areas: ["devops"] });
+  assert.deepEqual(db.getPreferences("ana"), { level: "advanced", areas: ["devops"] });
+  assert.equal(db.getUser("ana", D1).xp, 10);
+  assert.equal(db.getUser("ana", D1).streak, 1);
+});
+
+test("responder depois de configurar não apaga a configuração", () => {
+  db.setPreferences("ana", { level: "beginner", areas: ["banco"] });
+  db.recordAnswer("ana", null, true, 10, D1);
+  assert.deepEqual(db.getPreferences("ana"), { level: "beginner", areas: ["banco"] });
+});
+
+test("banco criado antes dessa mudança (versão 1) é migrado sem perder dados", () => {
+  const { DatabaseSync } = require("node:sqlite");
+  const file = path.join(tmpDir(), "devlingo.db");
+
+  // Esquema exato da versão 1, com uma pessoa que já jogou.
+  const old = new DatabaseSync(file);
+  old.exec(`
+    CREATE TABLE users (id TEXT PRIMARY KEY, xp INTEGER NOT NULL DEFAULT 0, streak INTEGER NOT NULL DEFAULT 0,
+      last_day TEXT, daily_day TEXT, daily_xp INTEGER NOT NULL DEFAULT 0);
+    CREATE TABLE guild_xp (guild_id TEXT NOT NULL, user_id TEXT NOT NULL, xp INTEGER NOT NULL DEFAULT 0,
+      PRIMARY KEY (guild_id, user_id));
+    INSERT INTO users (id, xp, streak, last_day) VALUES ('velha', 70, 4, '2026-11-09');
+    PRAGMA user_version = 1;
+  `);
+  old.close();
+
+  db.open(file);
+  assert.equal(db.getUser("velha", D1).xp, 70);
+  assert.equal(db.getUser("velha", D1).streak, 4);
+  assert.equal(db.getPreferences("velha"), null, "quem já jogava precisa passar pelo setup uma vez");
+
+  db.setPreferences("velha", { level: "intermediate", areas: ["backend"] });
+  db.close();
+  db.open(file);
+  assert.deepEqual(db.getPreferences("velha"), { level: "intermediate", areas: ["backend"] });
 });

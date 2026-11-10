@@ -1,0 +1,265 @@
+{
+  "$description": "Cores do Devlingo. Gerado por brand/tools/build.js; não edite à mão.",
+  "colors": {
+    "violet": {
+      "hex": "#6C4DFF",
+      "rgb": [
+        108,
+        77,
+        255
+      ],
+      "discordInt": 7097855,
+      "name": "Violeta Devlingo",
+      "role": "Cor principal: botões, links, destaques e o balão do símbolo"
+    },
+    "violetDeep": {
+      "hex": "#4A2FD6",
+      "rgb": [
+        74,
+        47,
+        214
+      ],
+      "discordInt": 4861910,
+      "name": "Violeta profundo",
+      "role": "Estados de pressionado e sombras da cor principal"
+    },
+    "violetLight": {
+      "hex": "#A99BFF",
+      "rgb": [
+        169,
+        155,
+        255
+      ],
+      "discordInt": 11115519,
+      "name": "Violeta claro",
+      "role": "A cor principal sobre fundos escuros"
+    },
+    "violetTint": {
+      "hex": "#EEEAFF",
+      "rgb": [
+        238,
+        234,
+        255
+      ],
+      "discordInt": 15657727,
+      "name": "Violeta névoa",
+      "role": "Fundos suaves, cartões e realces"
+    },
+    "midnight": {
+      "hex": "#17123A",
+      "rgb": [
+        23,
+        18,
+        58
+      ],
+      "discordInt": 1511994,
+      "name": "Meia-noite",
+      "role": "Fundo escuro principal"
+    },
+    "ink": {
+      "hex": "#1B1740",
+      "rgb": [
+        27,
+        23,
+        64
+      ],
+      "discordInt": 1775424,
+      "name": "Tinta",
+      "role": "Texto principal sobre fundo claro"
+    },
+    "mist": {
+      "hex": "#6B6890",
+      "rgb": [
+        107,
+        104,
+        144
+      ],
+      "discordInt": 7039120,
+      "name": "Bruma",
+      "role": "Texto secundário e elementos discretos"
+    },
+    "cloud": {
+      "hex": "#F7F5FF",
+      "rgb": [
+        247,
+        245,
+        255
+      ],
+      "discordInt": 16250367,
+      "name": "Nuvem",
+      "role": "Fundo claro principal"
+    },
+    "mint": {
+      "hex": "#2BD9A8",
+      "rgb": [
+        43,
+        217,
+        168
+      ],
+      "discordInt": 2873768,
+      "name": "Menta",
+      "role": "Acerto, sucesso e progresso"
+    },
+    "spark": {
+      "hex": "#FFB224",
+      "rgb": [
+        255,
+        178,
+        36
+      ],
+      "discordInt": 16757284,
+      "name": "Faísca",
+      "role": "Sequência, XP, conquistas e comemorações"
+    },
+    "flame": {
+      "hex": "#FF7A2F",
+      "rgb": [
+        255,
+        122,
+        47
+      ],
+      "discordInt": 16742959,
+      "name": "Chama",
+      "role": "O laranja do degradê da chama da sequência"
+    },
+    "coral": {
+      "hex": "#FF5C7A",
+      "rgb": [
+        255,
+        92,
+        122
+      ],
+      "discordInt": 16735354,
+      "name": "Coral",
+      "role": "Erro e alertas (sem agressividade)"
+    }
+  },
+  "gradients": {
+    "brand": [
+      "#8E75FF",
+      "#5233E6"
+    ],
+    "spark": [
+      "#FFD978",
+      "#FFB224"
+    ],
+    "flame": [
+      "#FFB224",
+      "#FF7A2F"
+    ]
+  },
+  "contrast": [
+    {
+      "fg": "#FFFFFF",
+      "bg": "#6C4DFF",
+      "label": "Texto branco sobre botão violeta",
+      "ratio": 5.07,
+      "aa": true,
+      "aaLarge": true
+    },
+    {
+      "fg": "#FFFFFF",
+      "bg": "#4A2FD6",
+      "label": "Texto branco sobre violeta profundo",
+      "ratio": 7.87,
+      "aa": true,
+      "aaLarge": true
+    },
+    {
+      "fg": "#1B1740",
+      "bg": "#F7F5FF",
+      "label": "Texto principal sobre fundo claro",
+      "ratio": 15.65,
+      "aa": true,
+      "aaLarge": true
+    },
+    {
+      "fg": "#6B6890",
+      "bg": "#F7F5FF",
+      "label": "Texto secundário sobre fundo claro",
+      "ratio": 4.86,
+      "aa": true,
+      "aaLarge": true
+    },
+    {
+      "fg": "#6C4DFF",
+      "bg": "#F7F5FF",
+      "label": "Link violeta sobre fundo claro",
+      "ratio": 4.7,
+      "aa": true,
+      "aaLarge": true
+    },
+    {
+      "fg": "#FFFFFF",
+      "bg": "#17123A",
+      "label": "Texto branco sobre fundo escuro",
+      "ratio": 17.74,
+      "aa": true,
+      "aaLarge": true
+    },
+    {
+      "fg": "#A99BFF",
+      "bg": "#17123A",
+      "label": "Violeta claro sobre fundo escuro",
+      "ratio": 7.45,
+      "aa": true,
+      "aaLarge": true
+    },
+    {
+      "fg": "#2BD9A8",
+      "bg": "#17123A",
+      "label": "Menta sobre fundo escuro",
+      "ratio": 9.79,
+      "aa": true,
+      "aaLarge": true
+    },
+    {
+      "fg": "#FFB224",
+      "bg": "#17123A",
+      "label": "Faísca sobre fundo escuro",
+      "ratio": 9.84,
+      "aa": true,
+      "aaLarge": true
+    },
+    {
+      "fg": "#1B1740",
+      "bg": "#2BD9A8",
+      "label": "Texto tinta sobre menta",
+      "ratio": 9.33,
+      "aa": true,
+      "aaLarge": true
+    },
+    {
+      "fg": "#1B1740",
+      "bg": "#FFB224",
+      "label": "Texto tinta sobre faísca",
+      "ratio": 9.37,
+      "aa": true,
+      "aaLarge": true
+    },
+    {
+      "fg": "#1B1740",
+      "bg": "#FF5C7A",
+      "label": "Texto tinta sobre coral",
+      "ratio": 5.68,
+      "aa": true,
+      "aaLarge": true
+    },
+    {
+      "fg": "#FFFFFF",
+      "bg": "#FF5C7A",
+      "label": "Texto branco sobre coral (NÃO use)",
+      "ratio": 2.97,
+      "aa": false,
+      "aaLarge": false
+    },
+    {
+      "fg": "#FFFFFF",
+      "bg": "#2BD9A8",
+      "label": "Texto branco sobre menta (NÃO use)",
+      "ratio": 1.81,
+      "aa": false,
+      "aaLarge": false
+    }
+  ]
+}

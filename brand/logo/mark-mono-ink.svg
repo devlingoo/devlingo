@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512"><title>Devlingo (tinta)</title>
+  <defs>
+    <mask id="mi-cut" maskUnits="userSpaceOnUse" x="0" y="0" width="512" height="512">
+      <rect width="512" height="512" fill="#fff"/>
+      <g fill="none" stroke="#000" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M212 218 L170 250 L212 282" stroke-width="32"/><path d="M300 218 L342 250 L300 282" stroke-width="32"/>
+        <path d="M206 316 Q256 354 306 316" stroke-width="28"/>
+      </g>
+    </mask>
+  </defs>
+  <g fill="#1B1740">
+    <g mask="url(#mi-cut)">
+      <rect x="56" y="118" width="400" height="300" rx="112"/>
+      <path d="M174 402 H262 L134 466 Z" stroke="#1B1740" stroke-width="22" stroke-linejoin="round"/>
+    </g>
+    <path d="M256 124 V84" stroke="#1B1740" stroke-width="16" stroke-linecap="round" fill="none"/>
+    <circle cx="256" cy="60" r="26"/>
+  </g>
+</svg>

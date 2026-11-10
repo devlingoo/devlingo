@@ -1,6 +1,8 @@
 const { MessageFlags } = require("discord.js");
 const challenges = require("../utils/challenges");
-const { learningLevelMenu, learningTopicMenu, challengeMessage } = require("../utils/ui");
+const db = require("../utils/db");
+const study = require("../utils/study");
+const { learningLevelMenu, challengeMessage } = require("../utils/ui");
 
 const ephemeral = (content) => ({ content, flags: MessageFlags.Ephemeral });
 const show = (interaction, components) =>
@@ -10,8 +12,9 @@ const show = (interaction, components) =>
 //   learn:difficulty:<dono>                               menu de níveis
 //   learn:topic:<dono>:<nível>                            menu de assuntos
 //   learn:next:<dono>:<nível>:<assunto>:<últimoDesafio>   botão "Próxima pergunta"
-//   learn:topics:<dono>:<nível>                           botão "Trocar assunto"
+//   learn:topics:<dono>:<nível>[:all]                     botão "Trocar assunto" (":all" = todas as áreas)
 //   learn:levels:<dono>                                   botão "Trocar nível"
+//   learn:go:<dono>:<nível>:<assunto>                     botão "Praticar" (vem da tela de um curso)
 module.exports = {
   prefix: "learn",
 
@@ -28,8 +31,8 @@ module.exports = {
     // Escolheu um nível no menu: mostra os assuntos dele.
     if (stage === "difficulty" && isMenu) return showTopics(interaction, ownerId, interaction.values[0]);
 
-    // "Trocar assunto": volta ao menu de assuntos do mesmo nível.
-    if (stage === "topics" && isButton) return showTopics(interaction, ownerId, difficulty);
+    // "Trocar assunto": volta ao menu de assuntos do mesmo nível (só as áreas da pessoa, ou todas com ":all").
+    if (stage === "topics" && isButton) return showTopics(interaction, ownerId, difficulty, topicId === "all");
 
     // "Trocar nível": volta ao menu de níveis.
     if (stage === "levels" && isButton) {
@@ -44,15 +47,18 @@ module.exports = {
 
     // "Próxima pergunta": mais uma do mesmo nível e assunto.
     if (stage === "next" && isButton) return ask(interaction, ownerId, difficulty, topicId, lastId);
+
+    // "Praticar" na tela de um curso: vai direto a uma pergunta do módulo e nível que faltam.
+    if (stage === "go" && isButton) return ask(interaction, ownerId, difficulty, topicId);
   },
 };
 
-async function showTopics(interaction, ownerId, difficulty) {
-  const topics = challenges.topics(difficulty);
-  if (!topics.length) {
+async function showTopics(interaction, ownerId, difficulty, showAll = false) {
+  const menu = study.topicMenu(ownerId, difficulty, { showAll });
+  if (!menu) {
     return interaction.reply(ephemeral("Ainda não há perguntas cadastradas nesse nível. Use aprender para escolher outro."));
   }
-  return show(interaction, learningTopicMenu(ownerId, difficulty, topics));
+  return show(interaction, menu);
 }
 
 // Sorteia uma pergunta do nível e assunto escolhidos (nunca de outro assunto).
@@ -62,7 +68,8 @@ async function ask(interaction, ownerId, difficulty, topicId, lastId) {
     return interaction.reply(ephemeral("Esse assunto não está disponível nessa trilha. Use aprender para começar novamente."));
   }
 
-  const challenge = challenges.random({ difficulty, topic: topicId }, lastId);
+  // Evita repetir: primeiro as nunca vistas, depois as que ainda não acertou, por fim as acertadas há mais tempo.
+  const challenge = challenges.random({ difficulty, topic: topicId }, lastId, db.getSeen(ownerId));
   if (!challenge) return interaction.reply(ephemeral("Ainda não há perguntas para esse assunto."));
 
   const issuedAt = Date.now().toString(36);

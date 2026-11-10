@@ -1758,5 +1758,1205 @@
       "label": "Git e versionamento",
       "description": "Branches, commits e fluxo de trabalho"
     }
+  },
+  {
+    "id": "js-038",
+    "language": "javascript",
+    "question": "O que esse código imprime?",
+    "code": "console.log('A');\nsetTimeout(() => console.log('B'), 0);\nPromise.resolve().then(() => console.log('C'));\nconsole.log('D');",
+    "options": [
+      "A D C B",
+      "A C D B",
+      "A D B C",
+      "A B C D"
+    ],
+    "answer": 0,
+    "explanation": "O código síncrono roda primeiro (A e D). Depois o event loop esvazia a fila de microtarefas (o `then` da Promise: C) antes de passar às macrotarefas (o `setTimeout`: B), mesmo com atraso 0.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "javascript-fundamentals",
+      "label": "Fundamentos de JavaScript",
+      "description": "Tipos, valores e comportamento da linguagem"
+    }
+  },
+  {
+    "id": "js-039",
+    "language": "javascript",
+    "question": "O que esse código imprime?",
+    "code": "function Foo() {}\nconst f = new Foo();\nconsole.log(f.__proto__ === Foo.prototype, Object.getPrototypeOf(Foo) === Function.prototype);",
+    "options": [
+      "true true",
+      "true false",
+      "false true",
+      "false false"
+    ],
+    "answer": 0,
+    "explanation": "Instâncias criadas com `new Foo()` apontam para `Foo.prototype`. A própria função `Foo` também é um objeto, e o protótipo dela é `Function.prototype`.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "javascript-fundamentals",
+      "label": "Fundamentos de JavaScript",
+      "description": "Tipos, valores e comportamento da linguagem"
+    }
+  },
+  {
+    "id": "js-040",
+    "language": "javascript",
+    "question": "O que esse código imprime?",
+    "code": "console.log([NaN].includes(NaN), [NaN].indexOf(NaN));",
+    "options": [
+      "true -1",
+      "false -1",
+      "false 0",
+      "true 0"
+    ],
+    "answer": 0,
+    "explanation": "`includes` usa o algoritmo SameValueZero e encontra o NaN. `indexOf` usa `===`, e `NaN === NaN` é false, então devolve -1.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "javascript-fundamentals",
+      "label": "Fundamentos de JavaScript",
+      "description": "Tipos, valores e comportamento da linguagem"
+    }
+  },
+  {
+    "id": "js-041",
+    "language": "javascript",
+    "question": "O que esse código imprime?",
+    "code": "console.log(Number.MAX_SAFE_INTEGER + 2);",
+    "options": [
+      "9007199254740993",
+      "Infinity",
+      "9007199254740992",
+      "9007199254740991"
+    ],
+    "answer": 2,
+    "explanation": "Acima de 2^53 os números de ponto flutuante não representam todos os inteiros: 9007199254740993 é arredondado para 9007199254740992. Para inteiros grandes e exatos use `BigInt`.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "javascript-fundamentals",
+      "label": "Fundamentos de JavaScript",
+      "description": "Tipos, valores e comportamento da linguagem"
+    }
+  },
+  {
+    "id": "js-042",
+    "language": "javascript",
+    "question": "O que esse código imprime?",
+    "code": "async function a() {\n  console.log(1);\n  await null;\n  console.log(2);\n}\na();\nconsole.log(3);",
+    "options": [
+      "3 1 2",
+      "1 3 2",
+      "1 2 3",
+      "2 1 3"
+    ],
+    "answer": 1,
+    "explanation": "A função roda de forma síncrona até o primeiro `await` (imprime 1). O resto dela vira uma microtarefa, então o código que vem depois da chamada (3) executa antes do 2.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "javascript-functions",
+      "label": "Funções em JavaScript",
+      "description": "Declaração, arrow functions, escopo e closures"
+    }
+  },
+  {
+    "id": "js-043",
+    "language": "javascript",
+    "question": "O que esse código imprime?",
+    "code": "const obj = {\n  n: 1,\n  a() { return [0].map(() => this.n)[0]; },\n  b() { return [0].map(function () { return this?.n; })[0]; },\n};\nconsole.log(obj.a(), obj.b());",
+    "options": [
+      "1 undefined",
+      "undefined 1",
+      "undefined undefined",
+      "1 1"
+    ],
+    "answer": 0,
+    "explanation": "A arrow function herda o `this` do método (o `obj`) e devolve 1. A função comum chamada pelo `map` tem o próprio `this` (global ou undefined), que não tem `n`.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "javascript-functions",
+      "label": "Funções em JavaScript",
+      "description": "Declaração, arrow functions, escopo e closures"
+    }
+  },
+  {
+    "id": "js-044",
+    "language": "javascript",
+    "question": "O que esse código imprime?",
+    "code": "const memo = (fn) => {\n  const cache = new Map();\n  return (x) => {\n    if (!cache.has(x)) cache.set(x, fn(x));\n    return cache.get(x);\n  };\n};\nlet calls = 0;\nconst quad = memo((x) => { calls++; return x * x; });\nquad(3); quad(3); quad(4);\nconsole.log(calls);",
+    "options": [
+      "0",
+      "3",
+      "2",
+      "1"
+    ],
+    "answer": 2,
+    "explanation": "O cache guarda o resultado por argumento: `quad(3)` só executa a função na primeira vez, e `quad(4)` é um valor novo. Total: 2 execuções.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "javascript-functions",
+      "label": "Funções em JavaScript",
+      "description": "Declaração, arrow functions, escopo e closures"
+    }
+  },
+  {
+    "id": "js-045",
+    "language": "javascript",
+    "question": "O que esse código imprime?",
+    "code": "function* g() {\n  const x = yield 1;\n  console.log(x);\n  yield 2;\n}\nconst it = g();\nit.next();\nconsole.log(it.next('ok').value);",
+    "options": [
+      "1 2",
+      "ok 1",
+      "undefined 2",
+      "ok 2"
+    ],
+    "answer": 3,
+    "explanation": "O valor passado a `next('ok')` vira o resultado da expressão `yield 1` dentro do gerador (`x = 'ok'`). Ele segue até `yield 2`, cujo valor é impresso depois.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "javascript-functions",
+      "label": "Funções em JavaScript",
+      "description": "Declaração, arrow functions, escopo e closures"
+    }
+  },
+  {
+    "id": "js-046",
+    "language": "javascript",
+    "question": "O que esse código imprime?",
+    "code": "console.log([1, , 3].length, Object.keys([1, , 3]).length);",
+    "options": [
+      "3 2",
+      "3 3",
+      "2 3",
+      "2 2"
+    ],
+    "answer": 0,
+    "explanation": "Um array esparso tem `length` 3, mas o buraco não é uma propriedade: `Object.keys` lista só os índices 0 e 2.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "javascript-arrays",
+      "label": "Arrays e laços em JavaScript",
+      "description": "Arrays, métodos funcionais e laços de repetição"
+    }
+  },
+  {
+    "id": "js-047",
+    "language": "javascript",
+    "question": "O que acontece ao executar esse código?",
+    "code": "console.log([].reduce((a, b) => a + b));",
+    "options": [
+      "Imprime 0",
+      "TypeError",
+      "Imprime NaN",
+      "Imprime undefined"
+    ],
+    "answer": 1,
+    "explanation": "`reduce` sem valor inicial num array vazio lança `TypeError`. Passe um valor inicial (`reduce(fn, 0)`) para evitar.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "javascript-arrays",
+      "label": "Arrays e laços em JavaScript",
+      "description": "Arrays, métodos funcionais e laços de repetição"
+    }
+  },
+  {
+    "id": "js-048",
+    "language": "javascript",
+    "question": "O que esse código imprime?",
+    "code": "const a = [{ n: 1 }];\nconst b = [...a];\nconst c = structuredClone(a);\na[0].n = 2;\nconsole.log(b[0].n, c[0].n);",
+    "options": [
+      "1 2",
+      "2 2",
+      "2 1",
+      "1 1"
+    ],
+    "answer": 2,
+    "explanation": "O spread faz cópia rasa: `b[0]` é o mesmo objeto que `a[0]`. `structuredClone` faz cópia profunda: `c[0]` é um objeto novo e continua com n = 1.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "javascript-arrays",
+      "label": "Arrays e laços em JavaScript",
+      "description": "Arrays, métodos funcionais e laços de repetição"
+    }
+  },
+  {
+    "id": "js-049",
+    "language": "javascript",
+    "question": "Em buscas repetidas numa lista grande, qual é a diferença entre `array.includes(x)` e `set.has(x)`?",
+    "code": "",
+    "options": [
+      "includes é O(1) e Set.has é O(n)",
+      "Set.has é O(n) e includes é O(log n)",
+      "includes percorre o array (O(n)); Set.has é O(1) em média",
+      "Os dois são O(1), só muda a sintaxe"
+    ],
+    "answer": 2,
+    "explanation": "`includes` compara item a item. `Set` usa uma tabela hash: a busca leva tempo constante, em média. Para muitas buscas, converter a lista em `Set` compensa.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "javascript-arrays",
+      "label": "Arrays e laços em JavaScript",
+      "description": "Arrays, métodos funcionais e laços de repetição"
+    }
+  },
+  {
+    "id": "py-026",
+    "language": "python",
+    "question": "O que esse código imprime?",
+    "code": "fs = [lambda: i for i in range(3)]\nprint([f() for f in fs])",
+    "options": [
+      "[0, 1, 2]",
+      "[0, 0, 0]",
+      "[2, 2, 2]",
+      "[3, 3, 3]"
+    ],
+    "answer": 2,
+    "explanation": "O `i` da lambda só é resolvido quando ela é chamada (late binding), e nesse momento vale 2, o último valor do laço. Para fixar o valor, use `lambda i=i: i`.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "python-fundamentals",
+      "label": "Fundamentos de Python",
+      "description": "Tipos de dados, variáveis e estruturas básicas"
+    }
+  },
+  {
+    "id": "py-027",
+    "language": "python",
+    "question": "O que esse código imprime?",
+    "code": "def gen():\n    yield from range(3)\n\ng = gen()\nprint(list(g), list(g))",
+    "options": [
+      "[0, 1, 2] []",
+      "[0, 1, 2] [0, 1, 2]",
+      "[] []",
+      "[0, 1, 2] None"
+    ],
+    "answer": 0,
+    "explanation": "Um gerador só pode ser percorrido uma vez. Depois que o primeiro `list(g)` o esgota, o segundo recebe uma lista vazia.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "python-fundamentals",
+      "label": "Fundamentos de Python",
+      "description": "Tipos de dados, variáveis e estruturas básicas"
+    }
+  },
+  {
+    "id": "py-028",
+    "language": "python",
+    "question": "O que acontece ao executar esse código?",
+    "code": "x = 10\n\ndef f():\n    print(x)\n    x = 5\n\nf()",
+    "options": [
+      "Imprime 5",
+      "Imprime None",
+      "Imprime 10",
+      "UnboundLocalError"
+    ],
+    "answer": 3,
+    "explanation": "Como `x` recebe uma atribuição dentro de `f`, o Python a trata como variável local na função inteira. O `print` tenta ler essa local antes de ela existir. Use `global x` ou outro nome.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "python-fundamentals",
+      "label": "Fundamentos de Python",
+      "description": "Tipos de dados, variáveis e estruturas básicas"
+    }
+  },
+  {
+    "id": "py-029",
+    "language": "python",
+    "question": "O que esse código imprime?",
+    "code": "class A:\n    def hi(self): return 'A'\n\nclass B(A):\n    def hi(self): return 'B' + super().hi()\n\nclass C(A):\n    def hi(self): return 'C' + super().hi()\n\nclass D(B, C):\n    pass\n\nprint(D().hi())",
+    "options": [
+      "BA",
+      "BCA",
+      "ABC",
+      "CBA"
+    ],
+    "answer": 1,
+    "explanation": "A ordem de resolução de métodos (MRO) de `D` é D, B, C, A. O `super()` de B chama C (não A), e o de C chama A, resultando em B + C + A.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "python-fundamentals",
+      "label": "Fundamentos de Python",
+      "description": "Tipos de dados, variáveis e estruturas básicas"
+    }
+  },
+  {
+    "id": "py-030",
+    "language": "python",
+    "question": "O que acontece ao executar esse código?",
+    "code": "d = {'a': 1}\nfor k in d:\n    d['b'] = 2",
+    "options": [
+      "RuntimeError: o dicionário mudou de tamanho durante o laço",
+      "Laço infinito",
+      "Roda e d fica com 'a' e 'b'",
+      "KeyError"
+    ],
+    "answer": 0,
+    "explanation": "Adicionar ou remover chaves enquanto se itera sobre o dicionário lança `RuntimeError`. Itere sobre uma cópia (`list(d)`) se precisar alterá-lo.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "python-collections",
+      "label": "Listas e dicionários em Python",
+      "description": "Listas, dicionários, fatiamento e comprehensions"
+    }
+  },
+  {
+    "id": "py-031",
+    "language": "python",
+    "question": "O que esse código imprime?",
+    "code": "a = [[0] * 2] * 2\na[0][0] = 1\nprint(a)",
+    "options": [
+      "[[1, 0], [0, 0]]",
+      "[[1, 1], [1, 1]]",
+      "[[1, 0], [1, 0]]",
+      "[[0, 0], [0, 0]]"
+    ],
+    "answer": 2,
+    "explanation": "`[[0] * 2] * 2` repete a mesma lista interna duas vezes, sem fazer cópias. Alterar uma linha altera as duas. Use `[[0] * 2 for _ in range(2)]`.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "python-collections",
+      "label": "Listas e dicionários em Python",
+      "description": "Listas, dicionários, fatiamento e comprehensions"
+    }
+  },
+  {
+    "id": "py-032",
+    "language": "python",
+    "question": "O que esse código imprime?",
+    "code": "from collections import Counter\nprint(Counter('abracadabra').most_common(1))",
+    "options": [
+      "[('a', 4)]",
+      "('a', 5)",
+      "[('a', 5)]",
+      "[('b', 2)]"
+    ],
+    "answer": 2,
+    "explanation": "`Counter` conta as ocorrências: 'a' aparece 5 vezes em 'abracadabra'. `most_common(1)` devolve uma lista com o par mais frequente.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "python-collections",
+      "label": "Listas e dicionários em Python",
+      "description": "Listas, dicionários, fatiamento e comprehensions"
+    }
+  },
+  {
+    "id": "py-033",
+    "language": "python",
+    "question": "O que esse código imprime?",
+    "code": "print(sorted(['bb', 'a', 'cc', 'd'], key=len))",
+    "options": [
+      "['d', 'a', 'cc', 'bb']",
+      "['a', 'd', 'bb', 'cc']",
+      "['bb', 'cc', 'a', 'd']",
+      "['a', 'bb', 'cc', 'd']"
+    ],
+    "answer": 1,
+    "explanation": "A ordenação do Python é estável: itens com a mesma chave (mesmo tamanho) mantêm a ordem original. 'a' vem antes de 'd', e 'bb' antes de 'cc'.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "python-collections",
+      "label": "Listas e dicionários em Python",
+      "description": "Listas, dicionários, fatiamento e comprehensions"
+    }
+  },
+  {
+    "id": "sql-014",
+    "language": "sql",
+    "question": "Qual expressão numera as linhas dentro de cada departamento, recomeçando a contagem em cada um?",
+    "code": "",
+    "options": [
+      "ORDER BY dept, salario LIMIT 1",
+      "ROW_NUMBER() OVER (PARTITION BY dept ORDER BY salario DESC)",
+      "COUNT(*) GROUP BY dept",
+      "NUMBER() WITHIN dept ORDER BY salario"
+    ],
+    "answer": 1,
+    "explanation": "Funções de janela (`OVER`) calculam sobre um conjunto de linhas sem colapsá-las. `PARTITION BY` define os grupos e `ORDER BY` a ordem dentro de cada um.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "sql-queries",
+      "label": "Consultas SQL",
+      "description": "SELECT, filtros e funções de consulta"
+    }
+  },
+  {
+    "id": "sql-015",
+    "language": "sql",
+    "question": "Qual filtro NÃO consegue aproveitar bem um índice B-tree comum na coluna `nome`?",
+    "code": "",
+    "options": [
+      "nome LIKE '%ana'",
+      "nome LIKE 'ana%'",
+      "nome > 'ana'",
+      "nome = 'ana'"
+    ],
+    "answer": 0,
+    "explanation": "Com o curinga no início, o banco não sabe por onde começar na árvore ordenada e precisa varrer a tabela. Com o curinga no fim (`'ana%'`) ele usa o índice como uma busca por faixa.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "sql-queries",
+      "label": "Consultas SQL",
+      "description": "SELECT, filtros e funções de consulta"
+    }
+  },
+  {
+    "id": "sql-016",
+    "language": "sql",
+    "question": "Quantas linhas essa consulta retorna?",
+    "code": "SELECT 'x' WHERE 1 NOT IN (2, NULL);",
+    "options": [
+      "Dá erro por causa do NULL",
+      "Uma (o valor 'x')",
+      "Nenhuma",
+      "Duas"
+    ],
+    "answer": 2,
+    "explanation": "`1 NOT IN (2, NULL)` equivale a `1 <> 2 AND 1 <> NULL`. Comparar com NULL dá 'desconhecido', então a condição nunca é verdadeira. É uma armadilha clássica do `NOT IN` com NULL; prefira `NOT EXISTS`.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "sql-queries",
+      "label": "Consultas SQL",
+      "description": "SELECT, filtros e funções de consulta"
+    }
+  },
+  {
+    "id": "sql-017",
+    "language": "sql",
+    "question": "No nível de isolamento READ COMMITTED, qual anomalia ainda pode acontecer?",
+    "code": "",
+    "options": [
+      "Perda do COMMIT depois de uma queda de energia",
+      "Leitura suja: ler dados ainda não confirmados por outra transação",
+      "Leitura não repetível: reler a mesma linha devolve outro valor",
+      "Duas transações gravando o mesmo valor ao mesmo tempo no disco"
+    ],
+    "answer": 2,
+    "explanation": "READ COMMITTED só garante que você lê dados já confirmados (sem leitura suja). Entre duas leituras, outra transação pode confirmar uma alteração, e a segunda leitura mostra o valor novo. Para evitar, use REPEATABLE READ ou superior.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "sql-queries",
+      "label": "Consultas SQL",
+      "description": "SELECT, filtros e funções de consulta"
+    }
+  },
+  {
+    "id": "git-014",
+    "language": "git",
+    "question": "Você rodou `git reset --hard` e perdeu commits. Como costuma ser possível recuperá-los?",
+    "code": "",
+    "options": [
+      "Não dá: reset --hard apaga os commits para sempre",
+      "Achar o hash no git reflog e voltar com git reset --hard <hash>",
+      "Com git stash pop, que traz de volta os commits",
+      "Com git revert HEAD, que recria os arquivos apagados"
+    ],
+    "answer": 1,
+    "explanation": "Os commits continuam no banco de objetos por um tempo, e o `reflog` registra para onde o HEAD apontou. Ache o hash de antes do reset e volte para ele. Só somem de vez quando o coletor de lixo do Git os remove.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "git-versioning",
+      "label": "Git e versionamento",
+      "description": "Branches, commits e fluxo de trabalho"
+    }
+  },
+  {
+    "id": "git-015",
+    "language": "git",
+    "question": "Qual comando acha, por busca binária, o commit que introduziu um bug?",
+    "code": "",
+    "options": [
+      "git blame",
+      "git cherry-pick",
+      "git bisect",
+      "git grep"
+    ],
+    "answer": 2,
+    "explanation": "`git bisect` pede que você marque commits como bons ou ruins e divide o intervalo ao meio a cada passo; em poucas etapas ele aponta o primeiro commit ruim.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "git-versioning",
+      "label": "Git e versionamento",
+      "description": "Branches, commits e fluxo de trabalho"
+    }
+  },
+  {
+    "id": "git-016",
+    "language": "git",
+    "question": "Por que `git push --force-with-lease` é mais seguro que `--force`?",
+    "code": "",
+    "options": [
+      "Só funciona em branches novas",
+      "Apaga o histórico remoto antes de enviar",
+      "Faz um merge automático antes do push",
+      "Recusa o push se o remoto tiver commits que você ainda não viu"
+    ],
+    "answer": 3,
+    "explanation": "`--force` sobrescreve a branch remota mesmo que outra pessoa tenha enviado commits. `--force-with-lease` só sobrescreve se o remoto ainda estiver como você o viu da última vez, evitando destruir trabalho alheio.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "git-versioning",
+      "label": "Git e versionamento",
+      "description": "Branches, commits e fluxo de trabalho"
+    }
+  },
+  {
+    "id": "git-017",
+    "language": "git",
+    "question": "No `git rebase -i`, o que a ação `squash` faz com um commit?",
+    "code": "",
+    "options": [
+      "Move o commit para outra branch",
+      "Apaga o commit e as mudanças dele",
+      "Junta o commit ao anterior, combinando as mensagens",
+      "Divide o commit em vários menores"
+    ],
+    "answer": 2,
+    "explanation": "`squash` (ou `fixup`, que descarta a mensagem) funde o commit no anterior, deixando o histórico mais limpo antes de abrir o PR.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "git-versioning",
+      "label": "Git e versionamento",
+      "description": "Branches, commits e fluxo de trabalho"
+    }
+  },
+  {
+    "id": "web-001",
+    "language": "html",
+    "question": "Qual tag cria o título de maior importância dentro do conteúdo da página?",
+    "code": "",
+    "options": [
+      "<title>",
+      "<h1>",
+      "<head>",
+      "<header>"
+    ],
+    "answer": 1,
+    "explanation": "O `<h1>` é o título principal do conteúdo (de `<h2>` a `<h6>` vêm os subtítulos). O `<title>` fica dentro do `<head>` e aparece na aba do navegador, não na página.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "html-css",
+      "label": "HTML e CSS",
+      "description": "Estrutura e estilo de páginas web"
+    }
+  },
+  {
+    "id": "web-002",
+    "language": "html",
+    "question": "Qual atributo da tag `<img>` descreve a imagem em texto, para leitores de tela e para quando ela não carrega?",
+    "code": "<img src=\"gato.png\" ____=\"Gato dormindo no sofá\">",
+    "options": [
+      "caption",
+      "title",
+      "name",
+      "alt"
+    ],
+    "answer": 3,
+    "explanation": "O `alt` é o texto alternativo: leitores de tela leem e o navegador mostra se a imagem falhar. O `title` só cria uma dica ao passar o mouse e não substitui o `alt`.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "html-css",
+      "label": "HTML e CSS",
+      "description": "Estrutura e estilo de páginas web"
+    }
+  },
+  {
+    "id": "web-003",
+    "language": "css",
+    "question": "Qual seletor CSS aplica o estilo a todos os elementos com `class=\"aviso\"`?",
+    "code": "<p class=\"aviso\">Atenção!</p>",
+    "options": [
+      "*aviso",
+      "aviso",
+      "#aviso",
+      ".aviso"
+    ],
+    "answer": 3,
+    "explanation": "O ponto seleciona por classe (`.aviso`). O `#` seleciona por id (`#aviso`) e um nome sem prefixo seleciona a tag (`aviso` seria uma tag chamada `<aviso>`).",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "html-css",
+      "label": "HTML e CSS",
+      "description": "Estrutura e estilo de páginas web"
+    }
+  },
+  {
+    "id": "web-004",
+    "language": "css",
+    "question": "Qual propriedade CSS muda a cor do texto?",
+    "code": "p {\n  ____: red;\n}",
+    "options": [
+      "text-color",
+      "color",
+      "font-color",
+      "background-color"
+    ],
+    "answer": 1,
+    "explanation": "`color` define a cor do texto. `background-color` pinta o fundo; `text-color` e `font-color` não existem em CSS.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "html-css",
+      "label": "HTML e CSS",
+      "description": "Estrutura e estilo de páginas web"
+    }
+  },
+  {
+    "id": "web-005",
+    "language": "css",
+    "question": "Sem mexer no `box-sizing` (o padrão é `content-box`), quanta largura essa caixa ocupa na tela?",
+    "code": ".caixa {\n  width: 200px;\n  padding: 20px;\n  border: 5px solid black;\n}",
+    "options": [
+      "200px",
+      "225px",
+      "240px",
+      "250px"
+    ],
+    "answer": 3,
+    "explanation": "No `content-box`, o `width` vale só para o conteúdo: 200 + 20 + 20 (padding) + 5 + 5 (borda) = 250px. Com `box-sizing: border-box`, os 200px já incluiriam padding e borda.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "html-css",
+      "label": "HTML e CSS",
+      "description": "Estrutura e estilo de páginas web"
+    }
+  },
+  {
+    "id": "web-006",
+    "language": "css",
+    "question": "Considere o parágrafo `<p class=\"destaque\">Olá</p>`. De que cor fica o texto?",
+    "code": ".destaque { color: green; }\np { color: blue; }",
+    "options": [
+      "Preto, porque as regras entram em conflito",
+      "Azul",
+      "Verde",
+      "Nenhuma é aplicada, pois a segunda anula a primeira"
+    ],
+    "answer": 2,
+    "explanation": "Quando as regras conflitam, vence a de maior especificidade: classe (`.destaque`) pesa mais que tag (`p`), mesmo a tag vindo depois no arquivo. A ordem só desempata regras de especificidade igual.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "html-css",
+      "label": "HTML e CSS",
+      "description": "Estrutura e estilo de páginas web"
+    }
+  },
+  {
+    "id": "web-007",
+    "language": "css",
+    "question": "Qual a diferença entre `display: none` e `visibility: hidden`?",
+    "code": "",
+    "options": [
+      "none apaga o elemento do HTML; hidden só deixa o elemento transparente",
+      "hidden tira o elemento do layout; none só o esconde e mantém o espaço",
+      "Não há diferença: os dois escondem e liberam o espaço",
+      "none tira o elemento do layout; hidden só o esconde e mantém o espaço"
+    ],
+    "answer": 3,
+    "explanation": "Com `display: none` o elemento deixa de existir para o layout e os vizinhos ocupam o lugar dele. Com `visibility: hidden` ele continua ocupando espaço, só não aparece.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "html-css",
+      "label": "HTML e CSS",
+      "description": "Estrutura e estilo de páginas web"
+    }
+  },
+  {
+    "id": "web-008",
+    "language": "html",
+    "question": "Qual atributo do `<label>` o liga a um campo, de modo que clicar no texto foque o campo?",
+    "code": "<label ____=\"email\">E-mail</label>\n<input id=\"email\" type=\"email\">",
+    "options": [
+      "target",
+      "id",
+      "for",
+      "name"
+    ],
+    "answer": 2,
+    "explanation": "O `for` recebe o `id` do campo. Além de aumentar a área clicável, isso faz o leitor de tela anunciar o rótulo junto com o campo.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "html-css",
+      "label": "HTML e CSS",
+      "description": "Estrutura e estilo de páginas web"
+    }
+  },
+  {
+    "id": "web-009",
+    "language": "css",
+    "question": "Nessa coluna flex, o que `justify-content: center` faz com os itens?",
+    "code": ".menu {\n  display: flex;\n  flex-direction: column;\n  height: 300px;\n  justify-content: center;\n}",
+    "options": [
+      "Nada: só funciona com flex-direction: row",
+      "Centraliza apenas o texto dentro de cada item",
+      "Centraliza os itens na vertical",
+      "Centraliza os itens na horizontal"
+    ],
+    "answer": 2,
+    "explanation": "O `justify-content` age no eixo principal, e em `flex-direction: column` o eixo principal é o vertical. Para centralizar na horizontal, use `align-items: center` (eixo transversal).",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "html-css",
+      "label": "HTML e CSS",
+      "description": "Estrutura e estilo de páginas web"
+    }
+  },
+  {
+    "id": "web-010",
+    "language": "css",
+    "question": "Considere `<nav id=\"menu\"><a class=\"link ativo\">Início</a></nav>`. De que cor fica o link?",
+    "code": "#menu a { color: red; }\nnav .link.ativo { color: blue; }",
+    "options": [
+      "Vermelho",
+      "Azul, porque vem por último",
+      "A cor padrão do link, pois as regras se anulam",
+      "Azul, porque tem mais classes"
+    ],
+    "answer": 0,
+    "explanation": "A especificidade compara por colunas (ids, classes, tags): `#menu a` é 1-0-1 e `nav .link.ativo` é 0-2-1. Um único id vence qualquer quantidade de classes.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "html-css",
+      "label": "HTML e CSS",
+      "description": "Estrutura e estilo de páginas web"
+    }
+  },
+  {
+    "id": "web-011",
+    "language": "css",
+    "question": "O `.selo` está dentro do `.pai`, que está dentro do `.avo`. Em relação a quê o `.selo` é posicionado?",
+    "code": ".avo  { position: relative; }\n.pai  { /* sem position */ }\n.selo { position: absolute; top: 0; right: 0; }",
+    "options": [
+      "Ao .avo, o ancestral posicionado mais próximo",
+      "Ao .pai, o pai direto",
+      "À janela do navegador, sempre",
+      "Ao elemento irmão anterior do .selo"
+    ],
+    "answer": 0,
+    "explanation": "Um elemento `absolute` se posiciona em relação ao ancestral mais próximo que tenha `position` diferente de `static`. O `.pai` não tem, então o `.selo` sobe até o `.avo`.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "html-css",
+      "label": "HTML e CSS",
+      "description": "Estrutura e estilo de páginas web"
+    }
+  },
+  {
+    "id": "web-012",
+    "language": "html",
+    "question": "Clicar nesse botão, sem nenhum JavaScript, faz o quê?",
+    "code": "<form id=\"login\">\n  <input name=\"email\">\n  <button>Mostrar dica</button>\n</form>",
+    "options": [
+      "Só valida os campos, sem enviar",
+      "Nada: sem onclick o botão não faz nada",
+      "Limpa os campos do formulário",
+      "Envia o formulário: o type padrão do button é submit"
+    ],
+    "answer": 3,
+    "explanation": "Dentro de um `<form>`, o `<button>` sem `type` é `type=\"submit\"`. Para um botão que não envia, escreva `type=\"button\"`.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "html-css",
+      "label": "HTML e CSS",
+      "description": "Estrutura e estilo de páginas web"
+    }
+  },
+  {
+    "id": "web-013",
+    "language": "css",
+    "question": "`.a` e `.b` são irmãos e se sobrepõem na tela. Quem aparece por cima na área de sobreposição?",
+    "code": ".a { position: relative; z-index: 1; }\n.a .filho { position: absolute; z-index: 9999; }\n.b { position: relative; z-index: 2; }",
+    "options": [
+      "O .b: o z-index do .filho só vale dentro do contexto de .a",
+      "O .filho, porque 9999 é maior que 2",
+      "Depende da ordem dos elementos no HTML",
+      "Os dois dividem a área, metade cada"
+    ],
+    "answer": 0,
+    "explanation": "`position` com `z-index` cria um contexto de empilhamento. O `.filho` compete só dentro do `.a` (nível 1); de fora, o `.a` inteiro vale 1 e fica atrás do `.b` (2), seja qual for o z-index do filho.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "html-css",
+      "label": "HTML e CSS",
+      "description": "Estrutura e estilo de páginas web"
+    }
+  },
+  {
+    "id": "web-014",
+    "language": "css",
+    "question": "A galeria tem 3 itens e 600px de largura. Qual a largura de cada item?",
+    "code": ".galeria {\n  display: grid;\n  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));\n  width: 600px;\n}",
+    "options": [
+      "100px",
+      "150px",
+      "200px",
+      "600px"
+    ],
+    "answer": 2,
+    "explanation": "Cabem até 4 colunas de 150px, mas o `auto-fit` colapsa as colunas vazias e distribui o espaço entre as que têm item: 600 ÷ 3 = 200px. Com `auto-fill` seriam 4 colunas de 150px (3 usadas e uma vazia).",
+    "difficulty": "expert",
+    "topic": {
+      "id": "html-css",
+      "label": "HTML e CSS",
+      "description": "Estrutura e estilo de páginas web"
+    }
+  },
+  {
+    "id": "web-015",
+    "language": "html",
+    "question": "Um script externo no `<head>` com o atributo `defer` roda quando?",
+    "code": "<head>\n  <script defer src=\"app.js\"></script>\n</head>",
+    "options": [
+      "Assim que baixar, em qualquer ordem, mesmo no meio da leitura do HTML",
+      "Após o HTML ser lido, antes do DOMContentLoaded, na ordem do documento",
+      "Só depois do evento load, quando as imagens terminam de carregar",
+      "Antes de o HTML ser lido, travando a página até acabar"
+    ],
+    "answer": 1,
+    "explanation": "Com `defer`, o download é paralelo à leitura do HTML, mas a execução espera o documento terminar (antes de `DOMContentLoaded`) e respeita a ordem dos scripts. O que roda ao baixar, sem ordem garantida, é o `async`.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "html-css",
+      "label": "HTML e CSS",
+      "description": "Estrutura e estilo de páginas web"
+    }
+  },
+  {
+    "id": "web-016",
+    "language": "css",
+    "question": "Dois blocos irmãos, `.a` seguido de `.b`. Qual o espaço vertical entre eles?",
+    "code": ".a { margin-bottom: 30px; }\n.b { margin-top: 20px; }",
+    "options": [
+      "10px",
+      "20px",
+      "30px",
+      "50px"
+    ],
+    "answer": 2,
+    "explanation": "Margens verticais de blocos adjacentes colapsam: vale a maior das duas (30px), não a soma. Isso não acontece dentro de contêineres flex ou grid.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "html-css",
+      "label": "HTML e CSS",
+      "description": "Estrutura e estilo de páginas web"
+    }
+  },
+  {
+    "id": "dom-001",
+    "language": "javascript",
+    "question": "Qual método devolve o primeiro elemento que casa com um seletor CSS?",
+    "code": "",
+    "options": [
+      "document.querySelectorAll()",
+      "document.find()",
+      "document.querySelector()",
+      "document.getElementByCss()"
+    ],
+    "answer": 2,
+    "explanation": "`querySelector` devolve o primeiro elemento que casa (ou `null`). O `querySelectorAll` devolve todos, numa lista. `getElementByCss` e `find` não existem no `document`.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "dom-events",
+      "label": "DOM e eventos",
+      "description": "Selecionar, alterar e reagir a eventos na página"
+    }
+  },
+  {
+    "id": "dom-002",
+    "language": "javascript",
+    "question": "Qual propriedade troca o texto de um elemento, sem interpretar HTML?",
+    "code": "const titulo = document.querySelector(\"h1\");\ntitulo.____ = \"Olá!\";",
+    "options": [
+      "innerHTML",
+      "content",
+      "textContent",
+      "text"
+    ],
+    "answer": 2,
+    "explanation": "`textContent` define o texto puro. `innerHTML` interpreta o que receber como HTML; `text` e `content` não são propriedades de elementos.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "dom-events",
+      "label": "DOM e eventos",
+      "description": "Selecionar, alterar e reagir a eventos na página"
+    }
+  },
+  {
+    "id": "dom-003",
+    "language": "javascript",
+    "question": "Qual método registra uma função para rodar quando o botão for clicado?",
+    "code": "const botao = document.querySelector(\"#salvar\");\nbotao.____(\"click\", () => alert(\"Salvo!\"));",
+    "options": [
+      "onClick",
+      "listen",
+      "addEventListener",
+      "attachClick"
+    ],
+    "answer": 2,
+    "explanation": "`addEventListener(tipo, função)` registra o ouvinte do evento. `onClick` com C maiúsculo é de frameworks como o React, não do DOM; o do DOM é `onclick`, em minúsculas, e é uma propriedade.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "dom-events",
+      "label": "DOM e eventos",
+      "description": "Selecionar, alterar e reagir a eventos na página"
+    }
+  },
+  {
+    "id": "dom-004",
+    "language": "javascript",
+    "question": "O `<li>` foi criado, mas não aparece na página. O que falta?",
+    "code": "const item = document.createElement(\"li\");\nitem.textContent = \"Aprender DOM\";",
+    "options": [
+      "Nada: criar o elemento já o mostra",
+      "Chamar document.render(item)",
+      "Chamar item.show()",
+      "Inseri-lo na página, por exemplo com lista.append(item)"
+    ],
+    "answer": 3,
+    "explanation": "`createElement` só cria o elemento na memória. Ele aparece quando é colocado na árvore do documento, com `append`, `appendChild`, `prepend` e similares.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "dom-events",
+      "label": "DOM e eventos",
+      "description": "Selecionar, alterar e reagir a eventos na página"
+    }
+  },
+  {
+    "id": "dom-005",
+    "language": "javascript",
+    "question": "O que chamar para impedir que o envio do formulário recarregue a página?",
+    "code": "form.addEventListener(\"submit\", (e) => {\n  e.____();\n  validar();\n});",
+    "options": [
+      "stopPropagation",
+      "preventDefault",
+      "stopDefault",
+      "cancelSubmit"
+    ],
+    "answer": 1,
+    "explanation": "`preventDefault()` cancela a ação padrão do evento (no `submit`, enviar e recarregar). `stopPropagation()` só impede o evento de subir para os elementos pais.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "dom-events",
+      "label": "DOM e eventos",
+      "description": "Selecionar, alterar e reagir a eventos na página"
+    }
+  },
+  {
+    "id": "dom-006",
+    "language": "javascript",
+    "question": "A página tem vários `<li>`. O que acontece nesse código?",
+    "code": "const itens = document.querySelectorAll(\"li\");\nconst nomes = itens.map((li) => li.textContent);",
+    "options": [
+      "TypeError: NodeList não tem o método map",
+      "nomes vira uma NodeList com os textos",
+      "nomes vira um array com os textos",
+      "nomes vira um array vazio"
+    ],
+    "answer": 0,
+    "explanation": "`querySelectorAll` devolve uma `NodeList`, que tem `forEach` mas não `map`. Converta antes: `Array.from(itens, (li) => li.textContent)` ou `[...itens].map(...)`.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "dom-events",
+      "label": "DOM e eventos",
+      "description": "Selecionar, alterar e reagir a eventos na página"
+    }
+  },
+  {
+    "id": "dom-007",
+    "language": "javascript",
+    "question": "O que aparece no console ao clicar em um `<li>` dentro da lista (`lista` é o `<ul>`)?",
+    "code": "lista.addEventListener(\"click\", (e) => {\n  console.log(e.target.tagName, e.currentTarget.tagName);\n});",
+    "options": [
+      "UL UL",
+      "LI UL",
+      "LI LI",
+      "UL LI"
+    ],
+    "answer": 1,
+    "explanation": "`target` é o elemento em que o clique aconteceu (o `<li>`); `currentTarget` é onde o ouvinte está (o `<ul>`). Essa técnica, com um só ouvinte no pai para vários filhos, é a delegação de eventos.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "dom-events",
+      "label": "DOM e eventos",
+      "description": "Selecionar, alterar e reagir a eventos na página"
+    }
+  },
+  {
+    "id": "dom-008",
+    "language": "javascript",
+    "question": "Alguém digitou `<img src=x onerror=alert(1)>` num comentário. Qual forma de mostrar esse texto na página é segura?",
+    "code": "",
+    "options": [
+      "comentario.innerHTML = texto",
+      "comentario.textContent = texto",
+      "comentario.insertAdjacentHTML(\"beforeend\", texto)",
+      "comentario.outerHTML = texto"
+    ],
+    "answer": 1,
+    "explanation": "`textContent` trata o valor como texto puro, então as tags aparecem escritas e nada executa. As outras três interpretam o texto como HTML e abrem a porta para XSS (injeção de script).",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "dom-events",
+      "label": "DOM e eventos",
+      "description": "Selecionar, alterar e reagir a eventos na página"
+    }
+  },
+  {
+    "id": "dom-009",
+    "language": "javascript",
+    "question": "Em que ordem as mensagens aparecem?",
+    "code": "pai.addEventListener(\"click\", () => console.log(\"pai\"));\npai.addEventListener(\"click\", () => console.log(\"pai (captura)\"), true);\nfilho.addEventListener(\"click\", () => console.log(\"filho\"));\n\nfilho.click(); // o filho está dentro do pai",
+    "options": [
+      "filho, pai, pai (captura)",
+      "pai, pai (captura), filho",
+      "pai (captura), filho, pai",
+      "pai (captura), pai, filho"
+    ],
+    "answer": 2,
+    "explanation": "O evento tem três fases: captura (de cima para baixo), alvo e bolha (de baixo para cima). O ouvinte com `true` roda na captura, antes do alvo; o comum roda na bolha, depois dele.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "dom-events",
+      "label": "DOM e eventos",
+      "description": "Selecionar, alterar e reagir a eventos na página"
+    }
+  },
+  {
+    "id": "dom-010",
+    "language": "javascript",
+    "question": "O que aparece no console?",
+    "code": "b.addEventListener(\"click\", (e) => {\n  console.log(1);\n  e.stopPropagation();\n});\nb.addEventListener(\"click\", () => console.log(2));\na.addEventListener(\"click\", () => console.log(3)); // a é o pai de b\n\nb.click();",
+    "options": [
+      "1",
+      "1 3",
+      "1 2 3",
+      "1 2"
+    ],
+    "answer": 3,
+    "explanation": "`stopPropagation()` impede que o evento suba até o pai (o `3` não aparece), mas os outros ouvintes do mesmo elemento ainda rodam (o `2` aparece). Para cortar também esses, use `stopImmediatePropagation()`.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "dom-events",
+      "label": "DOM e eventos",
+      "description": "Selecionar, alterar e reagir a eventos na página"
+    }
+  },
+  {
+    "id": "dom-011",
+    "language": "javascript",
+    "question": "O que aparece no console?",
+    "code": "botao.addEventListener(\"click\", () => console.log(\"oi\"));\nbotao.removeEventListener(\"click\", () => console.log(\"oi\"));\nbotao.click();",
+    "options": [
+      "oi, duas vezes",
+      "Nada: o ouvinte foi removido",
+      "TypeError ao tentar remover",
+      "oi"
+    ],
+    "answer": 3,
+    "explanation": "`removeEventListener` precisa da MESMA função que foi registrada. Duas arrow functions iguais no texto são objetos diferentes, então nada é removido. Guarde a função numa variável e use-a nas duas chamadas.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "dom-events",
+      "label": "DOM e eventos",
+      "description": "Selecionar, alterar e reagir a eventos na página"
+    }
+  },
+  {
+    "id": "dom-012",
+    "language": "javascript",
+    "question": "Com 2 elementos `class=\"item\"` na página, o que aparece no console?",
+    "code": "const vivos = document.getElementsByClassName(\"item\");\nconst fixos = document.querySelectorAll(\".item\");\n\ndocument.body.append(\n  Object.assign(document.createElement(\"li\"), { className: \"item\" })\n);\nconsole.log(vivos.length, fixos.length);",
+    "options": [
+      "2 2",
+      "2 3",
+      "3 2",
+      "3 3"
+    ],
+    "answer": 2,
+    "explanation": "`getElementsByClassName` devolve uma coleção \"viva\", que acompanha o DOM (3). `querySelectorAll` devolve uma foto estática do momento da busca (2).",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "dom-events",
+      "label": "DOM e eventos",
+      "description": "Selecionar, alterar e reagir a eventos na página"
+    }
+  },
+  {
+    "id": "dom-013",
+    "language": "javascript",
+    "question": "O evento é cancelável. O que o console mostra quando ele acontece?",
+    "code": "document.addEventListener(\n  \"touchstart\",\n  (e) => {\n    e.preventDefault();\n    console.log(e.defaultPrevented);\n  },\n  { passive: true }\n);",
+    "options": [
+      "false",
+      "true",
+      "TypeError",
+      "Nada é impresso"
+    ],
+    "answer": 0,
+    "explanation": "Com `{ passive: true }` você promete ao navegador que não vai cancelar o evento, para ele rolar a tela sem esperar o ouvinte. Por isso o `preventDefault()` é ignorado (e o console avisa).",
+    "difficulty": "expert",
+    "topic": {
+      "id": "dom-events",
+      "label": "DOM e eventos",
+      "description": "Selecionar, alterar e reagir a eventos na página"
+    }
+  },
+  {
+    "id": "dom-014",
+    "language": "javascript",
+    "question": "Em que ordem aparecem as mensagens?",
+    "code": "const obs = new MutationObserver(() => console.log(\"observer\"));\nobs.observe(caixa, { childList: true });\n\ncaixa.append(\"x\");\nPromise.resolve().then(() => console.log(\"promise\"));\nsetTimeout(() => console.log(\"timeout\"));\nconsole.log(\"sync\");",
+    "options": [
+      "sync, timeout, observer, promise",
+      "sync, promise, observer, timeout",
+      "observer, sync, promise, timeout",
+      "sync, observer, promise, timeout"
+    ],
+    "answer": 3,
+    "explanation": "O código síncrono termina primeiro. Os callbacks do `MutationObserver` são microtarefas, enfileiradas no momento da mudança (o `append`), antes do `then`; as microtarefas esvaziam antes do `setTimeout`.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "dom-events",
+      "label": "DOM e eventos",
+      "description": "Selecionar, alterar e reagir a eventos na página"
+    }
+  },
+  {
+    "id": "dom-015",
+    "language": "javascript",
+    "question": "O que aparece no console, na ordem?",
+    "code": "const ctrl = new AbortController();\nconst opts = { signal: ctrl.signal };\nbotao.addEventListener(\"click\", () => console.log(\"a\"), opts);\nbotao.addEventListener(\"click\", () => console.log(\"b\"), opts);\n\nbotao.click();\nctrl.abort();\nbotao.click();",
+    "options": [
+      "Nada: abort() só serve para cancelar fetch",
+      "a, b",
+      "a, a, b, b",
+      "a, b, a, b"
+    ],
+    "answer": 1,
+    "explanation": "Passar um `signal` ao `addEventListener` liga o ouvinte ao controlador: `abort()` remove de uma vez todos os ouvintes registrados com ele. Útil para limpar vários ouvintes sem guardar cada função.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "dom-events",
+      "label": "DOM e eventos",
+      "description": "Selecionar, alterar e reagir a eventos na página"
+    }
+  },
+  {
+    "id": "dom-016",
+    "language": "javascript",
+    "question": "Com muitas caixas, esse laço fica lento. Qual o motivo e a correção?",
+    "code": "for (const caixa of caixas) {\n  const largura = painel.offsetWidth; // lê o layout\n  caixa.style.width = largura + \"px\"; // escreve o estilo\n}",
+    "options": [
+      "Ler e escrever alternado força recalcular o layout; leia antes do laço",
+      "O for...of é sempre mais lento que o forEach",
+      "style.width é lento por natureza; troque por setAttribute",
+      "offsetWidth faz uma requisição ao servidor a cada leitura"
+    ],
+    "answer": 0,
+    "explanation": "Escrever estilo invalida o layout, e ler `offsetWidth` logo depois obriga o navegador a recalculá-lo na hora (layout thrashing). Leia o valor uma vez, fora do laço, e só então escreva em todas as caixas.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "dom-events",
+      "label": "DOM e eventos",
+      "description": "Selecionar, alterar e reagir a eventos na página"
+    }
   }
 ]

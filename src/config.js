@@ -41,10 +41,28 @@ module.exports = {
   challengeTtlMs: 5 * 60 * 1000, // depois disso o desafio expira
   cooldownMs: 3000, // intervalo mínimo entre comandos da mesma pessoa
 
+  // ---- Estímulos de hábito. Os bônus abaixo ficam FORA do limite diário de XP: são raros
+  // (uma vez por dia, por marco ou a cada N acertos seguidos) e premiam constância, não volume.
+  // Meta diária: quantas respostas (certas ou erradas) por dia cumprem a meta (0 desliga).
+  dailyGoal: nonNegativeInt(process.env.DAILY_GOAL, 5),
+  goalBonusXp: 15, // XP ao cumprir a meta do dia (uma vez por dia)
+  // Marcos de sequência: dias seguidos -> XP de bônus no dia em que o marco é atingido.
+  streakMilestones: { 3: 10, 7: 30, 14: 60, 30: 150, 60: 300, 100: 500 },
+  comboEvery: 5, // a cada N acertos seguidos, o combo dá um bônus
+  comboBonusXp: 5,
+
+  // ---- Cursos e certificados. Um módulo (assunto) de um nível está concluído quando a pessoa
+  // acertou pelo menos esta porcentagem das perguntas DIFERENTES dele. Acertar a mesma pergunta
+  // várias vezes não conta mais de uma vez. 1 a 100.
+  coursePassPercent: Math.min(100, Math.max(1, nonNegativeInt(process.env.COURSE_PASS_PERCENT, 75) || 75)),
+
+  // Cores da marca (a paleta completa e o porquê de cada uma estão em brand/guide.html).
+  // Os valores são os mesmos de brand/tokens/colors.json.
   colors: {
-    brand: 0x5865f2,
-    success: 0x57f287,
-    danger: 0xed4245,
-    muted: 0x747f8d,
+    brand: 0x6c4dff, // Violeta Devlingo: mensagens padrão
+    success: 0x2bd9a8, // Menta: acerto
+    danger: 0xff5c7a, // Coral: erro
+    muted: 0x6b6890, // Bruma: desafio expirado
+    gold: 0xffb224, // Faísca: comemorações (subir de nível, meta, marcos, conquistas)
   },
 };

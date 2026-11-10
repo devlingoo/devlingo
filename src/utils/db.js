@@ -4,6 +4,8 @@ const { DatabaseSync } = require("node:sqlite"); // embutido no Node 22.13+, sem
 const config = require("../config");
 const logger = require("./logger");
 const { dayKey, shiftDay } = require("./time");
+const { levelOf } = require("./progress");
+const achievements = require("./achievements");
 
 // Cada item é uma migração; a posição + 1 é a versão gravada em PRAGMA user_version.
 // Para mudar o esquema, acrescente uma migração nova no fim (nunca edite as antigas).
@@ -26,6 +28,56 @@ const MIGRATIONS = [
     PRIMARY KEY (guild_id, user_id)
   );
   CREATE INDEX guild_xp_rank ON guild_xp (guild_id, xp DESC);
+  `,
+  // v2: configuração inicial da pessoa (nível e áreas escolhidos no comando "configurar").
+  // `areas` guarda os ids separados por vírgula, por exemplo "frontend,backend".
+  `
+  ALTER TABLE users ADD COLUMN level TEXT;
+  ALTER TABLE users ADD COLUMN areas TEXT;
+  `,
+  // v3: estatísticas, combo, meta diária e conquistas (estímulos de hábito).
+  `
+  ALTER TABLE users ADD COLUMN best_streak    INTEGER NOT NULL DEFAULT 0;
+  ALTER TABLE users ADD COLUMN answered       INTEGER NOT NULL DEFAULT 0;
+  ALTER TABLE users ADD COLUMN correct        INTEGER NOT NULL DEFAULT 0;
+  ALTER TABLE users ADD COLUMN expert_correct INTEGER NOT NULL DEFAULT 0;
+  ALTER TABLE users ADD COLUMN combo          INTEGER NOT NULL DEFAULT 0;
+  ALTER TABLE users ADD COLUMN best_combo     INTEGER NOT NULL DEFAULT 0;
+  ALTER TABLE users ADD COLUMN goal_day       TEXT;
+  ALTER TABLE users ADD COLUMN goal_count     INTEGER NOT NULL DEFAULT 0;
+  ALTER TABLE users ADD COLUMN goal_done_days INTEGER NOT NULL DEFAULT 0;
+
+  CREATE TABLE achievements (
+    user_id     TEXT NOT NULL,
+    key         TEXT NOT NULL,
+    unlocked_at INTEGER NOT NULL,
+    PRIMARY KEY (user_id, key)
+  );
+  `,
+  // v4: cursos e certificados. "seen" lembra de cada pergunta que a pessoa já respondeu: quando foi
+  // a última vez e se ela já acertou (cada pergunta acertada conta uma vez só no progresso dos
+  // cursos, e o sorteio usa isso para não repetir à toa); "certificates" tem um registro por curso e
+  // nível concluído, com um código único que qualquer pessoa pode conferir.
+  `
+  CREATE TABLE seen (
+    user_id      TEXT NOT NULL,
+    challenge_id TEXT NOT NULL,
+    last_at      INTEGER NOT NULL,
+    solved       INTEGER NOT NULL DEFAULT 0,
+    PRIMARY KEY (user_id, challenge_id)
+  );
+
+  CREATE TABLE certificates (
+    code      TEXT PRIMARY KEY,
+    user_id   TEXT NOT NULL,
+    course_id TEXT NOT NULL,
+    level     TEXT NOT NULL,
+    issued_at INTEGER NOT NULL,
+    UNIQUE (user_id, course_id, level)
+  );
+  CREATE INDEX certificates_user ON certificates (user_id, issued_at);
+
+  ALTER TABLE users ADD COLUMN cert_name TEXT;
   `,
 ];
 
@@ -102,7 +154,9 @@ function open(file = config.dbPath) {
   if (!inMemory) fs.mkdirSync(path.dirname(file), { recursive: true });
 
   db = new DatabaseSync(file);
-  if (!inMemory) db.exec("PRAGMA journal_mode = WAL; PRAGMA synchronous = NORMAL;");
+  // busy_timeout: com outro processo usando o mesmo arquivo (duas instâncias do bot, reinício do
+  // `npm run dev`), espera até 5 s pelo travamento em vez de falhar na hora com "database is locked".
+  if (!inMemory) db.exec("PRAGMA busy_timeout = 5000; PRAGMA journal_mode = WAL; PRAGMA synchronous = NORMAL;");
   migrate(db);
   if (!inMemory) importLegacyJson(path.join(path.dirname(file), "data.json"));
   return db;
@@ -143,19 +197,50 @@ function getUser(userId, now = new Date()) {
   };
 }
 
-// Registra uma resposta. guildId é null quando vem de DM.
-// Devolve { xp, streak, gained, capped, dailyXp }:
-//   gained = XP que realmente entrou (pode ser menor que o prêmio por causa do limite diário)
-//   capped = true se o limite diário segurou parte ou todo o XP desta resposta
-function recordAnswer(userId, guildId, correct, xpReward, now = new Date()) {
+// Configuração inicial da pessoa: { level, areas: [ids] }, ou null se ainda não configurou.
+function getPreferences(userId) {
+  const row = connection().prepare("SELECT level, areas FROM users WHERE id = ?").get(userId);
+  if (!row?.level || !row?.areas) return null;
+  return { level: row.level, areas: row.areas.split(",").filter(Boolean) };
+}
+
+// Guarda (ou troca) o nível e as áreas. Cria a pessoa se ela ainda não existir; XP e sequência não mudam.
+function setPreferences(userId, { level, areas }) {
+  connection()
+    .prepare(
+      `INSERT INTO users (id, level, areas) VALUES (?, ?, ?)
+       ON CONFLICT(id) DO UPDATE SET level = excluded.level, areas = excluded.areas`
+    )
+    .run(userId, level, areas.join(","));
+}
+
+// Registra uma resposta. guildId é null quando vem de DM. `extra.difficulty` (opcional) é o nível
+// do desafio e serve para as conquistas.
+//
+// Devolve tudo o que a mensagem de resposta precisa mostrar:
+//   xp, streak, level, dailyXp
+//   gained        XP da resposta que realmente entrou (o limite diário pode segurar parte ou tudo)
+//   capped        true se o limite diário segurou parte ou todo o XP desta resposta
+//   bonus         { combo, goal, streak, total }: XP extra, FORA do limite diário
+//   combo         acertos seguidos agora; comboBroken = combo (>= 3) que acabou de ser perdido, ou 0
+//   goal          { count, target, completed }: meta do dia (completed = acabou de ser cumprida)
+//   milestone     { days, bonus } se um marco de sequência foi atingido hoje, senão null
+//   levelUp       { from, to } se subiu de nível, senão null
+//   achievements  conquistas desbloqueadas agora (objetos de achievements.js)
+function recordAnswer(userId, guildId, correct, xpReward, now = new Date(), extra = {}) {
   const today = todayKey(now);
 
   return transaction(() => {
-    const row = connection().prepare("SELECT * FROM users WHERE id = ?").get(userId);
+    const conn = connection();
+    const row = conn.prepare("SELECT * FROM users WHERE id = ?").get(userId);
 
-    // Responder já conta como atividade do dia; a sequência cresce no primeiro desafio de cada dia.
-    const streak = row?.last_day === today ? row.streak : currentStreak(row, today) + 1;
+    // Sequência: responder já conta como atividade do dia e ela cresce na primeira resposta de cada dia.
+    const firstOfDay = row?.last_day !== today;
+    const streak = firstOfDay ? currentStreak(row, today) + 1 : row.streak;
+    const bestStreak = Math.max(row?.best_streak ?? 0, streak);
+    const milestoneBonus = firstOfDay ? config.streakMilestones[streak] ?? 0 : 0;
 
+    // XP da resposta, respeitando o limite diário.
     const dailyBefore = dailyXpOf(row, today);
     let gained = correct ? xpReward : 0;
     let capped = false;
@@ -167,29 +252,211 @@ function recordAnswer(userId, guildId, correct, xpReward, now = new Date()) {
       }
     }
 
-    const xp = (row?.xp ?? 0) + gained;
-    const dailyXp = dailyBefore + gained;
-    connection()
-      .prepare(
-        `INSERT INTO users (id, xp, streak, last_day, daily_day, daily_xp)
-         VALUES (?, ?, ?, ?, ?, ?)
-         ON CONFLICT(id) DO UPDATE SET
-           xp = excluded.xp, streak = excluded.streak, last_day = excluded.last_day,
-           daily_day = excluded.daily_day, daily_xp = excluded.daily_xp`
-      )
-      .run(userId, xp, streak, today, today, dailyXp);
+    // Combo: acertos seguidos. O bônus só vem quando o XP da resposta entrou (não no limite diário).
+    const comboBefore = row?.combo ?? 0;
+    const combo = correct ? comboBefore + 1 : 0;
+    const comboBroken = !correct && comboBefore >= 3 ? comboBefore : 0;
+    const comboBonus = correct && gained > 0 && combo % config.comboEvery === 0 ? config.comboBonusXp : 0;
 
-    if (guildId && gained > 0) {
-      connection()
+    // Meta do dia: conta respostas (certas ou erradas). O bônus sai uma vez, quando a contagem a alcança.
+    const goalBefore = row?.goal_day === today ? row.goal_count : 0;
+    const goalCount = goalBefore + 1;
+    const goalCompleted = config.dailyGoal > 0 && goalBefore < config.dailyGoal && goalCount >= config.dailyGoal;
+    const goalBonus = goalCompleted ? config.goalBonusXp : 0;
+
+    const bonusTotal = comboBonus + goalBonus + milestoneBonus;
+    const xpBefore = row?.xp ?? 0;
+    const xp = xpBefore + gained + bonusTotal;
+    const dailyXp = dailyBefore + gained; // bônus não gasta o limite diário
+    const levelBefore = levelOf(xpBefore);
+    const level = levelOf(xp);
+
+    const stats = {
+      answered: (row?.answered ?? 0) + 1,
+      correct: (row?.correct ?? 0) + (correct ? 1 : 0),
+      expertCorrect: (row?.expert_correct ?? 0) + (correct && extra.difficulty === "expert" ? 1 : 0),
+      bestCombo: Math.max(row?.best_combo ?? 0, combo),
+      goalDoneDays: (row?.goal_done_days ?? 0) + (goalCompleted ? 1 : 0),
+      streak,
+      bestStreak,
+      level,
+    };
+
+    conn
+      .prepare(
+        `INSERT INTO users (id, xp, streak, best_streak, last_day, daily_day, daily_xp, answered, correct,
+                            expert_correct, combo, best_combo, goal_day, goal_count, goal_done_days)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+         ON CONFLICT(id) DO UPDATE SET
+           xp = excluded.xp, streak = excluded.streak, best_streak = excluded.best_streak,
+           last_day = excluded.last_day, daily_day = excluded.daily_day, daily_xp = excluded.daily_xp,
+           answered = excluded.answered, correct = excluded.correct, expert_correct = excluded.expert_correct,
+           combo = excluded.combo, best_combo = excluded.best_combo, goal_day = excluded.goal_day,
+           goal_count = excluded.goal_count, goal_done_days = excluded.goal_done_days`
+      )
+      .run(
+        userId, xp, streak, bestStreak, today, today, dailyXp, stats.answered, stats.correct,
+        stats.expertCorrect, combo, stats.bestCombo, today, goalCount, stats.goalDoneDays
+      );
+
+    if (guildId && gained + bonusTotal > 0) {
+      conn
         .prepare(
           `INSERT INTO guild_xp (guild_id, user_id, xp) VALUES (?, ?, ?)
            ON CONFLICT(guild_id, user_id) DO UPDATE SET xp = xp + excluded.xp`
         )
-        .run(guildId, userId, gained);
+        .run(guildId, userId, gained + bonusTotal);
     }
 
-    return { xp, streak, gained, capped, dailyXp };
+    // Lembra da pergunta (quando foi vista e se já foi acertada): alimenta os cursos e o sorteio.
+    if (extra.challengeId) markSeen(userId, extra.challengeId, correct, now);
+
+    // Conquistas: grava as que a pessoa passou a merecer e devolve só as novas.
+    const unlocked = [];
+    for (const key of achievements.earned(stats)) {
+      const { changes } = conn
+        .prepare("INSERT OR IGNORE INTO achievements (user_id, key, unlocked_at) VALUES (?, ?, ?)")
+        .run(userId, key, now.getTime());
+      if (changes > 0) unlocked.push(achievements.get(key));
+    }
+
+    return {
+      xp,
+      level,
+      streak,
+      gained,
+      capped,
+      dailyXp,
+      bonus: { combo: comboBonus, goal: goalBonus, streak: milestoneBonus, total: bonusTotal },
+      combo,
+      comboBroken,
+      goal: { count: goalCount, target: config.dailyGoal, completed: goalCompleted },
+      milestone: milestoneBonus > 0 ? { days: streak, bonus: milestoneBonus } : null,
+      levelUp: level > levelBefore ? { from: levelBefore, to: level } : null,
+      achievements: unlocked,
+    };
   });
+}
+
+// Estatísticas da pessoa para o perfil (tudo zerado se ela ainda não jogou).
+function getStats(userId, now = new Date()) {
+  const row = connection().prepare("SELECT * FROM users WHERE id = ?").get(userId);
+  const today = todayKey(now);
+  const answered = row?.answered ?? 0;
+  const correct = row?.correct ?? 0;
+  const streak = currentStreak(row, today);
+  return {
+    answered,
+    correct,
+    accuracy: answered > 0 ? Math.round((correct / answered) * 100) : 0,
+    streak,
+    bestStreak: Math.max(row?.best_streak ?? 0, streak),
+    combo: row?.combo ?? 0,
+    bestCombo: row?.best_combo ?? 0,
+    goalCount: row?.goal_day === today ? row.goal_count : 0,
+    goalDoneDays: row?.goal_done_days ?? 0,
+  };
+}
+
+// Chaves das conquistas desbloqueadas, da mais antiga para a mais nova.
+function getAchievements(userId) {
+  return connection()
+    .prepare("SELECT key FROM achievements WHERE user_id = ? ORDER BY unlocked_at, key")
+    .all(userId)
+    .map((r) => r.key);
+}
+
+// ---------- cursos e certificados ----------
+
+// Registra que a pessoa respondeu a pergunta agora. "solved" nunca volta atrás: depois de acertar
+// uma vez, errar de novo não desfaz o progresso.
+function markSeen(userId, challengeId, correct, now = new Date()) {
+  connection()
+    .prepare(
+      `INSERT INTO seen (user_id, challenge_id, last_at, solved) VALUES (?, ?, ?, ?)
+       ON CONFLICT(user_id, challenge_id) DO UPDATE SET last_at = excluded.last_at, solved = MAX(solved, excluded.solved)`
+    )
+    .run(userId, challengeId, now.getTime(), correct ? 1 : 0);
+}
+
+// Atalho: marca como acertada.
+const markSolved = (userId, challengeId, now = new Date()) => markSeen(userId, challengeId, true, now);
+
+// Ids das perguntas que a pessoa já acertou.
+function getSolved(userId) {
+  return new Set(
+    connection()
+      .prepare("SELECT challenge_id FROM seen WHERE user_id = ? AND solved = 1")
+      .all(userId)
+      .map((r) => r.challenge_id)
+  );
+}
+
+// Tudo o que a pessoa já respondeu: Map(id da pergunta -> { lastAt, solved }). Serve ao sorteio.
+function getSeen(userId) {
+  return new Map(
+    connection()
+      .prepare("SELECT challenge_id, last_at, solved FROM seen WHERE user_id = ?")
+      .all(userId)
+      .map((r) => [r.challenge_id, { lastAt: r.last_at, solved: r.solved === 1 }])
+  );
+}
+
+// Grava um certificado. Devolve false se o código já existia (colisão) ou se a pessoa já tem
+// o certificado desse curso e nível.
+function addCertificate({ code, userId, courseId, level, now = new Date() }) {
+  const { changes } = connection()
+    .prepare("INSERT OR IGNORE INTO certificates (code, user_id, course_id, level, issued_at) VALUES (?, ?, ?, ?, ?)")
+    .run(code, userId, courseId, level, now.getTime());
+  return changes > 0;
+}
+
+const certificateOf = (row) =>
+  row ? { code: row.code, userId: row.user_id, courseId: row.course_id, level: row.level, issuedAt: row.issued_at } : null;
+
+// Certificados da pessoa, do mais antigo para o mais novo.
+function getCertificates(userId) {
+  return connection()
+    .prepare("SELECT * FROM certificates WHERE user_id = ? ORDER BY issued_at, course_id, level")
+    .all(userId)
+    .map(certificateOf);
+}
+
+function getCertificate(userId, courseId, level) {
+  return certificateOf(
+    connection().prepare("SELECT * FROM certificates WHERE user_id = ? AND course_id = ? AND level = ?").get(userId, courseId, level)
+  );
+}
+
+// Busca pelo código (para o comando verificar). O código é comparado sem diferenciar maiúsculas.
+function findCertificate(code) {
+  return certificateOf(connection().prepare("SELECT * FROM certificates WHERE code = ?").get(String(code).toUpperCase()));
+}
+
+// Nome que aparece nos certificados da pessoa (ela mesma escolhe).
+function getCertificateName(userId) {
+  return connection().prepare("SELECT cert_name FROM users WHERE id = ?").get(userId)?.cert_name ?? null;
+}
+
+function setCertificateName(userId, name) {
+  connection()
+    .prepare("INSERT INTO users (id, cert_name) VALUES (?, ?) ON CONFLICT(id) DO UPDATE SET cert_name = excluded.cert_name")
+    .run(userId, name);
+}
+
+// Posição da pessoa no ranking do servidor (guildId) ou global (guildId nulo): { position, xp },
+// ou null se ela ainda não tem XP. Empates dividem a mesma posição.
+function rankOf(userId, guildId) {
+  const conn = connection();
+  const mine = guildId
+    ? conn.prepare("SELECT xp FROM guild_xp WHERE guild_id = ? AND user_id = ?").get(guildId, userId)
+    : conn.prepare("SELECT xp FROM users WHERE id = ?").get(userId);
+  if (!mine || mine.xp <= 0) return null;
+
+  const { n } = guildId
+    ? conn.prepare("SELECT COUNT(*) AS n FROM guild_xp WHERE guild_id = ? AND xp > ?").get(guildId, mine.xp)
+    : conn.prepare("SELECT COUNT(*) AS n FROM users WHERE xp > ?").get(mine.xp);
+  return { position: n + 1, xp: mine.xp };
 }
 
 // Ranking do servidor (guildId) ou global (guildId nulo, usado em DM)
@@ -207,4 +474,25 @@ function top(guildId, limit = 10) {
   return rows.map((r) => ({ userId: r.userId, xp: r.xp }));
 }
 
-module.exports = { getUser, recordAnswer, top, open, close };
+module.exports = {
+  getUser,
+  getPreferences,
+  setPreferences,
+  recordAnswer,
+  getStats,
+  getAchievements,
+  markSeen,
+  markSolved,
+  getSolved,
+  getSeen,
+  addCertificate,
+  getCertificates,
+  getCertificate,
+  findCertificate,
+  getCertificateName,
+  setCertificateName,
+  rankOf,
+  top,
+  open,
+  close,
+};

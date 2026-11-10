@@ -1,0 +1,78 @@
+/* Tokens do Devlingo. Gerado por brand/tools/build.js; não edite à mão.
+   Use os tokens semânticos (--dl-bg, --dl-text, --dl-primary...) nas telas: eles trocam sozinhos
+   entre claro e escuro. As cores "cruas" (--dl-violet etc.) são a paleta da marca. */
+
+:root {
+  /* Paleta */
+  --dl-violet: #6C4DFF;
+  --dl-violet-deep: #4A2FD6;
+  --dl-violet-light: #A99BFF;
+  --dl-violet-tint: #EEEAFF;
+  --dl-midnight: #17123A;
+  --dl-ink: #1B1740;
+  --dl-mist: #6B6890;
+  --dl-cloud: #F7F5FF;
+  --dl-mint: #2BD9A8;
+  --dl-spark: #FFB224;
+  --dl-flame: #FF7A2F;
+  --dl-coral: #FF5C7A;
+
+  /* Degradês */
+  --dl-gradient-brand: linear-gradient(135deg, #8e75ff, #5233e6);
+  --dl-gradient-spark: linear-gradient(135deg, #ffd978, #FFB224);
+  --dl-gradient-flame: linear-gradient(180deg, #FFB224, #FF7A2F);
+
+  /* Semânticos (tema claro) */
+  --dl-bg: var(--dl-cloud);
+  --dl-surface: #ffffff;
+  --dl-surface-soft: var(--dl-violet-tint);
+  --dl-border: #e1dcf7;
+  --dl-text: var(--dl-ink);
+  --dl-text-muted: var(--dl-mist);
+  --dl-primary: var(--dl-violet);
+  --dl-primary-hover: var(--dl-violet-deep);
+  --dl-on-primary: #ffffff;
+  --dl-link: var(--dl-violet);
+  --dl-success: var(--dl-mint);
+  --dl-on-success: var(--dl-ink);
+  --dl-warning: var(--dl-spark);
+  --dl-on-warning: var(--dl-ink);
+  --dl-danger: var(--dl-coral);
+  --dl-on-danger: var(--dl-ink);
+
+  /* Tipografia */
+  --dl-font-sans: "Nunito", ui-rounded, "SF Pro Rounded", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --dl-font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  /* Forma e espaço */
+  --dl-radius-sm: 10px;
+  --dl-radius-md: 16px;
+  --dl-radius-lg: 24px;
+  --dl-radius-pill: 999px;
+  --dl-space: 8px; /* múltiplos de 8 */
+  --dl-shadow: 0 10px 30px rgba(74, 47, 214, 0.18);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --dl-bg: var(--dl-midnight);
+    --dl-surface: #211a55;
+    --dl-surface-soft: #2b2270;
+    --dl-border: #3a3085;
+    --dl-text: #f4f2ff;
+    --dl-text-muted: #b9b3dd;
+    --dl-link: var(--dl-violet-light);
+    --dl-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  }
+}
+
+:root[data-theme="dark"] {
+  --dl-bg: var(--dl-midnight);
+  --dl-surface: #211a55;
+  --dl-surface-soft: #2b2270;
+  --dl-border: #3a3085;
+  --dl-text: #f4f2ff;
+  --dl-text-muted: #b9b3dd;
+  --dl-link: var(--dl-violet-light);
+  --dl-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
