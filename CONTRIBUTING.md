@@ -37,6 +37,13 @@ O progresso fica em SQLite (`src/utils/db.js`). Para mudar as tabelas, **acresce
 - As telas (o que cada comando mostra) ficam em `src/utils/views.js`; os comandos e os botões de atalho usam as mesmas funções. Comando novo entra na ajuda sozinho: defina `category` (`estudar`, `voce` ou `ajuda`) e, se quiser, `order`.
 - Em mensagens com menção ao bot, deixe a menção **fora** de crases (`commandRef` em `ui.js` já faz isso): dentro de código o Discord mostra o número, não o nome.
 
+## Marca
+
+- A identidade visual (logotipo, cores, fontes, ícones, avatar, banner) está em `brand/`; o resumo e o guia visual estão em `brand/README.md` e `brand/guide.html`.
+- Os arquivos de `brand/` são **gerados**: não edite à mão. Mude em `brand/tools` e rode `npm run build` (e `npm run guide`) lá dentro.
+- As cores das mensagens do bot (`colors` em `src/config.js`) precisam bater com `brand/tokens/colors.json`; o `npm test` confere.
+- Para atualizar o avatar e o banner do bot no Discord: `brand/tools/apply-discord.js` (mostra o que muda antes de alterar).
+
 ## Segredos
 
 Se um token do bot vazar (commit, print, conversa), redefina-o em Developer Portal → Bot → Reset Token e atualize o `.env` e o secret `DISCORD_TOKEN` do repositório.

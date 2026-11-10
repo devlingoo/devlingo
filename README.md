@@ -1,3 +1,12 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="brand/logo/logo-horizontal-on-dark.svg">
+    <img src="brand/logo/logo-horizontal.svg" alt="Devlingo" width="420">
+  </picture>
+</p>
+
+<p align="center"><strong>Aprenda programação jogando.</strong></p>
+
 # Devlingo Bot
 
 Bot de Discord estilo Duolingo para aprender programação, feito em JavaScript com discord.js (v14.19.3 ou mais novo).
@@ -103,6 +112,7 @@ src/
   data/challenges.json  os desafios
   data/areas.json       quais assuntos pertencem a cada área (Frontend, Backend...)
 test/                   testes automáticos (npm test), sem precisar de token nem de internet
+brand/                  identidade visual: logotipo, cores, fontes, ícones, avatar e banner (veja brand/guide.html)
 data/                   banco SQLite em runtime (fora do git)
 .github/                CI (testes em cada PR), template de PR e o workflow manual de teste do bot
 ```
