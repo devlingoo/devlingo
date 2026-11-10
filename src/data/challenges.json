@@ -4111,7 +4111,7 @@
       "Porque a forma de lista roda mais rápido no build"
     ],
     "answer": 1,
-    "explanation": "Na forma de texto (shell), o comando roda dentro de `/bin/sh -c`, e quem recebe o SIGTERM do `docker stop` é o shell, que não o repassa: a aplicação não fecha direito e o Docker acaba usando SIGKILL após o prazo. Na forma de lista, a aplicação é o PID 1.",
+    "explanation": "Na forma de texto, o Docker executa `/bin/sh -c \"node app.js\"`. Em casos simples alguns shells se substituem pelo comando e nada muda, mas com `&&`, `;`, pipes ou variáveis o shell continua como PID 1 e não repassa o SIGTERM: o `docker stop` espera o prazo (10 s) e usa SIGKILL. Na forma de lista, a aplicação é o PID 1 e recebe o sinal.",
     "difficulty": "advanced",
     "topic": {
       "id": "docker-basics",
