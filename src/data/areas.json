@@ -4,7 +4,16 @@
     "label": "Frontend",
     "emoji": "🎨",
     "description": "O que roda no navegador: lógica e interface",
-    "topics": ["html-css", "dom-events", "http-rest", "javascript-fundamentals", "javascript-functions", "javascript-arrays"]
+    "topics": [
+      "html-css",
+      "dom-events",
+      "http-rest",
+      "web-security",
+      "testing-basics",
+      "javascript-fundamentals",
+      "javascript-functions",
+      "javascript-arrays"
+    ]
   },
   {
     "id": "backend",
@@ -13,11 +22,15 @@
     "description": "Servidores, regras de negócio e APIs",
     "topics": [
       "http-rest",
+      "web-security",
+      "testing-basics",
       "javascript-fundamentals",
       "javascript-functions",
       "javascript-arrays",
       "python-fundamentals",
-      "python-collections"
+      "python-collections",
+      "data-structures",
+      "networking-basics"
     ]
   },
   {
@@ -25,13 +38,13 @@
     "label": "Banco de dados",
     "emoji": "🗄️",
     "description": "Guardar, consultar e manter dados",
-    "topics": ["sql-queries"]
+    "topics": ["sql-queries", "db-modeling"]
   },
   {
     "id": "devops",
     "label": "Ferramentas e DevOps",
     "emoji": "🛠️",
     "description": "Versionamento, entrega e infraestrutura",
-    "topics": ["git-versioning"]
+    "topics": ["linux-shell", "docker-basics", "git-versioning", "ci-cd", "networking-basics"]
   }
 ]
