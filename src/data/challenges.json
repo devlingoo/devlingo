@@ -4878,5 +4878,325 @@
       "label": "Segurança web",
       "description": "Ataques comuns e como se defender"
     }
+  },
+  {
+    "id": "ds-001",
+    "language": "python",
+    "question": "O que acontece ao executar esse código?",
+    "code": "t = (1, 2, 3)\nt[0] = 9",
+    "options": [
+      "A tupla passa a ser (9, 2, 3) e o programa segue",
+      "SyntaxError: a atribuição com colchetes não existe",
+      "Nada é alterado, mas o Python não mostra nenhum erro",
+      "TypeError: a tupla não aceita atribuição de itens"
+    ],
+    "answer": 3,
+    "explanation": "Tuplas são imutáveis: depois de criadas, não dá para trocar, adicionar nem remover itens. Por isso podem ser chaves de dicionário. Se precisar mudar, use uma lista ou crie outra tupla.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "data-structures",
+      "label": "Estruturas de dados",
+      "description": "Listas, conjuntos, dicionários, filas e complexidade"
+    }
+  },
+  {
+    "id": "ds-002",
+    "language": "python",
+    "question": "O que acontece ao executar esse código?",
+    "code": "preco = {\"pao\": 5, \"leite\": 7}\nprint(preco[\"ovo\"])",
+    "options": [
+      "IndexError, pois \"ovo\" não é uma posição válida",
+      "Imprime 0, o valor padrão para chaves que faltam",
+      "KeyError, pois \"ovo\" não existe; get() evita o erro",
+      "Imprime None e o programa continua normalmente, sem erro"
+    ],
+    "answer": 2,
+    "explanation": "Acessar uma chave que não existe com `[]` levanta `KeyError`. O método `preco.get(\"ovo\")` devolve `None` (ou o valor padrão que você passar: `preco.get(\"ovo\", 0)`), sem erro.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "data-structures",
+      "label": "Estruturas de dados",
+      "description": "Listas, conjuntos, dicionários, filas e complexidade"
+    }
+  },
+  {
+    "id": "ds-003",
+    "language": "python",
+    "question": "O que esse código imprime?",
+    "code": "print(len(set([1, 2, 2, 3, 3, 3])))",
+    "options": [
+      "1",
+      "2",
+      "3",
+      "6"
+    ],
+    "answer": 2,
+    "explanation": "O `set` guarda cada valor uma única vez, então os repetidos somem: sobram 1, 2 e 3. É a forma mais curta de remover duplicados (mas perde a ordem original, que o conjunto não garante).",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "data-structures",
+      "label": "Estruturas de dados",
+      "description": "Listas, conjuntos, dicionários, filas e complexidade"
+    }
+  },
+  {
+    "id": "ds-004",
+    "language": "python",
+    "question": "O que esse código imprime?",
+    "code": "pilha = []\npilha.append(\"a\")\npilha.append(\"b\")\npilha.append(\"c\")\nprint(pilha.pop())",
+    "options": [
+      "b",
+      "a",
+      "['a', 'b', 'c']",
+      "c"
+    ],
+    "answer": 3,
+    "explanation": "Uma pilha segue o princípio LIFO (last in, first out): o último a entrar é o primeiro a sair. Em Python, uma lista com `append` e `pop` funciona como pilha. O `pop()` sem argumento remove e devolve o último item.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "data-structures",
+      "label": "Estruturas de dados",
+      "description": "Listas, conjuntos, dicionários, filas e complexidade"
+    }
+  },
+  {
+    "id": "ds-005",
+    "language": "python",
+    "question": "Qual é a forma eficiente de implementar uma fila (FIFO) em Python?",
+    "code": "from collections import deque\n\nfila = deque()\nfila.append(x)   # entra\nfila.popleft()   # sai",
+    "options": [
+      "Um set, porque ele guarda os itens na ordem de chegada",
+      "Uma lista com append e pop(0), que tem o mesmo desempenho",
+      "Um dict, usando o número de chegada como chave",
+      "collections.deque, com append e popleft"
+    ],
+    "answer": 3,
+    "explanation": "Tirar o primeiro item de uma lista (`pop(0)`) desloca todos os outros: custa O(n). A `deque` é feita para as duas pontas e faz `append`/`popleft` em O(1). Em filas grandes, a diferença é enorme.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "data-structures",
+      "label": "Estruturas de dados",
+      "description": "Listas, conjuntos, dicionários, filas e complexidade"
+    }
+  },
+  {
+    "id": "ds-006",
+    "language": "python",
+    "question": "Por que `x in conjunto` é bem mais rápido que `x in lista` com milhões de itens?",
+    "code": "",
+    "options": [
+      "O set fica na memória da CPU, e a lista fica no disco",
+      "O set guarda os itens em ordem e faz busca binária",
+      "O set usa tabela hash (O(1) em média); a lista compara um a um",
+      "A lista precisa converter cada item para texto antes de comparar"
+    ],
+    "answer": 2,
+    "explanation": "O `set` calcula o hash do valor e vai direto à posição certa (tempo médio constante). A lista não tem esse atalho: percorre item por item até achar, ou até o fim. Para consultas de pertinência repetidas, converta a lista em `set`.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "data-structures",
+      "label": "Estruturas de dados",
+      "description": "Listas, conjuntos, dicionários, filas e complexidade"
+    }
+  },
+  {
+    "id": "ds-007",
+    "language": "python",
+    "question": "Por que esse código dá erro, e como resolver?",
+    "code": "agenda = {[1, 2]: \"reunião\"}",
+    "options": [
+      "SyntaxError: chaves de dict só podem ser textos ou números",
+      "KeyError: a chave [1, 2] ainda não foi criada no dict",
+      "TypeError: lista é mutável, não hasheável; use uma tupla",
+      "ValueError: a lista [1, 2] tem tamanho inválido para uma chave"
+    ],
+    "answer": 2,
+    "explanation": "Chaves de dicionário precisam de hash estável, e uma lista mutável poderia mudar de hash depois de inserida. Tuplas (e textos, números) são imutáveis e servem: `{(1, 2): \"reunião\"}`.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "data-structures",
+      "label": "Estruturas de dados",
+      "description": "Listas, conjuntos, dicionários, filas e complexidade"
+    }
+  },
+  {
+    "id": "ds-008",
+    "language": "python",
+    "question": "Dobrando o tamanho da lista, quantas vezes mais repetições o laço faz?",
+    "code": "contar = 0\nfor a in lista:\n    for b in lista:\n        contar += 1",
+    "options": [
+      "4 vezes (crescimento quadrático, O(n²))",
+      "2 vezes (crescimento linear, proporcional, O(n))",
+      "Nenhuma a mais (tempo constante, O(1))",
+      "8 vezes (crescimento cúbico, O(n³))"
+    ],
+    "answer": 0,
+    "explanation": "Para cada um dos n itens, o laço de dentro percorre outros n: são n × n repetições. Com n dobrado, vira (2n)² = 4n². É assim que se lê a complexidade: contando como o trabalho cresce com o tamanho da entrada.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "data-structures",
+      "label": "Estruturas de dados",
+      "description": "Listas, conjuntos, dicionários, filas e complexidade"
+    }
+  },
+  {
+    "id": "ds-009",
+    "language": "python",
+    "question": "Numa lista ordenada de 1 milhão de itens, a busca binária faz no máximo quantas comparações?",
+    "code": "import bisect\n\ni = bisect.bisect_left(lista, alvo)",
+    "options": [
+      "Exatamente 1 milhão, uma comparação por item",
+      "Cerca de 20 (log₂ de 1 milhão)",
+      "Cerca de 500 mil (metade da lista, em média)",
+      "Cerca de 1.000 (a raiz quadrada de 1 milhão)"
+    ],
+    "answer": 1,
+    "explanation": "A cada comparação a busca binária descarta metade do que resta: 1.000.000 → 500.000 → 250.000 ... → 1. São log₂(1.000.000) ≈ 20 passos. Por isso ela precisa de lista ordenada, e por isso é tão mais rápida que olhar item por item.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "data-structures",
+      "label": "Estruturas de dados",
+      "description": "Listas, conjuntos, dicionários, filas e complexidade"
+    }
+  },
+  {
+    "id": "ds-010",
+    "language": "python",
+    "question": "Quanto custa `lista.insert(0, x)` numa lista com n itens?",
+    "code": "lista.insert(0, x)",
+    "options": [
+      "O(n): todos os itens são deslocados uma posição",
+      "O(1): o Python guarda um ponteiro para o início",
+      "O(log n): o Python insere por busca binária",
+      "O(n²): cada inserção reordena a lista inteira"
+    ],
+    "answer": 0,
+    "explanation": "A lista do Python é um vetor contíguo: para abrir espaço no início, todos os n itens andam uma casa. Por isso o custo cresce com o tamanho. Se precisa inserir nas duas pontas, use `deque.appendleft`, que é O(1).",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "data-structures",
+      "label": "Estruturas de dados",
+      "description": "Listas, conjuntos, dicionários, filas e complexidade"
+    }
+  },
+  {
+    "id": "ds-011",
+    "language": "python",
+    "question": "O que esse código imprime?",
+    "code": "class Ruim:\n    def __init__(self, v):\n        self.v = v\n    def __hash__(self):\n        return 1\n    def __eq__(self, o):\n        return self.v == o.v\n\nd = {Ruim(1): \"a\", Ruim(2): \"b\"}\nprint(len(d), d[Ruim(2)])",
+    "options": [
+      "TypeError: dois objetos não podem ter o mesmo hash",
+      "2 a: a busca devolve sempre o primeiro item do hash",
+      "1 b: o segundo item sobrescreve o primeiro por ter o mesmo hash",
+      "2 b: o dict resolve a colisão comparando com =="
+    ],
+    "answer": 3,
+    "explanation": "Colisão é quando chaves diferentes caem na mesma posição da tabela. O dicionário não se perde: compara com `==` e guarda os dois. Só fica mais lento, porque a busca vira quase uma varredura. É o motivo de um bom `__hash__` espalhar os valores.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "data-structures",
+      "label": "Estruturas de dados",
+      "description": "Listas, conjuntos, dicionários, filas e complexidade"
+    }
+  },
+  {
+    "id": "ds-012",
+    "language": "python",
+    "question": "Entre as duas pessoas de 30 anos, quem vem primeiro no resultado?",
+    "code": "pessoas = [(\"Ana\", 30), (\"Bia\", 25), (\"Caio\", 30), (\"Dani\", 25)]\nprint(sorted(pessoas, key=lambda p: p[1]))",
+    "options": [
+      "Ana: a ordenação do Python é estável e mantém a ordem",
+      "Ana, mas só porque o nome vem antes na ordem alfabética",
+      "Caio: o sorted coloca o último dos empatados na frente",
+      "Depende: o Python embaralha os empates a cada execução"
+    ],
+    "answer": 0,
+    "explanation": "O `sorted` (e o `list.sort`) é estável: itens com a mesma chave ficam na ordem em que estavam. Isso permite ordenar em passos: primeiro pelo critério secundário, depois pelo principal. Aqui o resultado é Bia, Dani, Ana, Caio.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "data-structures",
+      "label": "Estruturas de dados",
+      "description": "Listas, conjuntos, dicionários, filas e complexidade"
+    }
+  },
+  {
+    "id": "ds-013",
+    "language": "python",
+    "question": "O que imprimem os dois prints?",
+    "code": "import heapq\n\nh = []\nfor n in [5, 1, 4]:\n    heapq.heappush(h, n)\nprint(h[0])\nprint(h)",
+    "options": [
+      "1 e [5, 4, 1]: o heap fica ordenado do maior para o menor",
+      "1 e [1, 5, 4]: só o primeiro é garantidamente o menor",
+      "5 e [5, 1, 4]: o heappush só acrescenta no final da lista",
+      "1 e [1, 4, 5]: o heap mantém a lista sempre ordenada"
+    ],
+    "answer": 1,
+    "explanation": "O `heapq` é um heap mínimo guardado numa lista: a raiz (`h[0]`) é sempre o menor item, e `heappop` o devolve em O(log n). Mas o resto da lista só obedece à regra do heap (pai ≤ filhos), não está ordenado.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "data-structures",
+      "label": "Estruturas de dados",
+      "description": "Listas, conjuntos, dicionários, filas e complexidade"
+    }
+  },
+  {
+    "id": "ds-014",
+    "language": "python",
+    "question": "O que esse código imprime?",
+    "code": "tabuleiro = [[0] * 2] * 3\ntabuleiro[0][0] = 1\nprint(tabuleiro)",
+    "options": [
+      "[[1, 0], [1, 0], [1, 0]]",
+      "[[1, 0], [0, 0], [0, 0]]",
+      "[[0, 0], [0, 0], [0, 0]]",
+      "[[1, 0], [1, 0], [0, 0]]"
+    ],
+    "answer": 0,
+    "explanation": "O `*` repete a referência para a MESMA lista interna três vezes, não cria três listas. Mudar uma linha muda todas. O certo é criar uma lista nova por linha: `[[0] * 2 for _ in range(3)]`.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "data-structures",
+      "label": "Estruturas de dados",
+      "description": "Listas, conjuntos, dicionários, filas e complexidade"
+    }
+  },
+  {
+    "id": "ds-015",
+    "language": "python",
+    "question": "O que esse código imprime no final?",
+    "code": "from functools import lru_cache\n\nchamadas = 0\n\n@lru_cache(maxsize=2)\ndef f(x):\n    global chamadas\n    chamadas += 1\n    return x * 2\n\nf(1); f(2); f(3); f(1)\nprint(chamadas)",
+    "options": [
+      "2: o cache calcula só os dois primeiros valores",
+      "4: o f(1) foi descartado quando o f(3) entrou",
+      "3: a segunda chamada de f(1) vem do cache",
+      "1: o cache guarda todos os resultados sem limite"
+    ],
+    "answer": 1,
+    "explanation": "Com `maxsize=2`, o cache guarda só os 2 resultados mais recentes (LRU: o menos usado recentemente sai). Ao chamar `f(3)`, o `f(1)` foi descartado, então o segundo `f(1)` é calculado de novo: 4 execuções do corpo.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "data-structures",
+      "label": "Estruturas de dados",
+      "description": "Listas, conjuntos, dicionários, filas e complexidade"
+    }
+  },
+  {
+    "id": "ds-016",
+    "language": "python",
+    "question": "Por que `list.append` é considerado O(1) amortizado?",
+    "code": "",
+    "options": [
+      "Porque cada append reordena os itens em segundo plano",
+      "Às vezes realoca (cópia O(n)), mas em média custa constante",
+      "Porque o Python usa uma lista ligada e insere sempre no final",
+      "Porque o append só guarda um ponteiro e nunca copia nada"
+    ],
+    "answer": 1,
+    "explanation": "A lista reserva mais espaço do que precisa e o aumenta em degraus proporcionais. Na maioria dos `append` só se escreve no espaço sobrando; de raro em raro há uma realocação com cópia (O(n)). Espalhado por todos os appends, o custo médio é constante.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "data-structures",
+      "label": "Estruturas de dados",
+      "description": "Listas, conjuntos, dicionários, filas e complexidade"
+    }
   }
 ]

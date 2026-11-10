@@ -68,5 +68,12 @@
     "emoji": "🧪",
     "description": "Asserts, mocks, isolamento e cobertura: confie no que você escreve.",
     "modules": ["testing-basics"]
+  },
+  {
+    "id": "estruturas",
+    "name": "Estruturas de dados",
+    "emoji": "🧮",
+    "description": "Listas, conjuntos, dicionários, filas e complexidade: escolha a estrutura certa.",
+    "modules": ["data-structures"]
   }
 ]
