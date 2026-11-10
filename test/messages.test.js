@@ -10,6 +10,7 @@ const buttonHandler = require("../src/handlers/buttonHandler");
 const messageCreate = require("../src/events/messageCreate");
 const db = require("../src/utils/db");
 const challenges = require("../src/utils/challenges");
+const areas = require("../src/utils/areas");
 
 // Cliente falso, mas com os handlers reais carregando as pastas commands/, events/ e buttons/.
 const client = Object.assign(new EventEmitter(), {
@@ -170,7 +171,17 @@ test("'desafio' pede o setup na primeira vez; configurado, sorteia do nível e d
   await messageCreate.execute(client, second);
   const chId = customIds(second.sent[0].components).find((id) => id.startsWith("ch:")).split(":")[1];
   assert.equal(challenges.getById(chId).difficulty, "advanced");
-  assert.equal(challenges.getById(chId).topic.id, "git-versioning");
+  // A área DevOps tem vários assuntos (Git, Linux, Docker...) e o sorteio escolhe qualquer um deles:
+  // o que importa é nunca sair de fora da área da pessoa.
+  const doDevops = areas.topicIdsFor(["devops"]);
+  assert.ok(doDevops.size >= 1);
+  assert.ok(doDevops.has(challenges.getById(chId).topic.id), `${challenges.getById(chId).topic.id} não é da área DevOps`);
+
+  // E, repetindo o sorteio, as perguntas vêm só dali (o teste antigo passava por sorte quando só havia o Git).
+  for (let n = 0; n < 60; n++) {
+    const ch = challenges.random({ difficulty: "advanced", topicIds: doDevops });
+    assert.ok(doDevops.has(ch.topic.id) && ch.difficulty === "advanced");
+  }
 });
 
 test("'perfil' mostra a trilha escolhida", async () => {
