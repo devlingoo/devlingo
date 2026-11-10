@@ -1,6 +1,6 @@
 const { escapeMarkdown } = require("discord.js");
 const db = require("../utils/db");
-const { sendV2, notice, rankingMessage, callPrefix } = require("../utils/ui");
+const { sendV2, notice, rankingMessage, commandRef } = require("../utils/ui");
 
 const MEDALS = ["🥇", "🥈", "🥉"];
 
@@ -13,8 +13,8 @@ module.exports = {
   async execute({ message, client }) {
     const rows = db.top(message.guildId, 10);
     if (rows.length === 0) {
-      const call = callPrefix(client, Boolean(message.guildId));
-      return sendV2(message.channel, notice(`Ninguém pontuou ainda. Comece com \`${call}desafio\`!`));
+      const how = commandRef(client, Boolean(message.guildId), "desafio");
+      return sendV2(message.channel, notice(`Ninguém pontuou ainda. Comece com ${how}!`));
     }
 
     const lines = await Promise.all(

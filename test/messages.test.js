@@ -106,3 +106,42 @@ test("'perfil' e 'ranking' leem o banco SQLite de verdade", async () => {
 
   db.close();
 });
+
+// O Discord não resolve menção dentro de crases (código inline): aparece o número do bot, tipo
+// <@1569442084426092686>, em vez do nome. A menção tem que ficar sempre fora do código.
+const mentionInsideCode = /`[^`\n]*<@!?\d+>[^`\n]*`/;
+
+test("a menção ao bot nunca fica dentro de crases (a ajuda no servidor mostra o nome, não o número)", async () => {
+  const help = fakeMessage({ content: "<@1> ajuda", authorId: "501" });
+  await messageCreate.execute(client, help);
+  assert.doesNotMatch(textOf(help), mentionInsideCode);
+  assert.match(textOf(help), /Marque <@1> e escreva o comando\. Exemplo: <@1> `aprender`/);
+  assert.equal(textOf(help).split("<@1>").length - 1, 2, "a menção aparece só no texto de como usar, não em cada comando");
+});
+
+test("na DM a ajuda não menciona o bot em lugar nenhum", async () => {
+  const help = fakeMessage({ content: "ajuda", authorId: "502", dm: true });
+  await messageCreate.execute(client, help);
+  assert.doesNotMatch(textOf(help), /<@/);
+  assert.match(textOf(help), /Exemplo: `aprender`/);
+});
+
+test("'não conheci esse comando' também mostra a menção fora das crases", async () => {
+  const inGuild = fakeMessage({ content: "<@1> xyzzy", authorId: "503" });
+  await messageCreate.execute(client, inGuild);
+  assert.doesNotMatch(textOf(inGuild), mentionInsideCode);
+  assert.match(textOf(inGuild), /Use <@1> `ajuda` para ver a lista/);
+
+  const dm = fakeMessage({ content: "xyzzy", authorId: "504", dm: true });
+  await messageCreate.execute(client, dm);
+  assert.match(textOf(dm), /Use `ajuda` para ver a lista/);
+});
+
+test("'ranking' vazio ensina a começar sem deixar a menção dentro de crases", async () => {
+  db.open(":memory:");
+  const msg = fakeMessage({ content: "<@1> ranking", authorId: "505" });
+  await messageCreate.execute(client, msg);
+  assert.doesNotMatch(textOf(msg), mentionInsideCode);
+  assert.match(textOf(msg), /Comece com <@1> `desafio`!/);
+  db.close();
+});
