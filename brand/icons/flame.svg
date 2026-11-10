@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64"><title>flame</title>
+  <defs><linearGradient id="ic-flame" x1="0.5" y1="0" x2="0.5" y2="1"><stop offset="0" stop-color="#FFB224"/><stop offset="1" stop-color="#FF7A2F"/></linearGradient></defs>
+  <path d="M32 3 C36 14 50 22 50 40 C50 52 42 61 32 61 C22 61 14 52 14 40 C14 31 19 26 23 20 C24 26 27 29 30 30 C28 20 28 10 32 3 Z" fill="url(#ic-flame)"/>
+  <path d="M32 59 C25 59 21 54 21 48 C21 42 26 39 29 33 C32 38 43 41 43 49 C43 55 38 59 32 59 Z" fill="#FFE08A"/>
+</svg>
