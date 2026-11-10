@@ -75,5 +75,19 @@
     "emoji": "🧮",
     "description": "Listas, conjuntos, dicionários, filas e complexidade: escolha a estrutura certa.",
     "modules": ["data-structures"]
+  },
+  {
+    "id": "redes",
+    "name": "Redes na prática",
+    "emoji": "🌐",
+    "description": "IP, DNS, portas, TCP e UDP, HTTP e TLS: como os computadores conversam.",
+    "modules": ["networking-basics"]
+  },
+  {
+    "id": "cicd",
+    "name": "CI/CD com GitHub Actions",
+    "emoji": "🚀",
+    "description": "Workflows, jobs, cache, segredos e deploy: automatize testes e entregas.",
+    "modules": ["ci-cd"]
   }
 ]
