@@ -78,6 +78,7 @@ Cada curso junta alguns assuntos (os **módulos**) e tem um certificado **por n�
 - **Quem estuda de qualquer jeito também avança:** o progresso conta pelas perguntas acertadas em `aprender`, `desafio` ou pelo botão **Praticar** da tela do curso. Cada resposta mostra uma linha com quanto falta para o certificado.
 - **O certificado:** uma imagem PNG (1600×1131) com o seu nome, o curso, o nível, os módulos, a data e um código `DVL-XXXX-XXXX`. Só você consegue pedir a imagem (a resposta vai escondida, só para você), mas o código serve para qualquer pessoa conferir com `verificar`.
 - **O nome:** o primeiro certificado usa o seu nome do Discord (só letras; emoji, números e símbolos saem). Para trocar: `certificados nome Ana Beatriz Almeida`. A troca vale para todos os certificados, inclusive os antigos.
+- **Muitos certificados:** a lista de `certificados` mostra os mais recentes que cabem numa mensagem do Discord (que aceita 4000 caracteres de texto) e avisa quantos ficaram de fora; o código de cada um continua na tela do curso (`cursos`) e serve para o `verificar`.
 - **Custa nada:** é tudo gerado pelo próprio bot, sem serviço externo.
 
 O mínimo de 75% muda com `COURSE_PASS_PERCENT` no `.env`. Diferente do XP, o certificado **não** tem limite diário.

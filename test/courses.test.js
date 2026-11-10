@@ -338,6 +338,38 @@ test("a lista de cursos aguenta o limite (MAX_COURSES) com nomes e descrições 
   assert.ok(menu.options.length <= 25, "o menu do Discord aceita no máximo 25 opções");
 });
 
+test("a lista de certificados aguenta o pior caso (20 cursos x 4 níveis, nomes no tamanho máximo) e avisa dos mais antigos", () => {
+  const make = (courseCount) => {
+    const certs = [];
+    for (let i = 0; i < courseCount; i++) {
+      for (const [j, level] of challenges.DIFFICULTIES.entries()) {
+        certs.push({
+          course: { emoji: "🧮", name: `Curso ${i}`.padEnd(50, "x") },
+          level,
+          issuedAt: Date.UTC(2026, 10, 1) + (i * 4 + j) * 1000,
+          code: `DVL-${String(i).padStart(2, "0")}${j}A-B${String(j).padStart(2, "0")}C`,
+        });
+      }
+    }
+    return certs;
+  };
+
+  const all = make(20); // 80 certificados
+  const view = courseUi.certificatesList({ ownerId: OWNER, certs: all, name: "N".repeat(100) });
+  assertWithinDiscordLimits(view, "80 certificados no tamanho máximo", assert);
+  const text = textOf(view);
+  const hidden = Number(/\+ (\d+) certificados mais antigos/.exec(text)?.[1]);
+  assert.ok(hidden > 0, "avisa quantos ficaram de fora");
+  assert.equal(text.split("\n").filter((l) => l.includes("`DVL-")).length + hidden, 80, "cada certificado aparece na lista ou no aviso");
+  assert.ok(text.includes(all.at(-1).code), "o mais recente aparece");
+  assert.ok(!text.includes(all[0].code), "o mais antigo é o primeiro a sair");
+
+  // Com poucos certificados não há aviso nenhum, e todos aparecem na ordem de emissão.
+  const few = textOf(courseUi.certificatesList({ ownerId: OWNER, certs: make(2), name: "Ana" }));
+  assert.doesNotMatch(few, /mais antigo/);
+  assert.equal(few.split("\n").filter((l) => l.includes("`DVL-")).length, 8);
+});
+
 test("a tela de um curso aponta o próximo módulo a praticar e some quando tudo foi concluído", () => {
   const first = views.courseDetail(OWNER, "javascript");
   assert.ok(customIds(first).includes(`learn:go:${OWNER}:beginner:javascript-fundamentals`));
