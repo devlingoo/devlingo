@@ -1,8 +1,12 @@
 // Telas completas do bot (o que cada comando mostra). Os comandos e os botões de atalho (nav)
 // usam as mesmas funções daqui, então "digitar o comando" e "clicar no botão" dão o mesmo resultado.
+const { AttachmentBuilder } = require("discord.js");
 const db = require("./db");
 const { safeText } = require("./text");
 const challenges = require("./challenges");
+const courseLib = require("./courses");
+const courseUi = require("./courseUi");
+const certificate = require("./certificate");
 const progress = require("./progress");
 const study = require("./study");
 const ui = require("./ui");
@@ -104,4 +108,78 @@ async function ranking({ client, guild, guildId, ownerId }) {
   });
 }
 
-module.exports = { help, studyEntry, setup, profile, achievements: achievementsView, ranking };
+// ---------- cursos e certificados ----------
+
+// Lista de cursos com o progresso de cada nível. Ao abrir, confere se a pessoa merece algum
+// certificado que ainda não foi emitido (idempotente) e avisa no topo.
+function courses(ownerId) {
+  const issued = courseLib.sync(ownerId);
+  const solved = db.getSolved(ownerId);
+  const items = courseLib.list.map((course) => ({ course, rows: courseLib.progress(ownerId, course, solved) }));
+  return courseUi.coursesList({ ownerId, items, certificateCount: courseLib.certificatesOf(ownerId).length, issued });
+}
+
+// Um curso, módulo a módulo. null se o curso não existe (mensagem antiga, curso removido).
+function courseDetail(ownerId, courseId) {
+  const course = courseLib.get(courseId);
+  if (!course) return null;
+  const rows = courseLib.progress(ownerId, course);
+  return courseUi.courseDetail({ ownerId, course, rows, next: courseLib.nextStep(rows) });
+}
+
+// Lista de certificados da pessoa. `discordName` só serve de nome inicial se ela ainda não escolheu um.
+function certificates(ownerId, discordName) {
+  courseLib.sync(ownerId);
+  return courseUi.certificatesList({
+    ownerId,
+    certs: courseLib.certificatesOf(ownerId),
+    name: courseLib.nameFor(ownerId, discordName),
+  });
+}
+
+// O cartão com a imagem de um certificado DA PESSOA: { components, files }. null se o código não é dela.
+function certificateView(ownerId, code, discordName) {
+  const found = db.findCertificate(code);
+  if (!found || found.userId !== ownerId) return null;
+  const cert = courseLib.certificatesOf(ownerId).find((c) => c.code === found.code);
+  if (!cert) return null;
+
+  const name = courseLib.nameFor(ownerId, discordName);
+  const filename = `certificado-${cert.course.id}-${cert.level.id}.png`;
+  const png = certificate.renderCertificate({
+    name,
+    courseName: cert.course.name,
+    levelId: cert.level.id,
+    levelLabel: cert.level.label,
+    modules: courseLib.moduleLabels(cert.course),
+    issuedAt: new Date(cert.issuedAt),
+    code: cert.code,
+  });
+  return {
+    components: courseUi.certificateCard({ ownerId, cert, name, filename }),
+    files: [new AttachmentBuilder(png, { name: filename })],
+  };
+}
+
+// Comando verificar: qualquer pessoa confere um código.
+function verify(codeInput) {
+  const code = courseLib.normalizeCode(codeInput);
+  const found = code ? db.findCertificate(code) : null;
+  const cert = found ? courseLib.certificatesOf(found.userId).find((c) => c.code === found.code) ?? null : null;
+  const name = cert ? courseLib.nameFor(found.userId, null) : null;
+  return courseUi.verifyCard({ cert, code: codeInput, name });
+}
+
+module.exports = {
+  help,
+  studyEntry,
+  setup,
+  profile,
+  achievements: achievementsView,
+  ranking,
+  courses,
+  courseDetail,
+  certificates,
+  certificateView,
+  verify,
+};

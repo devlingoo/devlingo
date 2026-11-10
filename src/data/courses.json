@@ -1,0 +1,37 @@
+[
+  {
+    "id": "javascript",
+    "name": "JavaScript do zero",
+    "emoji": "🟨",
+    "description": "Variáveis, funções e arrays: a base de tudo na web.",
+    "modules": ["javascript-fundamentals", "javascript-functions", "javascript-arrays"]
+  },
+  {
+    "id": "python",
+    "name": "Python do zero",
+    "emoji": "🐍",
+    "description": "Fundamentos, listas e dicionários da linguagem mais acolhedora.",
+    "modules": ["python-fundamentals", "python-collections"]
+  },
+  {
+    "id": "sql",
+    "name": "SQL essencial",
+    "emoji": "🗄️",
+    "description": "Consultar e filtrar dados com SELECT, JOIN e mais.",
+    "modules": ["sql-queries"]
+  },
+  {
+    "id": "git",
+    "name": "Git na prática",
+    "emoji": "🔀",
+    "description": "Commits, branches e o fluxo de trabalho do dia a dia.",
+    "modules": ["git-versioning"]
+  },
+  {
+    "id": "frontend",
+    "name": "Frontend na prática",
+    "emoji": "🎨",
+    "description": "HTML, CSS e DOM: monte uma página e dê vida a ela.",
+    "modules": ["html-css", "dom-events"]
+  }
+]

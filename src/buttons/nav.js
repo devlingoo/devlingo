@@ -19,6 +19,7 @@ module.exports = {
     const avatarUrl = interaction.user.displayAvatarURL({ extension: "png", size: 128 });
     const screens = {
       estudar: async () => views.studyEntry(ownerId),
+      cursos: async () => views.courses(ownerId),
       perfil: async () => views.profile({ ownerId, name, avatarUrl }),
       ranking: () => views.ranking({ client, guild: interaction.guild, guildId: interaction.guildId, ownerId }),
       conquistas: async () => views.achievements(ownerId),

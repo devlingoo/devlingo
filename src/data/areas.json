@@ -4,7 +4,7 @@
     "label": "Frontend",
     "emoji": "🎨",
     "description": "O que roda no navegador: lógica e interface",
-    "topics": ["javascript-fundamentals", "javascript-functions", "javascript-arrays"]
+    "topics": ["html-css", "dom-events", "javascript-fundamentals", "javascript-functions", "javascript-arrays"]
   },
   {
     "id": "backend",

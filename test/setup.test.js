@@ -126,9 +126,15 @@ test("áreas sobrepostas: Frontend e Backend dividem JavaScript sem duplicar o a
 
   const values = optionValues(lastCall(i));
   assert.equal(new Set(values).size, values.length, "sem assunto repetido");
-  assert.deepEqual([...values].sort(), [
-    "javascript-arrays", "javascript-functions", "javascript-fundamentals", "python-collections", "python-fundamentals",
-  ]);
+
+  // O menu é a união dos assuntos das duas áreas (derivada dos dados: assunto novo não quebra o teste).
+  const front = areas.topicIdsFor(["frontend"]);
+  const back = areas.topicIdsFor(["backend"]);
+  const shared = [...front].filter((id) => back.has(id));
+  assert.ok(shared.includes("javascript-fundamentals"), "JavaScript pertence às duas áreas");
+  const expected = challenges.topics("beginner", new Set([...front, ...back])).map((t) => t.id);
+  assert.deepEqual([...values].sort(), expected.sort());
+  for (const id of shared) assert.equal(values.filter((v) => v === id).length, 1, `${id} aparece uma vez só`);
 });
 
 test("se as áreas da pessoa não têm nada no nível, mostra tudo com um aviso (menu nunca fica vazio)", async () => {

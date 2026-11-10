@@ -22,6 +22,14 @@ require.cache[dbPath] = {
     getUser: () => ({ xp: 0, streak: 0, dailyXp: 0 }),
     getPreferences: () => null,
     setPreferences() {},
+    // Memória de perguntas e certificados: este banco falso nunca viu nada (nem emite certificado).
+    getSeen: () => new Map(),
+    getSolved: () => new Set(),
+    getCertificate: () => null,
+    getCertificates: () => [],
+    addCertificate: () => true,
+    getCertificateName: () => null,
+    setCertificateName() {},
     top: () => [],
   },
 };

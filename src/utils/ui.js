@@ -31,8 +31,9 @@ const divider = () =>
 
 // ---------- envio e contexto ----------
 
-function sendV2(channel, components) {
-  return channel.send({ components, flags: MessageFlags.IsComponentsV2 });
+// `files` (opcional): anexos que a mensagem mostra por um MediaGallery ("attachment://nome.png").
+function sendV2(channel, components, files) {
+  return channel.send({ components, ...(files ? { files } : {}), flags: MessageFlags.IsComponentsV2 });
 }
 
 const isDM = (message) => message.channel.type === ChannelType.DM;
@@ -56,6 +57,7 @@ const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
 // Botões de atalho (customId nav:<idDoDono>:<destino>; tratados em buttons/nav.js).
 const NAV = {
   estudar: { label: "Estudar", emoji: "📚" },
+  cursos: { label: "Cursos", emoji: "🎓" },
   perfil: { label: "Perfil", emoji: "👤" },
   ranking: { label: "Ranking", emoji: "🏆" },
   conquistas: { label: "Conquistas", emoji: "🏅" },
@@ -101,7 +103,7 @@ function helpMessage({ client, groups, intro, footer, ownerId }) {
   container
     .addSeparatorComponents(divider())
     .addTextDisplayComponents(text(`-# ${footer}`))
-    .addActionRowComponents(navRow(ownerId, ["estudar", "perfil", "ranking", "conquistas"]));
+    .addActionRowComponents(navRow(ownerId, ["estudar", "cursos", "perfil", "ranking", "conquistas"]));
   return [container];
 }
 
@@ -180,7 +182,7 @@ function profileMessage({ name, avatarUrl, user, prefs = null, stats = null, unl
     .addTextDisplayComponents(text(habit.join("\n")))
     .addSeparatorComponents(divider())
     .addTextDisplayComponents(text(numbers.join("\n")));
-  if (ownerId) container.addActionRowComponents(navRow(ownerId, ["estudar", "ranking", "conquistas", "configurar"]));
+  if (ownerId) container.addActionRowComponents(navRow(ownerId, ["estudar", "cursos", "ranking", "conquistas", "configurar"]));
   return [container];
 }
 
@@ -469,6 +471,9 @@ function celebrationLines(state) {
   if (state.milestone) party(`🔥 **${state.milestone.days} dias seguidos!** +${state.milestone.bonus} XP de bônus`);
   if (state.bonus?.combo > 0) party(`⚡ **Combo ×${state.combo}!** +${state.bonus.combo} XP`);
   for (const a of state.achievements ?? []) party(`🏅 **Conquista desbloqueada:** ${a.emoji} ${a.name} — ${a.description}`);
+  for (const cert of state.certificates ?? []) {
+    party(`🎓 **Certificado conquistado:** ${cert.course.emoji} ${cert.course.name} — ${cert.level.label}`);
+  }
   if (state.comboBroken > 0) lines.push(`💔 O combo de ${state.comboBroken} acertos acabou. Bora começar outro!`);
   return { lines, gold };
 }
@@ -525,11 +530,35 @@ function challengeMessage(ch, ownerId, issuedAt, state = { type: "open" }) {
         `-# 🎯 Meta do dia: ${progress.progressBar(done, state.goal.target, 5)} ${done}/${state.goal.target}${done >= state.goal.target ? " ✅" : ""}`
       );
     }
+    if (state.courseHint) {
+      // Progresso do curso a que este assunto pertence, para a pessoa ver o certificado se aproximando.
+      const h = state.courseHint;
+      footer.push(
+        h.certified
+          ? `-# 🎓 ${h.course.name} · ${h.level.label}: certificado conquistado ✅`
+          : `-# 🎓 ${h.course.name} · ${h.level.label}: ${h.doneModules}/${h.total} módulos (neste: ${Math.min(h.module.solved, h.module.needed)}/${h.module.needed} perguntas diferentes)`
+      );
+    }
     if (state.capped) footer.push(`-# 🛑 Limite diário de ${config.dailyXpCap} XP atingido: o XP volta amanhã.`);
 
     container.addSeparatorComponents(divider()).addTextDisplayComponents(text(`${verdict}\n💡 ${ch.explanation}`));
     if (celebration.lines.length > 0) container.addTextDisplayComponents(text(celebration.lines.join("\n")));
     container.addTextDisplayComponents(text(footer.join("\n")));
+
+    // Certificado novo: botão para ver a imagem na hora.
+    if (state.certificates?.length) {
+      container.addActionRowComponents(
+        new ActionRowBuilder().addComponents(
+          state.certificates.slice(0, 3).map((cert) =>
+            new ButtonBuilder()
+              .setCustomId(`cert:show:${ownerId}:${cert.code}`)
+              .setLabel(state.certificates.length === 1 ? "Ver meu certificado" : `${cert.course.name} · ${cert.level.label}`.slice(0, 80))
+              .setEmoji("🎓")
+              .setStyle(ButtonStyle.Success)
+          )
+        )
+      );
+    }
   } else if (state.type === "expired") {
     container.addTextDisplayComponents(text("-# ⏰ Esse desafio expirou."));
   } else {
@@ -544,6 +573,12 @@ function challengeMessage(ch, ownerId, issuedAt, state = { type: "open" }) {
 }
 
 module.exports = {
+  // Peças compartilhadas com as telas de cursos (utils/courseUi.js)
+  text,
+  divider,
+  navRow,
+  plural,
+  levelTag,
   sendV2,
   isDM,
   commandRef,
