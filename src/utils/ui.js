@@ -13,9 +13,9 @@ const {
   StringSelectMenuBuilder,
   TextDisplayBuilder,
   ThumbnailBuilder,
-  escapeMarkdown,
 } = require("discord.js");
 const config = require("../config");
+const { safeText } = require("./text");
 const challenges = require("./challenges");
 const areas = require("./areas");
 const progress = require("./progress");
@@ -130,7 +130,7 @@ function profileMessage({ name, avatarUrl, user, prefs = null, stats = null, unl
 
   const header = new SectionBuilder()
     .addTextDisplayComponents(
-      text(`## ${title.emoji} ${escapeMarkdown(name)}`),
+      text(`## ${title.emoji} ${safeText(name)}`),
       text(
         [
           `**${title.name} · Nível ${lv.level}** — ⭐ **${user.xp} XP**`,

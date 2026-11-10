@@ -52,14 +52,22 @@ module.exports = {
     const correct = chosen === ch.answer;
     // O resultado traz tudo o que a mensagem mostra: XP que entrou (já com o limite diário), bônus,
     // combo, meta do dia, marcos de sequência, subida de nível e conquistas novas.
-    const result = db.recordAnswer(
-      interaction.user.id,
-      interaction.guildId,
-      correct,
-      config.xpCorrect,
-      new Date(),
-      { difficulty: ch.difficulty }
-    );
+    let result;
+    try {
+      result = db.recordAnswer(
+        interaction.user.id,
+        interaction.guildId,
+        correct,
+        config.xpCorrect,
+        new Date(),
+        { difficulty: ch.difficulty }
+      );
+    } catch (error) {
+      // Nada foi gravado: solta a trava para a pessoa poder tentar de novo. Sem isso, o clique
+      // seguinte seria ignorado como "duplicado" e a pergunta ficaria impossível de responder.
+      answered.delete(key);
+      throw error;
+    }
 
     return update(
       interaction,
