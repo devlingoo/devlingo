@@ -2,6 +2,7 @@
   "name": "devlingo",
   "version": "v2.0",
   "description": "Bot de Discord estilo Duolingo para aprender programação",
+  "license": "MIT",
   "main": "src/devlingo.js",
   "scripts": {
     "start": "node --disable-warning=ExperimentalWarning src/devlingo.js",
