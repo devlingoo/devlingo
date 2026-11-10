@@ -5603,7 +5603,7 @@
     "id": "cic-005",
     "language": "yaml",
     "question": "Em que ordem os jobs rodam?",
-    "code": "jobs:\n  testar:\n    runs-on: ubuntu-latest\n  publicar:\n    needs: testar\n    runs-on: ubuntu-latest\n  lint:\n    runs-on: ubuntu-latest",
+    "code": "jobs:\n  testar:\n    runs-on: ubuntu-latest\n    steps:\n      - run: npm test\n  publicar:\n    needs: testar\n    runs-on: ubuntu-latest\n    steps:\n      - run: npm run deploy\n  lint:\n    runs-on: ubuntu-latest\n    steps:\n      - run: npm run lint",
     "options": [
       "Um de cada vez, na ordem em que aparecem no arquivo",
       "publicar roda primeiro, já que declarou a dependência no arquivo",
@@ -5743,7 +5743,7 @@
     "id": "cic-012",
     "language": "yaml",
     "question": "Como exigir a aprovação de uma pessoa antes de um deploy em produção?",
-    "code": "jobs:\n  deploy:\n    runs-on: ubuntu-latest\n    environment: producao",
+    "code": "jobs:\n  deploy:\n    runs-on: ubuntu-latest\n    environment: producao\n    steps:\n      - run: ./deploy.sh",
     "options": [
       "Usar um environment com revisores obrigatórios",
       "Colocar needs: aprovacao no job, apontando para um job vazio",
@@ -5763,7 +5763,7 @@
     "id": "cic-013",
     "language": "yaml",
     "question": "Um pull request vindo de um fork passa a rodar o seu workflow. O que acontece com os secrets?",
-    "code": "on:\n  pull_request:\njobs:\n  testar:\n    steps:\n      - run: ./testar.sh\n        env:\n          TOKEN: ${{ secrets.MEU_TOKEN }}",
+    "code": "on:\n  pull_request:\njobs:\n  testar:\n    runs-on: ubuntu-latest\n    steps:\n      - run: ./testar.sh\n        env:\n          TOKEN: ${{ secrets.MEU_TOKEN }}",
     "options": [
       "Não são entregues (só o GITHUB_TOKEN, somente leitura)",
       "O workflow nem chega a rodar, pois forks são bloqueados",
@@ -5803,7 +5803,7 @@
     "id": "cic-015",
     "language": "yaml",
     "question": "Qual é o risco desse passo, e qual a correção recomendada?",
-    "code": "- run: echo \"Título: ${{ github.event.pull_request.title }}\"",
+    "code": "- run: echo \"${{ github.event.pull_request.title }}\"",
     "options": [
       "Vazamento do título em logs públicos; ative a máscara de texto",
       "Nenhum: o GitHub escapa todo texto que vem de fontes externas",
