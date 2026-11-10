@@ -2,9 +2,8 @@ const { Events } = require("discord.js");
 const config = require("../config");
 const logger = require("../utils/logger");
 const { parseCommand } = require("../utils/parse");
+const { remaining } = require("../utils/cooldown");
 const { sendV2, notice, isDM, commandRef } = require("../utils/ui");
-
-const lastUse = new Map(); // userId -> momento do último comando
 
 module.exports = {
   name: Events.MessageCreate,
@@ -27,11 +26,9 @@ module.exports = {
     }
 
     // Cooldown: se mandar rápido demais, só reage com ⏳
-    const now = Date.now();
-    if (now - (lastUse.get(message.author.id) ?? 0) < config.cooldownMs) {
+    if (remaining(message.author.id, config.cooldownMs) > 0) {
       return message.react("⏳").catch(() => {});
     }
-    lastUse.set(message.author.id, now);
 
     try {
       await command.execute({ message, args: parsed.args, client });

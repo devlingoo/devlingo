@@ -1,6 +1,7 @@
 const areas = require("../utils/areas");
 const challenges = require("../utils/challenges");
 const study = require("../utils/study");
+const { safeText } = require("../utils/text");
 const { sendV2, notice, challengeMessage, setupAreasMenu } = require("../utils/ui");
 
 module.exports = {
@@ -32,7 +33,8 @@ module.exports = {
 
     if (!ch) {
       const langs = challenges.languages().join(", ");
-      return sendV2(message.channel, notice(`Não tenho desafios de **${language}**. Disponíveis: ${langs}`));
+      // `language` é o que a pessoa digitou: passa por safeText antes de voltar numa mensagem.
+      return sendV2(message.channel, notice(`Não tenho desafios de **${safeText(language, { max: 24 })}**. Disponíveis: ${langs}`));
     }
 
     const issuedAt = Date.now().toString(36);
