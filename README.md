@@ -62,6 +62,15 @@ Depois disso, `aprender` já abre nos assuntos do seu nível e das suas áreas, 
 
 A configuração fica salva por pessoa (vale em todos os servidores e na DM). Só aparecem áreas e níveis que já têm desafios cadastrados.
 
+#### Sugestão de subir de nível
+
+O bot olha as **últimas 20 respostas no seu nível** (só perguntas do nível escolhido em `configurar` entram na conta). Se a janela está cheia e você acertou **pelo menos 90%**, a resposta certa seguinte vem com o convite e um botão **Subir para ...**. Detalhes:
+
+- **Nada muda sozinho.** O nível só sobe se você tocar no botão, que só oferece o nível logo acima (e confirma numa mensagem à parte, para a explicação da pergunta continuar na tela).
+- Depois de convidar, a contagem **recomeça do zero**: quem ignora o convite só o recebe de novo depois de outras 20 respostas boas. Trocar de nível em `configurar` também zera a contagem; mudar só as áreas, não.
+- No 🔴 Especialista não há para onde subir, então não aparece convite.
+- `LEVEL_UP_WINDOW` e `LEVEL_UP_PERCENT` no `.env` mudam o tamanho da janela e o mínimo de acerto (`LEVEL_UP_WINDOW=0` desliga). Quem já jogava começa a contagem do zero.
+
 ### Trilha de estudo (`aprender`)
 
 1. O menu mostra os assuntos do seu nível, só das suas áreas. **Ver todas as áreas** mostra os de fora, sem mexer na sua configuração.
@@ -110,6 +119,8 @@ Variáveis opcionais do `.env` (todas explicadas no `.env.example`):
 | `DAILY_XP_CAP` | `200` | máximo de XP por pessoa por dia (`0` = sem limite) |
 | `DAILY_GOAL` | `5` | respostas por dia que cumprem a meta diária (`0` = sem meta) |
 | `COURSE_PASS_PERCENT` | `75` | % das perguntas de um módulo que precisa acertar para concluí-lo (de 1 a 100) |
+| `LEVEL_UP_WINDOW` | `20` | últimas respostas no seu nível que contam para sugerir subir (`0` = não sugerir) |
+| `LEVEL_UP_PERCENT` | `90` | % de acerto nessa janela para receber a sugestão (de 1 a 100) |
 | `TIMEZONE` | `America/Sao_Paulo` | fuso que define "o dia" da sequência e do limite diário |
 | `DB_PATH` | `data/devlingo.db` | onde fica o banco |
 
@@ -187,6 +198,5 @@ Cada curso tem `id` (até 12 caracteres), `name`, `emoji`, `description` e `modu
 ## Próximos passos
 
 - Mais desafios e mais assuntos (hoje são 308 desafios em 19 assuntos, com 4 em cada nível; `npm test` exige esse mínimo). Ideias que ainda não existem: acessibilidade, observabilidade, Kubernetes e algoritmos de grafos. O limite é de 20 cursos (`MAX_COURSES` em `src/utils/courses.js`).
-- Avisar quando a pessoa vai bem num nível (por exemplo, 90% de acerto) e sugerir subir; hoje o nível só muda se ela mudar em `configurar`.
 - Mais estímulos de hábito, ainda não feitos: "desafio do dia" igual para todo mundo, "congelar" a sequência por um dia, ligas semanais de ranking e lembretes por DM (esses só com **opt-in** da pessoa, nunca por padrão)
 - Escala: ao chegar perto de ~2.500 servidores o Discord exige sharding (`ShardingManager`), e o SQLite em arquivo único passa a ser o gargalo (a troca natural é Postgres). Hoje quase nada atrapalha: os dados ficam por pessoa e não por servidor. O que precisa mudar na hora é a memória de cada processo (trava de clique duplo, cooldown), que teria de ir para o banco compartilhado.

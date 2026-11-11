@@ -3,6 +3,7 @@ const config = require("../config");
 const db = require("../utils/db");
 const challenges = require("../utils/challenges");
 const courses = require("../utils/courses");
+const { levelSuggestion: suggestLevel } = require("../utils/study");
 const logger = require("../utils/logger");
 const { commandRef, challengeMessage } = require("../utils/ui");
 
@@ -87,9 +88,20 @@ module.exports = {
       logger.error("Erro ao atualizar o progresso do curso:", error);
     }
 
+    // Sugestão de subir de nível: só depois de um acerto, para o convite chegar junto da comemoração.
+    // Se falhar, só deixa de aparecer o convite.
+    let levelSuggestion = null;
+    try {
+      if (correct) levelSuggestion = suggestLevel(ownerId, result.levelProgress);
+    } catch (error) {
+      logger.error("Erro ao calcular a sugestão de nível:", error);
+    }
+
     return update(
       interaction,
-      challengeMessage(ch, ownerId, issuedAt, { type: "answered", chosen, correct, study, ...result, certificates, courseHint })
+      challengeMessage(ch, ownerId, issuedAt, {
+        type: "answered", chosen, correct, study, ...result, certificates, courseHint, levelSuggestion,
+      })
     );
   },
 };
