@@ -6158,5 +6158,325 @@
       "label": "TypeScript",
       "description": "Tipos, inferência, generics e as armadilhas do compilador"
     }
+  },
+  {
+    "id": "grf-001",
+    "language": "python",
+    "question": "O grafo é não dirigido. O que falta na função ligar?",
+    "code": "grafo = {\"A\": [], \"B\": []}\n\ndef ligar(grafo, a, b):\n    grafo[a].append(b)\n\nligar(grafo, \"A\", \"B\")\nprint(grafo)",
+    "options": [
+      "Nada: toda aresta criada já vale nos dois sentidos sozinha, sem outro código",
+      "Também incluir a na lista de b, para a aresta valer nos dois sentidos",
+      "Ordenar a lista de vizinhos depois de cada ligação feita",
+      "Trocar append por extend, que liga os dois vértices de uma vez só"
+    ],
+    "answer": 1,
+    "explanation": "Na lista de adjacência, `grafo[a]` guarda quem o vértice `a` alcança. Numa aresta não dirigida, a ligação vale para os dois lados, então é preciso gravar `b` em `grafo[a]` **e** `a` em `grafo[b]`. Sem isso, o grafo vira dirigido: de A se chega a B, mas de B não se volta a A.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "graph-algorithms",
+      "label": "Grafos",
+      "description": "Buscas, caminhos mínimos, ciclos e ordenação em grafos"
+    }
+  },
+  {
+    "id": "grf-002",
+    "language": "python",
+    "question": "Um grafo tem 1000 vértices e só 1500 arestas. Qual representação guarda menos informação?",
+    "code": "",
+    "options": [
+      "A matriz de adjacência: usa uma célula para cada aresta que existe",
+      "Depende só do nome dos vértices, e não do número de arestas",
+      "A lista de adjacência: guarda só as arestas que existem",
+      "As duas guardam exatamente a mesma quantidade de células"
+    ],
+    "answer": 2,
+    "explanation": "A matriz de adjacência tem uma célula para **cada par** de vértices: 1000 × 1000 = 1 milhão, mesmo com quase tudo vazio. A lista de adjacência guarda só as ligações reais (aqui, 3000 entradas, porque cada aresta aparece nos dois vértices). Para grafos esparsos, como redes sociais e mapas, a lista é a escolha comum; a matriz compensa em grafos densos ou quando é preciso saber rápido se duas pessoas estão ligadas.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "graph-algorithms",
+      "label": "Grafos",
+      "description": "Buscas, caminhos mínimos, ciclos e ordenação em grafos"
+    }
+  },
+  {
+    "id": "grf-003",
+    "language": "python",
+    "question": "Em um grafo não dirigido com essas arestas, qual é o grau do vértice C?",
+    "code": "arestas = [(\"A\", \"B\"), (\"A\", \"C\"), (\"B\", \"C\"), (\"C\", \"D\")]",
+    "options": [
+      "1",
+      "2",
+      "3",
+      "4"
+    ],
+    "answer": 2,
+    "explanation": "O grau de um vértice é o número de arestas que chegam nele. O C aparece em três: (A, C), (B, C) e (C, D). O 4 é o total de arestas do grafo, e não o grau de um vértice. Em grafos dirigidos, o grau se divide em grau de entrada e grau de saída.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "graph-algorithms",
+      "label": "Grafos",
+      "description": "Buscas, caminhos mínimos, ciclos e ordenação em grafos"
+    }
+  },
+  {
+    "id": "grf-004",
+    "language": "python",
+    "question": "O que esse código imprime?",
+    "code": "from collections import deque\n\ngrafo = {\n    \"A\": [\"B\", \"C\"],\n    \"B\": [\"D\"],\n    \"C\": [\"D\"],\n    \"D\": [],\n}\n\nfila = deque([\"A\"])\nvisitados = {\"A\"}\nwhile fila:\n    v = fila.popleft()\n    print(v, end=\" \")\n    for vizinho in grafo[v]:\n        if vizinho not in visitados:\n            visitados.add(vizinho)\n            fila.append(vizinho)",
+    "options": [
+      "A C B D",
+      "D C B A",
+      "A B D C",
+      "A B C D"
+    ],
+    "answer": 3,
+    "explanation": "A busca em largura (BFS) usa uma **fila** (FIFO) e visita o grafo por camadas: primeiro A; depois os vizinhos de A (B e C), na ordem em que entraram na fila; por fim D, que fica mais longe. O `visitados` evita colocar o mesmo vértice na fila duas vezes (D é vizinho de B e de C).",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "graph-algorithms",
+      "label": "Grafos",
+      "description": "Buscas, caminhos mínimos, ciclos e ordenação em grafos"
+    }
+  },
+  {
+    "id": "grf-005",
+    "language": "python",
+    "question": "O que esse código imprime?",
+    "code": "grafo = {\n    \"A\": [\"B\", \"C\"],\n    \"B\": [\"D\"],\n    \"C\": [\"D\"],\n    \"D\": [],\n}\n\ndef dfs(v, visitados):\n    visitados.add(v)\n    print(v, end=\" \")\n    for vizinho in grafo[v]:\n        if vizinho not in visitados:\n            dfs(vizinho, visitados)\n\ndfs(\"A\", set())",
+    "options": [
+      "A C D B",
+      "A B C D",
+      "A B D C",
+      "D B C A"
+    ],
+    "answer": 2,
+    "explanation": "A busca em profundidade (DFS) vai o mais fundo que puder antes de voltar: A, depois B, depois D (o vizinho de B). Só então volta e visita C, pois D já estava em `visitados`. Ela se apoia numa **pilha** (aqui, a pilha de chamadas da recursão); a BFS, que usa fila, imprimiria A B C D neste mesmo grafo.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "graph-algorithms",
+      "label": "Grafos",
+      "description": "Buscas, caminhos mínimos, ciclos e ordenação em grafos"
+    }
+  },
+  {
+    "id": "grf-006",
+    "language": "python",
+    "question": "O que acontece ao rodar esse código?",
+    "code": "grafo = {\"A\": [\"B\"], \"B\": [\"A\"]}\n\ndef dfs(v):\n    print(v, end=\" \")\n    for vizinho in grafo[v]:\n        dfs(vizinho)\n\ndfs(\"A\")",
+    "options": [
+      "Imprime A B A B... até estourar com RecursionError",
+      "Imprime só A, porque o Python ignora os ciclos sozinho",
+      "Imprime A B A e para quando volta ao vértice de onde saiu",
+      "Imprime A B e termina normalmente, pois o grafo só tem 2 vértices"
+    ],
+    "answer": 0,
+    "explanation": "A e B apontam um para o outro, e a função não lembra por onde já passou. Ela chama `dfs(B)`, que chama `dfs(A)`, e assim por diante até o Python estourar o limite de chamadas aninhadas (`RecursionError`). Num grafo com ciclo, é obrigatório guardar os vértices já visitados e não voltar a eles (com isso, o código termina e imprime só A B).",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "graph-algorithms",
+      "label": "Grafos",
+      "description": "Buscas, caminhos mínimos, ciclos e ordenação em grafos"
+    }
+  },
+  {
+    "id": "grf-007",
+    "language": "python",
+    "question": "O que esse código imprime?",
+    "code": "from collections import deque\n\ngrafo = {\n    \"A\": [\"B\", \"C\"],\n    \"B\": [\"D\"],\n    \"C\": [\"E\"],\n    \"D\": [\"E\"],\n    \"E\": [],\n}\n\ndef caminho(origem, destino):\n    fila = deque([[origem]])\n    visitados = {origem}\n    while fila:\n        rota = fila.popleft()\n        if rota[-1] == destino:\n            return rota\n        for v in grafo[rota[-1]]:\n            if v not in visitados:\n                visitados.add(v)\n                fila.append(rota + [v])\n\nprint(caminho(\"A\", \"E\"))",
+    "options": [
+      "['A', 'B', 'D', 'E']",
+      "['A', 'C', 'E', 'D']",
+      "None",
+      "['A', 'C', 'E']"
+    ],
+    "answer": 3,
+    "explanation": "A BFS expande por camadas, então a primeira vez que ela chega ao destino é pelo caminho com **menos arestas**: A, C, E (2 arestas) em vez de A, B, D, E (3). É por isso que a BFS é o algoritmo de caminho mais curto em grafos **sem pesos**. Uma DFS que visitasse B primeiro devolveria A, B, D, E, que é mais comprido.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "graph-algorithms",
+      "label": "Grafos",
+      "description": "Buscas, caminhos mínimos, ciclos e ordenação em grafos"
+    }
+  },
+  {
+    "id": "grf-008",
+    "language": "python",
+    "question": "Quantas componentes conexas (grupos separados) tem esse grafo?",
+    "code": "grafo = {\n    \"A\": [\"B\"],\n    \"B\": [\"A\"],\n    \"C\": [],\n    \"D\": [\"E\"],\n    \"E\": [\"D\"],\n}",
+    "options": [
+      "1",
+      "2",
+      "3",
+      "5"
+    ],
+    "answer": 2,
+    "explanation": "Uma componente conexa é um grupo de vértices que se alcançam entre si. Aqui há três: {A, B}, {C} (sozinho, sem arestas) e {D, E}. Para contar, percorre-se o grafo com BFS ou DFS a partir de cada vértice ainda não visitado: cada nova busca iniciada descobre uma componente nova.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "graph-algorithms",
+      "label": "Grafos",
+      "description": "Buscas, caminhos mínimos, ciclos e ordenação em grafos"
+    }
+  },
+  {
+    "id": "grf-009",
+    "language": "python",
+    "question": "Qual valor esse código imprime?",
+    "code": "import heapq\n\ngrafo = {\n    \"A\": [(\"B\", 1), (\"C\", 2)],\n    \"B\": [(\"D\", 5)],\n    \"C\": [(\"D\", 2)],\n    \"D\": [],\n}\n\ndef dijkstra(origem):\n    dist = {v: float(\"inf\") for v in grafo}\n    dist[origem] = 0\n    fila = [(0, origem)]\n    while fila:\n        d, v = heapq.heappop(fila)\n        if d > dist[v]:\n            continue\n        for vizinho, peso in grafo[v]:\n            if d + peso < dist[vizinho]:\n                dist[vizinho] = d + peso\n                heapq.heappush(fila, (dist[vizinho], vizinho))\n    return dist\n\nprint(dijkstra(\"A\")[\"D\"])",
+    "options": [
+      "3",
+      "4",
+      "6",
+      "7"
+    ],
+    "answer": 1,
+    "explanation": "O Dijkstra procura o caminho de **menor peso total**, e não o de menos arestas. De A até D há dois caminhos: A, B, D (1 + 5 = 6) e A, C, D (2 + 2 = 4). O `heapq` (fila de prioridade) faz o algoritmo sempre expandir o vértice mais barato ainda não fechado. Só vale com pesos **não negativos**.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "graph-algorithms",
+      "label": "Grafos",
+      "description": "Buscas, caminhos mínimos, ciclos e ordenação em grafos"
+    }
+  },
+  {
+    "id": "grf-010",
+    "language": "python",
+    "question": "Qual ordem de compilação respeita as dependências?",
+    "code": "# cada módulo lista os módulos de que depende\ndependencias = {\n    \"app\": [\"lib\", \"util\"],\n    \"lib\": [\"util\"],\n    \"util\": [],\n}",
+    "options": [
+      "util, app, lib",
+      "lib, util, app",
+      "util, lib, app",
+      "app, lib, util"
+    ],
+    "answer": 2,
+    "explanation": "Dependências formam um grafo dirigido sem ciclos (DAG), e a **ordenação topológica** lista os vértices de modo que cada um só aparece depois de tudo de que depende. O `util` não depende de ninguém, então vai primeiro; o `lib` precisa só do `util`; o `app` precisa dos dois. Se houvesse ciclo (A depende de B e B de A), nenhuma ordem existiria.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "graph-algorithms",
+      "label": "Grafos",
+      "description": "Buscas, caminhos mínimos, ciclos e ordenação em grafos"
+    }
+  },
+  {
+    "id": "grf-011",
+    "language": "python",
+    "question": "O que esse código imprime, e a resposta está certa?",
+    "code": "grafo = {\"A\": [\"B\", \"C\"], \"B\": [\"D\"], \"C\": [\"D\"], \"D\": []}\n\ndef tem_ciclo(v, visitados):\n    if v in visitados:\n        return True\n    visitados.add(v)\n    return any(tem_ciclo(w, visitados) for w in grafo[v])\n\nprint(tem_ciclo(\"A\", set()))",
+    "options": [
+      "RecursionError, por causa do losango entre A, B, C e D",
+      "True, e está certo: D aparece duas vezes",
+      "False, e está certo: o grafo não tem ciclo",
+      "True, mas errado: D é alcançado por dois caminhos"
+    ],
+    "answer": 3,
+    "explanation": "Este grafo em losango não tem ciclo (todas as setas vão para frente), mas D é alcançado por B e depois por C. O código trata \"já visitei\" como \"achei um ciclo\", e isso só vale para vértices que ainda estão **no caminho atual** da recursão. O certo é guardar o caminho em andamento (adicionar ao entrar e remover ao sair); em grafos dirigidos, é assim que se separa um ciclo de dois caminhos que se encontram.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "graph-algorithms",
+      "label": "Grafos",
+      "description": "Buscas, caminhos mínimos, ciclos e ordenação em grafos"
+    }
+  },
+  {
+    "id": "grf-012",
+    "language": "python",
+    "question": "Qual é a complexidade de tempo dessa BFS (V vértices, E arestas)?",
+    "code": "from collections import deque\n\ndef bfs(grafo, inicio):\n    fila = deque([inicio])\n    visitados = {inicio}\n    while fila:\n        v = fila.popleft()\n        for vizinho in grafo[v]:\n            if vizinho not in visitados:\n                visitados.add(vizinho)\n                fila.append(vizinho)",
+    "options": [
+      "O(E log V)",
+      "O(V + E)",
+      "O(V²)",
+      "O(V · E)"
+    ],
+    "answer": 1,
+    "explanation": "Cada vértice entra na fila uma única vez (V) e, ao sair, suas arestas são olhadas uma vez cada (somando E no total): V + E passos. Com uma **matriz** de adjacência seria O(V²), porque achar os vizinhos de um vértice exige varrer uma linha inteira de V células. O O(E log V) é o do Dijkstra com heap, que precisa ordenar por prioridade.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "graph-algorithms",
+      "label": "Grafos",
+      "description": "Buscas, caminhos mínimos, ciclos e ordenação em grafos"
+    }
+  },
+  {
+    "id": "grf-013",
+    "language": "python",
+    "question": "O que esse código imprime, e qual é a distância real de A até B?",
+    "code": "import heapq\n\ngrafo = {\n    \"A\": [(\"B\", 1), (\"C\", 2)],\n    \"B\": [],\n    \"C\": [(\"B\", -2)],\n}\n\ndef dijkstra(origem):\n    dist = {v: float(\"inf\") for v in grafo}\n    dist[origem] = 0\n    visitados = set()\n    fila = [(0, origem)]\n    while fila:\n        d, v = heapq.heappop(fila)\n        if v in visitados:\n            continue\n        visitados.add(v)\n        for vizinho, peso in grafo[v]:\n            if vizinho not in visitados and d + peso < dist[vizinho]:\n                dist[vizinho] = d + peso\n                heapq.heappush(fila, (dist[vizinho], vizinho))\n    return dist\n\nprint(dijkstra(\"A\")[\"B\"])",
+    "options": [
+      "-2, que é o menor peso de aresta que existe no grafo",
+      "1, mas A, C, B custa 0: Dijkstra não aceita pesos negativos",
+      "inf, porque B não é alcançável a partir de A",
+      "0, porque o Dijkstra sempre devolve o caminho mais barato do grafo"
+    ],
+    "answer": 1,
+    "explanation": "O Dijkstra parte da ideia de que, ao tirar um vértice da fila com a menor distância, ela não melhora mais. Com um peso negativo isso deixa de valer: o B é fechado com 1 antes de o C (distância 2) mostrar que A, C, B custa 2 + (-2) = 0. Para grafos com pesos negativos use o **Bellman-Ford**, que também detecta ciclos negativos.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "graph-algorithms",
+      "label": "Grafos",
+      "description": "Buscas, caminhos mínimos, ciclos e ordenação em grafos"
+    }
+  },
+  {
+    "id": "grf-014",
+    "language": "python",
+    "question": "Qual é o peso total da árvore geradora mínima desse grafo?",
+    "code": "# (vértice, vértice, peso); grafo não dirigido\narestas = [(\"A\", \"B\", 4), (\"A\", \"C\", 1), (\"B\", \"C\", 2), (\"B\", \"D\", 5), (\"C\", \"D\", 8)]",
+    "options": [
+      "7",
+      "8",
+      "12",
+      "20"
+    ],
+    "answer": 1,
+    "explanation": "A árvore geradora mínima liga todos os vértices com o menor peso total e sem ciclos. O **Kruskal** pega as arestas da mais leve para a mais pesada e só as aceita se não fecharem ciclo: A-C (1), B-C (2), pula A-B (4), que fecharia o ciclo A, C, B, e pega B-D (5). Total: 8. O 7 vem de somar 1 + 2 + 4, que forma um ciclo e deixa o D de fora; o 20 é a soma de todas as arestas.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "graph-algorithms",
+      "label": "Grafos",
+      "description": "Buscas, caminhos mínimos, ciclos e ordenação em grafos"
+    }
+  },
+  {
+    "id": "grf-015",
+    "language": "python",
+    "question": "O que acontece ao rodar esse código no Python padrão?",
+    "code": "n = 5000\ngrafo = {i: [i + 1] for i in range(n)}\ngrafo[n] = []\n\ndef dfs(v):\n    for w in grafo[v]:\n        dfs(w)\n\ndfs(0)",
+    "options": [
+      "RecursionError: passa do limite de 1000 chamadas aninhadas",
+      "MemoryError já na criação do dicionário grafo",
+      "Termina, mas imprime um aviso sobre a profundidade da recursão",
+      "Roda normalmente: 5000 chamadas cabem tranquilamente na memória"
+    ],
+    "answer": 0,
+    "explanation": "O grafo é uma linha com 5001 vértices, e a DFS recursiva aninha uma chamada por vértice. O Python limita essas chamadas (`sys.getrecursionlimit()`, 1000 por padrão) e levanta `RecursionError`. Em grafos grandes, escreva a DFS de forma **iterativa**, com uma pilha explícita (uma lista com `append` e `pop`), que não tem esse limite; subir o limite com `sys.setrecursionlimit` é arriscado, pois pode derrubar o interpretador.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "graph-algorithms",
+      "label": "Grafos",
+      "description": "Buscas, caminhos mínimos, ciclos e ordenação em grafos"
+    }
+  },
+  {
+    "id": "grf-016",
+    "language": "python",
+    "question": "O que esse código imprime?",
+    "code": "def bipartido(grafo):\n    cor = {}\n    for inicio in grafo:\n        if inicio in cor:\n            continue\n        cor[inicio] = 0\n        pilha = [inicio]\n        while pilha:\n            v = pilha.pop()\n            for w in grafo[v]:\n                if w not in cor:\n                    cor[w] = 1 - cor[v]\n                    pilha.append(w)\n                elif cor[w] == cor[v]:\n                    return False\n    return True\n\ntriangulo = {\"A\": [\"B\", \"C\"], \"B\": [\"A\", \"C\"], \"C\": [\"A\", \"B\"]}\nquadrado = {\"A\": [\"B\", \"D\"], \"B\": [\"A\", \"C\"], \"C\": [\"B\", \"D\"], \"D\": [\"A\", \"C\"]}\nprint(bipartido(triangulo), bipartido(quadrado))",
+    "options": [
+      "False True",
+      "False False",
+      "True False",
+      "True True"
+    ],
+    "answer": 0,
+    "explanation": "Um grafo é bipartido quando dá para pintar os vértices com duas cores sem que dois vizinhos tenham a mesma. O código tenta isso e devolve `False` se achar uma aresta entre vértices da mesma cor. No triângulo, A e B ganham cores diferentes, e C tem vizinhos das duas cores: impossível. Regra geral: um grafo é bipartido se, e somente se, **não tem ciclo de tamanho ímpar**. O quadrado (ciclo de 4) é bipartido.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "graph-algorithms",
+      "label": "Grafos",
+      "description": "Buscas, caminhos mínimos, ciclos e ordenação em grafos"
+    }
   }
 ]

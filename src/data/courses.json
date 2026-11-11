@@ -84,6 +84,13 @@
     "modules": ["data-structures"]
   },
   {
+    "id": "grafos",
+    "name": "Algoritmos de grafos",
+    "emoji": "🕸️",
+    "description": "Buscas em largura e profundidade, caminhos mínimos, ciclos e ordenação: navegue por conexões.",
+    "modules": ["graph-algorithms"]
+  },
+  {
     "id": "redes",
     "name": "Redes na prática",
     "emoji": "🌐",
