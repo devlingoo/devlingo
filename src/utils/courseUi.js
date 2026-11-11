@@ -101,6 +101,8 @@ function courseDetail({ ownerId, course, rows, next }) {
 
 // ---------- certificados ----------
 
+const LIST_BUDGET = 3400; // caracteres da lista de certificados (o Discord aceita 4000 de texto por mensagem)
+
 // certs: courses.certificatesOf (com course e level). name: o nome que sai no certificado.
 function certificatesList({ ownerId, certs, name }) {
   const container = new ContainerBuilder().setAccentColor(config.colors.gold).addTextDisplayComponents(text("## 🎓 Meus certificados"));
@@ -117,10 +119,22 @@ function certificatesList({ ownerId, certs, name }) {
   }
 
   const lines = certs.map((c) => `${c.course.emoji} **${c.course.name}** · ${c.level.emoji} ${c.level.label} — ${dateBR(c.issuedAt)} · \`${c.code}\``);
+
+  // Uma mensagem aceita no máximo 4000 caracteres de texto no total. Quem tem muitos certificados (todos os
+  // níveis de todos os cursos passam disso) vê os mais recentes que cabem, e um aviso diz quantos ficaram de
+  // fora; o código desses está na tela do curso. O orçamento deixa folga para o título, o nome e o aviso.
+  let first = 0;
+  let size = lines.reduce((sum, line) => sum + line.length + 1, 0);
+  while (size > LIST_BUDGET && first < lines.length - 1) size -= lines[first++].length + 1;
+  const note =
+    first > 0
+      ? `\n-# + ${first} ${first === 1 ? "certificado mais antigo" : "certificados mais antigos"} (o código de cada um está na tela do curso, no comando \`cursos\`).`
+      : "";
+
   container
     .addTextDisplayComponents(text(`Nome nos certificados: **${safeText(name)}**\n-# Para trocar, use o comando \`certificados nome Seu Nome Completo\`.`))
     .addSeparatorComponents(divider())
-    .addTextDisplayComponents(text(lines.join("\n")))
+    .addTextDisplayComponents(text(lines.slice(first).join("\n") + note))
     .addActionRowComponents(
       new ActionRowBuilder().addComponents(button(`nav:${ownerId}:cursos`, "Cursos", "🎓"), button(`nav:${ownerId}:estudar`, "Estudar", "📚"))
     );

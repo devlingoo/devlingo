@@ -81,12 +81,13 @@ O bot olha as **últimas 20 respostas no seu nível** (só perguntas do nível e
 
 ### Cursos e certificados (`cursos`)
 
-Cada curso junta alguns assuntos (os **módulos**) e tem um certificado **por nível**, então um curso rende até quatro: Iniciante, Intermediário, Avançado e Especialista. Hoje são treze cursos: 🟨 JavaScript do zero, 🎨 Frontend na prática (HTML, CSS e DOM), 🔌 HTTP e APIs REST, 🔐 Segurança web, 🧪 Testes automatizados, 🌐 Redes na prática, 🐍 Python do zero, 🧮 Estruturas de dados, 🗄️ SQL essencial, 🧱 Modelagem de dados, 🐳 Linux e Docker, 🚀 CI/CD com GitHub Actions e 🔀 Git na prática.
+Cada curso junta alguns assuntos (os **módulos**) e tem um certificado **por nível**, então um curso rende até quatro: Iniciante, Intermediário, Avançado e Especialista. Hoje são catorze cursos: 🟨 JavaScript do zero, 🟦 TypeScript na prática, 🎨 Frontend na prática (HTML, CSS e DOM), 🔌 HTTP e APIs REST, 🔐 Segurança web, 🧪 Testes automatizados, 🌐 Redes na prática, 🐍 Python do zero, 🧮 Estruturas de dados, 🗄️ SQL essencial, 🧱 Modelagem de dados, 🐳 Linux e Docker, 🚀 CI/CD com GitHub Actions e 🔀 Git na prática.
 
 - **Como conclui um módulo:** acertar **75% das perguntas diferentes** daquele assunto e nível (arredondado para cima). Acertar a mesma pergunta de novo não conta, e errar não tira o que já foi acertado. O nível do curso fecha quando **todos** os módulos dele passam, e o certificado sai na hora, na própria resposta que fechou, com um botão **Ver meu certificado**.
 - **Quem estuda de qualquer jeito também avança:** o progresso conta pelas perguntas acertadas em `aprender`, `desafio` ou pelo botão **Praticar** da tela do curso. Cada resposta mostra uma linha com quanto falta para o certificado.
 - **O certificado:** uma imagem PNG (1600×1131) com o seu nome, o curso, o nível, os módulos, a data e um código `DVL-XXXX-XXXX`. Só você consegue pedir a imagem (a resposta vai escondida, só para você), mas o código serve para qualquer pessoa conferir com `verificar`.
 - **O nome:** o primeiro certificado usa o seu nome do Discord (só letras; emoji, números e símbolos saem). Para trocar: `certificados nome Ana Beatriz Almeida`. A troca vale para todos os certificados, inclusive os antigos.
+- **Muitos certificados:** a lista de `certificados` mostra os mais recentes que cabem numa mensagem do Discord (que aceita 4000 caracteres de texto) e avisa quantos ficaram de fora; o código de cada um continua na tela do curso (`cursos`) e serve para o `verificar`.
 - **Custa nada:** é tudo gerado pelo próprio bot, sem serviço externo.
 
 O mínimo de 75% muda com `COURSE_PASS_PERCENT` no `.env`. Diferente do XP, o certificado **não** tem limite diário.
@@ -196,6 +197,6 @@ Cada curso tem `id` (até 12 caracteres), `name`, `emoji`, `description` e `modu
 
 ## Próximos passos
 
-- Mais desafios e mais assuntos (hoje são 292 desafios em 18 assuntos, com 4 em cada nível; `npm test` exige esse mínimo). Ideias que ainda não existem: TypeScript, acessibilidade, observabilidade, Kubernetes e algoritmos de grafos. O limite é de 20 cursos (`MAX_COURSES` em `src/utils/courses.js`).
+- Mais desafios e mais assuntos (hoje são 308 desafios em 19 assuntos, com 4 em cada nível; `npm test` exige esse mínimo). Ideias que ainda não existem: acessibilidade, observabilidade, Kubernetes e algoritmos de grafos. O limite é de 20 cursos (`MAX_COURSES` em `src/utils/courses.js`).
 - Mais estímulos de hábito, ainda não feitos: "desafio do dia" igual para todo mundo, "congelar" a sequência por um dia, ligas semanais de ranking e lembretes por DM (esses só com **opt-in** da pessoa, nunca por padrão)
 - Escala: ao chegar perto de ~2.500 servidores o Discord exige sharding (`ShardingManager`), e o SQLite em arquivo único passa a ser o gargalo (a troca natural é Postgres). Hoje quase nada atrapalha: os dados ficam por pessoa e não por servidor. O que precisa mudar na hora é a memória de cada processo (trava de clique duplo, cooldown), que teria de ir para o banco compartilhado.

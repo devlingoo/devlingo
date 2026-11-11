@@ -7,6 +7,13 @@
     "modules": ["javascript-fundamentals", "javascript-functions", "javascript-arrays"]
   },
   {
+    "id": "typescript",
+    "name": "TypeScript na prática",
+    "emoji": "🟦",
+    "description": "Tipos, inferência e generics: o JavaScript com rede de segurança.",
+    "modules": ["typescript"]
+  },
+  {
     "id": "python",
     "name": "Python do zero",
     "emoji": "🐍",
