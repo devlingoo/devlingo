@@ -1,5 +1,6 @@
 // Regras da trilha de estudo que juntam banco, áreas e desafios.
 // Os comandos (aprender, desafio) e os botões usam daqui para não repetir a lógica.
+const config = require("../config");
 const db = require("./db");
 const areas = require("./areas");
 const challenges = require("./challenges");
@@ -36,4 +37,43 @@ function topicMenu(userId, difficulty, { showAll = false } = {}) {
   return learningTopicMenu(userId, difficulty, list, { prefs, filtered, note });
 }
 
-module.exports = { preferencesOf, topicMenu };
+// Nível de dificuldade logo acima do atual, entre os que têm desafios (null se já está no último).
+function nextLevel(levelId) {
+  const levels = challenges.availableDifficulties();
+  const at = levels.findIndex((d) => d.id === levelId);
+  return at >= 0 ? (levels[at + 1] ?? null) : null;
+}
+
+// Decide se vale convidar a pessoa a subir de nível depois de uma resposta CERTA. `progress` é o
+// `levelProgress` devolvido por db.recordAnswer. Só sugere com a janela cheia (levelUpWindow respostas
+// no nível atual), pelo menos levelUpPercent% de acerto e um nível acima para ir. Ao sugerir, recomeça a
+// contagem: quem ignora o convite só o recebe de novo depois de outra janela cheia.
+// Devolve { from, to, answered, correct } (from e to são níveis de challenges.DIFFICULTIES) ou null.
+function levelSuggestion(userId, progress) {
+  if (!progress || config.levelUpWindow <= 0) return null;
+  if (progress.answered < config.levelUpWindow) return null;
+  if (progress.correct * 100 < progress.answered * config.levelUpPercent) return null;
+
+  const prefs = preferencesOf(userId);
+  const to = prefs && nextLevel(prefs.level);
+  if (!to) return null;
+
+  db.clearRecent(userId);
+  return { from: challenges.DIFFICULTIES.find((d) => d.id === prefs.level), to, ...progress };
+}
+
+// Passa a pessoa para o nível `levelId`, mantendo as áreas. Só aceita o nível logo acima do atual (é o
+// que o botão da sugestão oferece). Devolve { status, prefs }: "ok", "already" (já está nele) ou
+// "invalid" (sem configuração ou a sugestão não vale mais).
+function promote(userId, levelId) {
+  const prefs = preferencesOf(userId);
+  if (!prefs) return { status: "invalid", prefs: null };
+  if (prefs.level === levelId) return { status: "already", prefs };
+  if (nextLevel(prefs.level)?.id !== levelId) return { status: "invalid", prefs };
+
+  const updated = { level: levelId, areas: prefs.areas };
+  db.setPreferences(userId, updated);
+  return { status: "ok", prefs: updated };
+}
+
+module.exports = { preferencesOf, topicMenu, levelSuggestion, promote };
