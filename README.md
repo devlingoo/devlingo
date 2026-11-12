@@ -81,7 +81,7 @@ O bot olha as **últimas 20 respostas no seu nível** (só perguntas do nível e
 
 ### Cursos e certificados (`cursos`)
 
-Cada curso junta alguns assuntos (os **módulos**) e tem um certificado **por nível**, então um curso rende até quatro: Iniciante, Intermediário, Avançado e Especialista. Hoje são quinze cursos: 🟨 JavaScript do zero, 🟦 TypeScript na prática, 🎨 Frontend na prática (HTML, CSS e DOM), 🔌 HTTP e APIs REST, 🔐 Segurança web, 🧪 Testes automatizados, 🌐 Redes na prática, 🐍 Python do zero, 🧮 Estruturas de dados, 🕸️ Algoritmos de grafos, 🗄️ SQL essencial, 🧱 Modelagem de dados, 🐳 Linux e Docker, 🚀 CI/CD com GitHub Actions e 🔀 Git na prática.
+Cada curso junta alguns assuntos (os **módulos**) e tem um certificado **por nível**, então um curso rende até quatro: Iniciante, Intermediário, Avançado e Especialista. Hoje são dezesseis cursos: 🟨 JavaScript do zero, 🟦 TypeScript na prática, 🎨 Frontend na prática (HTML, CSS e DOM), ♿ Acessibilidade na web, 🔌 HTTP e APIs REST, 🔐 Segurança web, 🧪 Testes automatizados, 🌐 Redes na prática, 🐍 Python do zero, 🧮 Estruturas de dados, 🕸️ Algoritmos de grafos, 🗄️ SQL essencial, 🧱 Modelagem de dados, 🐳 Linux e Docker, 🚀 CI/CD com GitHub Actions e 🔀 Git na prática.
 
 - **Como conclui um módulo:** acertar **75% das perguntas diferentes** daquele assunto e nível (arredondado para cima). Acertar a mesma pergunta de novo não conta, e errar não tira o que já foi acertado. O nível do curso fecha quando **todos** os módulos dele passam, e o certificado sai na hora, na própria resposta que fechou, com um botão **Ver meu certificado**.
 - **Quem estuda de qualquer jeito também avança:** o progresso conta pelas perguntas acertadas em `aprender`, `desafio` ou pelo botão **Praticar** da tela do curso. Cada resposta mostra uma linha com quanto falta para o certificado.
@@ -197,6 +197,6 @@ Cada curso tem `id` (até 12 caracteres), `name`, `emoji`, `description` e `modu
 
 ## Próximos passos
 
-- Mais desafios e mais assuntos (hoje são 324 desafios em 20 assuntos, com 4 em cada nível; `npm test` exige esse mínimo). Ideias que ainda não existem: acessibilidade, observabilidade e Kubernetes. O limite é de 20 cursos (`MAX_COURSES` em `src/utils/courses.js`).
+- Mais desafios e mais assuntos (hoje são 340 desafios em 21 assuntos, com 4 em cada nível; `npm test` exige esse mínimo). Ideias que ainda não existem: observabilidade e Kubernetes. O limite é de 20 cursos (`MAX_COURSES` em `src/utils/courses.js`).
 - Mais estímulos de hábito, ainda não feitos: "desafio do dia" igual para todo mundo, "congelar" a sequência por um dia, ligas semanais de ranking e lembretes por DM (esses só com **opt-in** da pessoa, nunca por padrão)
 - Escala: ao chegar perto de ~2.500 servidores o Discord exige sharding (`ShardingManager`), e o SQLite em arquivo único passa a ser o gargalo (a troca natural é Postgres). Hoje quase nada atrapalha: os dados ficam por pessoa e não por servidor. O que precisa mudar na hora é a memória de cada processo (trava de clique duplo, cooldown), que teria de ir para o banco compartilhado.
