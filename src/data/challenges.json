@@ -6478,5 +6478,325 @@
       "label": "Grafos",
       "description": "Buscas, caminhos mínimos, ciclos e ordenação em grafos"
     }
+  },
+  {
+    "id": "a11y-001",
+    "language": "html",
+    "question": "O que falta nessa imagem para quem usa leitor de tela?",
+    "code": "<img src=\"vendas-2025.png\">",
+    "options": [
+      "Um alt descrevendo o que a imagem mostra",
+      "Mais resolução: o leitor de tela lê o texto que está desenhado na imagem",
+      "O atributo aria-hidden=\"true\", que faz o leitor de tela descrevê-la",
+      "Um id único na imagem, para o leitor de tela conseguir encontrá-la"
+    ],
+    "answer": 0,
+    "explanation": "O `alt` é o texto que o leitor de tela lê no lugar da imagem; sem ele, quem não enxerga o gráfico nem fica sabendo o que ele diz (o axe acusa `image-alt`). Escreva o que importa, como \"Gráfico de barras: as vendas subiram 20% em 2025\". Para uma imagem só decorativa, use `alt=\"\"`: o leitor de tela a ignora por completo. O texto desenhado dentro da imagem não é lido, e o `aria-hidden` esconde a imagem em vez de descrevê-la.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "accessibility",
+      "label": "Acessibilidade",
+      "description": "HTML acessível, teclado, leitores de tela e contraste"
+    }
+  },
+  {
+    "id": "a11y-002",
+    "language": "html",
+    "question": "Qual é o problema desse botão para quem navega só com o teclado?",
+    "code": "<div class=\"botao\" onclick=\"enviar()\">Enviar</div>",
+    "options": [
+      "A classe precisa de cursor: pointer para o teclado conseguir ativá-lo",
+      "Falta o atributo type=\"button\" para o Tab reconhecer o elemento",
+      "Nenhum: o onclick funciona com o teclado em qualquer elemento",
+      "O div não recebe foco com Tab nem reage a Enter; use <button>"
+    ],
+    "answer": 3,
+    "explanation": "O `<div>` não é focável: o Tab pula por ele, e Enter e Espaço não disparam o clique. O `<button>` já vem pronto com foco, com Enter e Espaço e com o papel de botão para o leitor de tela. Atributos como `type` e estilos como `cursor: pointer` não mudam nada disso. É a primeira regra do ARIA: se existe um elemento HTML nativo para a função, use-o.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "accessibility",
+      "label": "Acessibilidade",
+      "description": "HTML acessível, teclado, leitores de tela e contraste"
+    }
+  },
+  {
+    "id": "a11y-003",
+    "language": "html",
+    "question": "Como ligar o texto \"E-mail\" a esse campo para o leitor de tela?",
+    "code": "<input type=\"email\" id=\"email\">",
+    "options": [
+      "<p label=\"email\">E-mail</p>",
+      "<label for=\"email\">E-mail</label>",
+      "<label id=\"email\">E-mail</label>",
+      "<span for=\"email\" class=\"rotulo\">E-mail</span>"
+    ],
+    "answer": 1,
+    "explanation": "O `<label for=\"email\">` se liga ao campo cujo `id` é igual: o leitor de tela anuncia \"E-mail\" ao focar o campo (sem isso, o axe acusa `label`), e clicar no rótulo também foca o campo, o que dá um alvo de clique maior. O `for` só vale em `<label>`; um `id` no rótulo não liga nada, e atributos inventados, como `label`, são ignorados. Outra forma é colocar o `<input>` dentro do `<label>`.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "accessibility",
+      "label": "Acessibilidade",
+      "description": "HTML acessível, teclado, leitores de tela e contraste"
+    }
+  },
+  {
+    "id": "a11y-004",
+    "language": "html",
+    "question": "Para que serve o lang nesta tag?",
+    "code": "<html lang=\"pt-BR\">",
+    "options": [
+      "Informa o idioma do texto, para o leitor de tela pronunciar certo",
+      "Traduz a página sozinha para o idioma de quem a visita pelo navegador",
+      "Define em que idioma foi escrito o código HTML, e não o texto",
+      "Só serve para o Google; tecnologias assistivas o ignoram"
+    ],
+    "answer": 0,
+    "explanation": "O `lang` diz em que idioma está o texto. Leitores de tela usam isso para carregar as regras de pronúncia certas (um texto em português lido com a voz do inglês fica bem mais difícil de entender), e o CSS também enxerga o idioma, com o seletor `:lang(pt)`. Ele **não** traduz nada. Sem `lang`, o axe acusa `html-has-lang`; use códigos válidos, como `pt-BR`, pois um valor como `portugues` não é reconhecido.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "accessibility",
+      "label": "Acessibilidade",
+      "description": "HTML acessível, teclado, leitores de tela e contraste"
+    }
+  },
+  {
+    "id": "a11y-005",
+    "language": "html",
+    "question": "O que a verificação de acessibilidade aponta nesse trecho?",
+    "code": "<h1>Loja</h1>\n<h4>Ofertas</h4>",
+    "options": [
+      "Nada: o h4 é igual ao h2, só muda o tamanho do texto",
+      "O h1 deveria vir depois do h4, pois o h4 é o título principal",
+      "Pulou de h1 para h4: use h2 e ajuste o tamanho pelo CSS",
+      "Faltou o aria-level em cada título para ele funcionar"
+    ],
+    "answer": 2,
+    "explanation": "As tecnologias assistivas usam os títulos para dar navegação dentro da página: quem usa leitor de tela pula de seção em seção, e os níveis formam o índice. Pular de `h1` direto para `h4` sugere que existem níveis no meio que sumiram (o axe acusa `heading-order`). O `h4` não é um `h2` menor: o nível 4 está na árvore de acessibilidade. Escolha o título pela estrutura e deixe o tamanho para o CSS. O `aria-level` é dispensável, pois a tag já informa o nível.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "accessibility",
+      "label": "Acessibilidade",
+      "description": "HTML acessível, teclado, leitores de tela e contraste"
+    }
+  },
+  {
+    "id": "a11y-006",
+    "language": "css",
+    "question": "Esse texto de 16px passa no contraste mínimo do WCAG AA (4,5:1)?",
+    "code": ".aviso {\n  color: #999999;\n  background: #ffffff;\n  font-size: 16px;\n}",
+    "options": [
+      "Sim: a razão é exatamente 4,5:1, o mínimo",
+      "Sim: qualquer cinza passa sobre um fundo branco",
+      "Não: só o preto puro (#000000) passa sobre branco",
+      "Não: a razão é de cerca de 2,85:1"
+    ],
+    "answer": 3,
+    "explanation": "O WCAG AA pede contraste de pelo menos 4,5:1 para texto normal. #999999 sobre branco dá 2,85:1, e o axe acusa `color-contrast`. O cinza mais claro que ainda passa sobre branco é o #767676 (4,54:1); o #777777 já falha, com 4,48:1. Não precisa ser preto: basta ser escuro o bastante.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "accessibility",
+      "label": "Acessibilidade",
+      "description": "HTML acessível, teclado, leitores de tela e contraste"
+    }
+  },
+  {
+    "id": "a11y-007",
+    "language": "css",
+    "question": "O que essa regra causa para quem navega com o Tab?",
+    "code": "button:focus {\n  outline: none;\n}",
+    "options": [
+      "Nada: o navegador desenha outro indicador de foco no lugar",
+      "O botão deixa de receber o foco pelo Tab",
+      "O contorno some só ao clicar; no teclado ele continua aparecendo",
+      "Some o contorno que mostra qual botão está com o foco"
+    ],
+    "answer": 3,
+    "explanation": "O `outline: none` apaga o único indicador de foco que o navegador desenha, e quem navega com Tab não sabe onde está. O botão continua focável: ficou só invisível. Em vez de remover, estilize: `button:focus-visible { outline: 3px solid #0050d8; }`. O `:focus-visible` aparece com o teclado e, na maioria dos casos, não aparece ao clicar com o mouse.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "accessibility",
+      "label": "Acessibilidade",
+      "description": "HTML acessível, teclado, leitores de tela e contraste"
+    }
+  },
+  {
+    "id": "a11y-008",
+    "language": "html",
+    "question": "Como dar um nome a esse botão que só tem um ícone?",
+    "code": "<button>\n  <svg viewBox=\"0 0 24 24\" aria-hidden=\"true\">\n    <path d=\"M6 6l12 12M18 6L6 18\" />\n  </svg>\n</button>",
+    "options": [
+      "alt=\"Fechar\" no <button>",
+      "aria-hidden=\"true\" no <button>, como já está no <svg>",
+      "aria-label=\"Fechar\" no <button>",
+      "role=\"img\" no <button>"
+    ],
+    "answer": 2,
+    "explanation": "Um botão só com ícone não tem texto, então o leitor de tela diz apenas \"botão\" (o axe acusa `button-name`). O `aria-label=\"Fechar\"` dá o nome. O `alt` não existe em `<button>`; o `aria-hidden` no botão o tira da árvore de acessibilidade; e o `role=\"img\"` troca o papel dele por imagem, sem nome. Outra opção é pôr um texto escondido só visualmente dentro do botão.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "accessibility",
+      "label": "Acessibilidade",
+      "description": "HTML acessível, teclado, leitores de tela e contraste"
+    }
+  },
+  {
+    "id": "a11y-009",
+    "language": "html",
+    "question": "O que há de errado com esse botão?",
+    "code": "<button aria-hidden=\"true\">Comprar</button>",
+    "options": [
+      "Ele continua anunciado, mas desaparece da tela",
+      "Some para o leitor de tela, mas continua recebendo foco com Tab",
+      "O aria-hidden só funciona em elementos div e span",
+      "Nada: aria-hidden=\"true\" também impede que o teclado chegue nele"
+    ],
+    "answer": 1,
+    "explanation": "O `aria-hidden=\"true\"` tira o elemento da árvore de acessibilidade, mas não da ordem do Tab: o teclado continua parando nele, e quem usa leitor de tela chega a um controle que o programa não anunciou (o axe acusa `aria-hidden-focus`). Funciona em qualquer elemento, inclusive `<button>`, e o botão segue visível na tela. Para tirar um controle de cena de verdade, use `hidden`, `display: none` ou o atributo `inert`, que também o removem do foco.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "accessibility",
+      "label": "Acessibilidade",
+      "description": "HTML acessível, teclado, leitores de tela e contraste"
+    }
+  },
+  {
+    "id": "a11y-010",
+    "language": "html",
+    "question": "O que esse div com role=\"button\" ainda NÃO faz sozinho?",
+    "code": "<div role=\"button\" tabindex=\"0\" onclick=\"salvar()\">Salvar</div>",
+    "options": [
+      "Ser anunciado como botão: o role só vale em um <button>",
+      "Reagir a Enter e Espaço: o teclado precisa ser programado",
+      "Receber foco com Tab: o tabindex=\"0\" não é suficiente",
+      "Responder ao clique do mouse: o onclick só vale em <button>"
+    ],
+    "answer": 1,
+    "explanation": "O `role=\"button\"` muda só o que o leitor de tela anuncia (\"botão\"), e o `tabindex=\"0\"` coloca o div na ordem do Tab. Mas Enter e Espaço não disparam clique em um div: é preciso programar o `keydown` para essas duas teclas. O `<button>` nativo traz tudo isso pronto, e é por isso que a primeira regra do ARIA é preferir o elemento nativo.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "accessibility",
+      "label": "Acessibilidade",
+      "description": "HTML acessível, teclado, leitores de tela e contraste"
+    }
+  },
+  {
+    "id": "a11y-011",
+    "language": "html",
+    "question": "Em que ordem o Tab percorre esses links?",
+    "code": "<a href=\"#a\">Primeiro</a>\n<a href=\"#b\" tabindex=\"2\">Segundo</a>\n<a href=\"#c\" tabindex=\"1\">Terceiro</a>",
+    "options": [
+      "Primeiro, Segundo, Terceiro",
+      "Terceiro, Segundo, Primeiro",
+      "Primeiro, Terceiro, Segundo",
+      "Segundo, Terceiro, Primeiro"
+    ],
+    "answer": 1,
+    "explanation": "Um `tabindex` positivo passa o elemento na frente da ordem natural: vêm primeiro os de tabindex 1, depois os de 2, e só então os sem tabindex, na ordem do código. Por isso a ordem é Terceiro (1), Segundo (2) e Primeiro. Isso confunde quem navega por teclado, porque o foco pula pela tela sem lógica. Prefira a ordem do HTML e use só `tabindex=\"0\"` (entrar na ordem) ou `-1` (focar só por código).",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "accessibility",
+      "label": "Acessibilidade",
+      "description": "HTML acessível, teclado, leitores de tela e contraste"
+    }
+  },
+  {
+    "id": "a11y-012",
+    "language": "html",
+    "question": "O que falta para o leitor de tela ler a mensagem de erro junto com o campo?",
+    "code": "<label for=\"cpf\">CPF</label>\n<input id=\"cpf\" aria-invalid=\"true\">\n<p id=\"erro-cpf\">Digite 11 números.</p>",
+    "options": [
+      "for=\"erro-cpf\" no <p>",
+      "Pôr o <p> antes do <label>, pois o leitor lê na ordem do código",
+      "aria-label=\"erro-cpf\" no input",
+      "aria-describedby=\"erro-cpf\" no input"
+    ],
+    "answer": 3,
+    "explanation": "O `aria-describedby=\"erro-cpf\"` liga o campo ao texto do `<p>`: o leitor de tela anuncia o nome (\"CPF\") e depois a descrição (\"Digite 11 números.\"). O `for` só vale em `<label>`; um `aria-label` no campo **substitui** o nome dele (viraria \"erro-cpf\"); e a ordem no código, sozinha, não cria ligação nenhuma. O `aria-invalid=\"true\"`, que já está lá, informa ao leitor de tela que o valor é inválido.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "accessibility",
+      "label": "Acessibilidade",
+      "description": "HTML acessível, teclado, leitores de tela e contraste"
+    }
+  },
+  {
+    "id": "a11y-013",
+    "language": "html",
+    "question": "Qual é o nome acessível desse botão?",
+    "code": "<button aria-label=\"Excluir\" aria-labelledby=\"rotulo\">Apagar</button>\n<span id=\"rotulo\">Remover item</span>",
+    "options": [
+      "Apagar",
+      "Excluir",
+      "Remover item",
+      "Excluir Apagar Remover item"
+    ],
+    "answer": 2,
+    "explanation": "O nome acessível segue uma ordem de prioridade: primeiro o `aria-labelledby`, depois o `aria-label`, depois o conteúdo do elemento (e, por último, o `title`). Como o botão aponta para `rotulo`, o nome é o texto desse span, \"Remover item\"; os outros dois são ignorados, e os nomes não se somam. Isso pesa quando o texto visível diz uma coisa e o nome acessível, outra: quem usa comando de voz (\"clicar em Apagar\") não encontra o botão.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "accessibility",
+      "label": "Acessibilidade",
+      "description": "HTML acessível, teclado, leitores de tela e contraste"
+    }
+  },
+  {
+    "id": "a11y-014",
+    "language": "css",
+    "question": "No WCAG AA, qual destes textos passa no contraste?",
+    "code": ".titulo {\n  color: #949494;\n  background: #ffffff;\n  font-size: 24px;\n}\n\n.nota {\n  color: #949494;\n  background: #ffffff;\n  font-size: 16px;\n}",
+    "options": [
+      "Só o .nota: texto pequeno é tratado com mais folga",
+      "Os dois: a cor e o fundo são iguais",
+      "Só o .titulo: texto grande exige apenas 3:1",
+      "Nenhum: cinza claro nunca passa no AA"
+    ],
+    "answer": 2,
+    "explanation": "O WCAG AA pede 4,5:1 para texto normal e 3:1 para texto grande: 18pt (24px) ou mais, ou 14pt (cerca de 18,7px) ou mais em negrito. O #949494 sobre branco dá 3,03:1: passa no título de 24px e falha na nota de 16px (o axe acusa só `.nota`). Pelo axe, 23px normal já falha e 19px em negrito passa. Texto grande não é licença para cor fraca: 3:1 é o piso, e a leitura continua difícil para muita gente.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "accessibility",
+      "label": "Acessibilidade",
+      "description": "HTML acessível, teclado, leitores de tela e contraste"
+    }
+  },
+  {
+    "id": "a11y-015",
+    "language": "css",
+    "question": "Qual técnica deixa um texto fora da tela, mas ainda lido pelo leitor de tela?",
+    "code": "",
+    "options": [
+      "Reduzir a caixa a 1px, com overflow hidden e position absolute",
+      "visibility: hidden, que o tira da tela e o mantém na árvore",
+      "aria-hidden=\"true\", que o mostra apenas ao leitor de tela",
+      "display: none no elemento, que o deixa só para o leitor de tela"
+    ],
+    "answer": 0,
+    "explanation": "O `display: none` e o `visibility: hidden` tiram o texto da tela **e** da árvore de acessibilidade, e o `aria-hidden=\"true\"` o tira só da árvore: nenhum deles serve. A técnica do \"só para leitor de tela\" (a classe `.sr-only`) mantém o elemento renderizado, mas reduzido a um quadradinho de 1px fora do fluxo: `position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%)`. Assim, um botão só com ícone ganha o nome \"Fechar\" sem mostrar nada na tela.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "accessibility",
+      "label": "Acessibilidade",
+      "description": "HTML acessível, teclado, leitores de tela e contraste"
+    }
+  },
+  {
+    "id": "a11y-016",
+    "language": "html",
+    "question": "O que o showModal() faz que um div com display: block não faz?",
+    "code": "<button id=\"abrir\">Abrir</button>\n\n<dialog id=\"d\">\n  <p>Confirma?</p>\n  <button id=\"sim\">Sim</button>\n</dialog>\n\n<script>\n  abrir.onclick = () => d.showModal();\n</script>",
+    "options": [
+      "Deixa o resto da página inerte e devolve o foco a quem abriu",
+      "Só escurece o fundo; o Tab continua passando pelo resto da página",
+      "Abre o diálogo em uma nova janela do navegador",
+      "Só funciona com o mouse; o teclado não consegue fechar o diálogo"
+    ],
+    "answer": 0,
+    "explanation": "O `showModal()` abre o `<dialog>` como modal: o resto da página fica **inerte** (o Tab não chega nele, os cliques são bloqueados e o conteúdo de fora some da árvore de acessibilidade), o Esc fecha, e ao fechar o foco volta ao botão que o abriu. Um div com `display: block` não faz nada disso: o Tab continua passando pelo fundo, e os cliques chegam aos botões de trás. O `::backdrop`, que escurece o fundo, é só o detalhe visual.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "accessibility",
+      "label": "Acessibilidade",
+      "description": "HTML acessível, teclado, leitores de tela e contraste"
+    }
   }
 ]

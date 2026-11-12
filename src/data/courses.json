@@ -42,6 +42,13 @@
     "modules": ["html-css", "dom-events"]
   },
   {
+    "id": "a11y",
+    "name": "Acessibilidade na web",
+    "emoji": "♿",
+    "description": "Texto alternativo, rótulos, teclado, foco e contraste: uma web que funciona para todos.",
+    "modules": ["accessibility"]
+  },
+  {
     "id": "http",
     "name": "HTTP e APIs REST",
     "emoji": "🔌",
