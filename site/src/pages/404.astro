@@ -1,0 +1,13 @@
+---
+import Base from "../layouts/Base.astro";
+import Header from "../components/Header.astro";
+---
+
+<Base title="Página não encontrada" description="A página que você procura não existe." noindex>
+  <Header />
+  <main id="conteudo" tabindex="-1" class="wrap lost">
+    <h1>Essa página não existe.</h1>
+    <p>O endereço pode ter mudado ou ter sido digitado errado. A página inicial tem tudo sobre o Devlingo.</p>
+    <div class="actions"><a class="btn btn-primary" href="/">Voltar para o início</a></div>
+  </main>
+</Base>

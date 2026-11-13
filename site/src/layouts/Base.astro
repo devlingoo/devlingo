@@ -1,0 +1,51 @@
+---
+import "../styles/global.css";
+import fonts from "../generated/fonts.json";
+import { cspMeta } from "../../security/policy.mjs";
+
+interface Props {
+  title: string;
+  description: string;
+  /** Páginas que não devem aparecer em buscadores (a 404). */
+  noindex?: boolean;
+}
+const { title, description, noindex = false } = Astro.props;
+const site = Astro.site;
+const url = site ? new URL(Astro.url.pathname, site).href : undefined;
+const ogImage = site ? new URL("/og-image.png", site).href : undefined;
+---
+
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <!-- A política de segurança vem primeiro: vale para tudo que o navegador carregar depois dela.
+         Os cabeçalhos HTTP (public/_headers, vercel.json) trazem a mesma política e mais o que só funciona como cabeçalho. -->
+    <meta http-equiv="Content-Security-Policy" content={cspMeta()} />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#F7F5FF" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#17123A" media="(prefers-color-scheme: dark)" />
+    {noindex && <meta name="robots" content="noindex" />}
+    {url && <link rel="canonical" href={url} />}
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="preload" href={fonts.sans} as="font" type="font/woff2" crossorigin />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:site_name" content="Devlingo" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    {url && <meta property="og:url" content={url} />}
+    {ogImage && <meta property="og:image" content={ogImage} />}
+    {ogImage && <meta property="og:image:alt" content="Devlingo: aprenda programação jogando" />}
+    <meta name="twitter:card" content={ogImage ? "summary_large_image" : "summary"} />
+    <!-- Aplica o tema escolhido antes da primeira pintura (arquivo externo e bloqueante, para não piscar). -->
+    <script is:inline src="/theme-init.js"></script>
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

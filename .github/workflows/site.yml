@@ -1,0 +1,67 @@
+name: Site
+
+# Gera o site, audita o resultado e roda o teste de navegador. Só roda quando algo que o site usa muda
+# (as pastas do site, os dados do bot e a marca). Não é uma verificação obrigatória da main de propósito:
+# um PR que não mexe no site não precisa esperar por ele.
+on:
+  push:
+    branches: [main]
+    paths: ["site/**", "src/data/**", "brand/**", ".github/workflows/site.yml"]
+  pull_request:
+    paths: ["site/**", "src/data/**", "brand/**", ".github/workflows/site.yml"]
+
+# Mínimo possível: o job só lê o código.
+permissions:
+  contents: read
+
+concurrency:
+  group: site-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  site:
+    name: Site (build, auditoria e navegador)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: site
+
+    steps:
+      # As actions ficam fixadas pelo SHA do commit (a tag é só o comentário): uma tag pode ser movida, o SHA não.
+      - name: Baixar código
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+
+      # npm ci usa exatamente o package-lock.json, e o .npmrc impede qualquer script de instalação.
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Vulnerabilidades conhecidas nas dependências
+        run: npm audit --audit-level=high
+
+      - name: Conferir tipos e gerar o site
+        run: npm run build
+
+      - name: Auditoria de segurança do resultado
+        run: npm run audit:dist
+
+      - name: Auto-teste do auditor
+        run: npm run audit:selftest
+
+      - name: Teste de navegador (política de segurança, demo e acessibilidade)
+        run: npm run e2e
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
+
+      # Os arquivos gerados que ficam no git precisam estar em dia com a política.
+      - name: Arquivos gerados em dia
+        run: git diff --exit-code -- vercel.json public/_headers
