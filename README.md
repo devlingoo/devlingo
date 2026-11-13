@@ -24,6 +24,7 @@ No servidor, marque o bot no começo da mensagem. Na DM, escreva direto.
 | `@Devlingo configurar` | `configurar` | escolhe suas áreas (Frontend, Backend...) e seu nível; dá para mudar quando quiser |
 | `@Devlingo aprender` | `aprender` | trilha de estudo: escolhe o assunto exato e só pergunta sobre ele |
 | `@Devlingo desafio` | `desafio` | desafio aleatório do seu nível e das suas áreas (ou `desafio python`, `javascript`, `sql`, `git`) |
+| `@Devlingo diario` | `diario` | o desafio do dia: uma pergunta por nível, igual para todo mundo, com XP de bônus no primeiro acerto |
 | `@Devlingo cursos` | `cursos` | cursos com certificado: o seu progresso em cada módulo e o que praticar a seguir |
 | `@Devlingo certificados` | `certificados` | seus certificados (a imagem em PNG) e o nome que sai neles: `certificados nome Ana Souza` |
 | `@Devlingo verificar DVL-XXXX-XXXX` | `verificar DVL-XXXX-XXXX` | confere se um certificado é verdadeiro e de quem é |
@@ -44,6 +45,8 @@ O bot recompensa quem volta todo dia, sem punir quem falha:
 
 - 🎯 **Meta do dia:** 5 respostas por dia (certas ou erradas) cumprem a meta e rendem **+15 XP**, uma vez por dia. A barra aparece em toda resposta e no `perfil`.
 - 🔥 **Sequência e marcos:** a sequência cresce na primeira resposta de cada dia. Os marcos de 3, 7, 14, 30, 60 e 100 dias dão XP de bônus (+10, +30, +60, +150, +300 e +500). O `perfil` mostra o próximo marco e avisa, sem pressão, quando a sequência está em risco hoje.
+- ❄️ **Congelamento de sequência:** a cada 7 dias seguidos você ganha 1 congelamento (guarda no máximo 2). Quando você volta depois de dias sem responder, ele é usado **sozinho**, um por dia perdido, e a sequência não quebra (o dia salvo não soma). Faltou mais dias do que você tem congelamentos? Aí a sequência zera, e os congelamentos que sobraram ficam guardados. O `perfil` mostra quantos você tem e avisa quando um deles vai salvar a sua sequência.
+- 📆 **Desafio do dia (`diario`):** uma pergunta por nível a cada dia, a mesma para todo mundo do mesmo nível (dá para comparar com os amigos). O **primeiro acerto do dia rende +10 XP de bônus**, fora do limite diário. Errou? Dá para tentar de novo no mesmo dia; depois de cumprido, o próximo chega à meia-noite. Não repete até o nível inteiro passar. Também vale como resposta normal (XP, meta, combo, curso e sequência).
 - ⚡ **Combo:** acertos seguidos mostram um combo; a cada 5, **+5 XP**. Errar zera (o bot avisa, sem drama).
 - 🆙 **Níveis e títulos:** cada 100 XP é um nível. Títulos: 🌱 Semente, 🌿 Broto, 🌳 Árvore, ⚡ Faísca, 🔥 Chama e 👑 Lenda. Subir de nível é comemorado na própria resposta (a mensagem fica dourada).
 - 🏅 **Conquistas:** 13 medalhas (primeiro passo, 10/50/100 acertos, sequências, combos, meta, nível Especialista...). O comando `conquistas` mostra as ganhas e as que faltam.
@@ -198,5 +201,5 @@ Cada curso tem `id` (até 12 caracteres), `name`, `emoji`, `description` e `modu
 ## Próximos passos
 
 - Mais desafios e mais assuntos (hoje são 340 desafios em 21 assuntos, com 4 em cada nível; `npm test` exige esse mínimo). Ideias que ainda não existem: observabilidade e Kubernetes. O limite é de 20 cursos (`MAX_COURSES` em `src/utils/courses.js`).
-- Mais estímulos de hábito, ainda não feitos: "desafio do dia" igual para todo mundo, "congelar" a sequência por um dia, ligas semanais de ranking e lembretes por DM (esses só com **opt-in** da pessoa, nunca por padrão)
+- Mais estímulos de hábito, ainda não feitos: ligas semanais de ranking e lembretes por DM (esses só com **opt-in** da pessoa, nunca por padrão)
 - Escala: ao chegar perto de ~2.500 servidores o Discord exige sharding (`ShardingManager`), e o SQLite em arquivo único passa a ser o gargalo (a troca natural é Postgres). Hoje quase nada atrapalha: os dados ficam por pessoa e não por servidor. O que precisa mudar na hora é a memória de cada processo (trava de clique duplo, cooldown), que teria de ir para o banco compartilhado.

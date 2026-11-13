@@ -62,6 +62,7 @@ function profile({ ownerId, name, avatarUrl }) {
     user: db.getUser(ownerId),
     prefs: study.preferencesOf(ownerId),
     stats: db.getStats(ownerId),
+    habit: db.getHabit(ownerId),
     unlocked: db.getAchievements(ownerId),
     ownerId,
   });

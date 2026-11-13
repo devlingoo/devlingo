@@ -40,7 +40,7 @@ function fakeMessage({ content, authorId, dm = false }) {
 }
 
 test("os handlers carregam comandos, botões e eventos das pastas", () => {
-  for (const name of ["aprender", "desafio", "perfil", "ranking", "ajuda"]) {
+  for (const name of ["aprender", "desafio", "diario", "perfil", "ranking", "ajuda"]) {
     assert.ok(client.commands.has(name), `comando ${name}`);
   }
   assert.ok(client.findCommand("estudar"), "alias estudar -> aprender");

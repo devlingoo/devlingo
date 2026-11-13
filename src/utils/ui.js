@@ -124,8 +124,9 @@ function rankingMessage({ title, subtitle, lines, you, ownerId }) {
 // ---------- perfil ----------
 
 // user: { xp, streak, dailyXp } (db.getUser). Os demais campos são opcionais: stats (db.getStats),
-// prefs (configuração) e unlocked (chaves das conquistas); sem eles, a parte correspondente some.
-function profileMessage({ name, avatarUrl, user, prefs = null, stats = null, unlocked = [], ownerId = null }) {
+// habit (db.getHabit: congelamentos e desafio do dia), prefs (configuração) e unlocked (chaves das
+// conquistas); sem eles, a parte correspondente some.
+function profileMessage({ name, avatarUrl, user, prefs = null, stats = null, habit: extras = null, unlocked = [], ownerId = null }) {
   const lv = progress.levelProgress(user.xp);
   const title = progress.titleFor(lv.level);
   const streak = user.streak ?? 0;
@@ -150,14 +151,33 @@ function profileMessage({ name, avatarUrl, user, prefs = null, stats = null, unl
   ];
   const next = progress.nextMilestone(streak);
   if (next) habit.push(`-# Próximo marco: ${next.days} dias (+${next.bonus} XP) — faltam ${next.left}`);
+  if (extras && (extras.freezes > 0 || config.freezeEvery > 0)) {
+    habit.push(
+      `❄️ Congelamentos: **${extras.freezes}/${config.freezeMax}**` +
+        (extras.freezes === 0 && config.freezeEvery > 0 ? ` • ganhe um a cada ${config.freezeEvery} dias seguidos` : "")
+    );
+  }
   if (stats && config.dailyGoal > 0) {
     const done = Math.min(stats.goalCount, config.dailyGoal);
     habit.push(
       `🎯 Meta de hoje: ${progress.progressBar(done, config.dailyGoal, 5)} **${done}/${config.dailyGoal}**${done >= config.dailyGoal ? " ✅" : ""}`
     );
   }
+  if (extras) {
+    habit.push(
+      extras.dailyDone
+        ? "📆 Desafio do dia: **cumprido** ✅"
+        : `📆 Desafio do dia: **disponível** — use \`diario\`${config.dailyChallengeBonusXp > 0 ? ` (+${config.dailyChallengeBonusXp} XP)` : ""}`
+    );
+  }
   if (config.dailyXpCap > 0) habit.push(`📅 XP de hoje: **${user.dailyXp ?? 0}/${config.dailyXpCap}**`);
-  if (stats && streak > 0 && stats.goalCount === 0) {
+  if (extras?.frozenDays > 0) {
+    // Voltou depois de dias sem responder: a sequência só segue de pé porque há congelamentos para cobri-los.
+    habit.push(
+      `-# ❄️ Você ficou ${plural(extras.frozenDays, "dia", "dias")} sem responder: responda hoje e ` +
+        `${extras.frozenDays === 1 ? "um congelamento salva" : "os congelamentos salvam"} sua sequência de ${plural(streak, "dia", "dias")}.`
+    );
+  } else if (stats && streak > 0 && stats.goalCount === 0) {
     habit.push(`-# ⏳ Responda hoje para manter sua sequência de ${plural(streak, "dia", "dias")}!`);
   }
 
@@ -433,9 +453,9 @@ function studyNavigation(ch, ownerId) {
 
 // ---------- desafio ----------
 
-// customId: ch:<idDoDesafio>:<opção>:<idDoDono>:<criadoEm em base36>[:s]
-// O ":s" marca que o desafio faz parte de uma sessão de estudo (comando aprender).
-function challengeButtons(ch, ownerId, issuedAt, { disabled = false, chosen = null, reveal = false, study = false } = {}) {
+// customId: ch:<idDoDesafio>:<opção>:<idDoDono>:<criadoEm em base36>[:s|:d]
+// O ":s" marca que o desafio faz parte de uma sessão de estudo (comando aprender); o ":d", que é o desafio do dia.
+function challengeButtons(ch, ownerId, issuedAt, { disabled = false, chosen = null, reveal = false, study = false, daily = false } = {}) {
   const row = new ActionRowBuilder();
   ch.options.forEach((option, i) => {
     let style = ButtonStyle.Secondary;
@@ -444,7 +464,7 @@ function challengeButtons(ch, ownerId, issuedAt, { disabled = false, chosen = nu
 
     row.addComponents(
       new ButtonBuilder()
-        .setCustomId(`ch:${ch.id}:${i}:${ownerId}:${issuedAt}${study ? ":s" : ""}`)
+        .setCustomId(`ch:${ch.id}:${i}:${ownerId}:${issuedAt}${study ? ":s" : daily ? ":d" : ""}`)
         .setLabel(`${LETTERS[i]}) ${option}`.slice(0, 80))
         .setStyle(style)
         .setDisabled(disabled)
@@ -476,20 +496,40 @@ function celebrationLines(state) {
     );
   }
   if (state.goal?.completed) party(`🎯 **Meta do dia cumprida!** +${state.bonus?.goal ?? 0} XP`);
+  if (state.daily) {
+    party(`📆 **Desafio do dia cumprido!**${state.daily.bonus > 0 ? ` +${state.daily.bonus} XP de bônus` : ""}`);
+  }
   if (state.milestone) party(`🔥 **${state.milestone.days} dias seguidos!** +${state.milestone.bonus} XP de bônus`);
+  if (state.freeze?.used > 0) {
+    // `left` já inclui o congelamento ganho nesta mesma resposta (linha seguinte): aqui vale o saldo antes dele.
+    const remaining = state.freeze.left - (state.freeze.earned ? 1 : 0);
+    party(
+      `❄️ **Congelamento usado!** Você ficou ${plural(state.freeze.used, "dia", "dias")} sem responder e a sequência não quebrou. ` +
+        `Restam ${remaining}/${config.freezeMax}.`
+    );
+  }
+  if (state.freeze?.earned) {
+    party(
+      `❄️ **Você ganhou um congelamento!** Ele salva um dia sem responder, sozinho. Você tem ${state.freeze.left}/${config.freezeMax}.`
+    );
+  }
   if (state.bonus?.combo > 0) party(`⚡ **Combo ×${state.combo}!** +${state.bonus.combo} XP`);
   for (const a of state.achievements ?? []) party(`🏅 **Conquista desbloqueada:** ${a.emoji} ${a.name} — ${a.description}`);
   for (const cert of state.certificates ?? []) {
     party(`🎓 **Certificado conquistado:** ${cert.course.emoji} ${cert.course.name} — ${cert.level.label}`);
   }
   if (state.comboBroken > 0) lines.push(`💔 O combo de ${state.comboBroken} acertos acabou. Bora começar outro!`);
+  if (state.type === "answered" && state.isDaily && !state.correct) {
+    lines.push("📆 O desafio do dia continua valendo: dá para tentar de novo com `diario`.");
+  }
   return { lines, gold };
 }
 
 // state: { type: "open" } | { type: "expired" } |
 //        { type: "answered", chosen, correct, gained, xp, streak }
 // Qualquer estado aceita `study: true` (sessão de estudo): depois da resposta aparecem
-// os botões "Próxima pergunta", "Trocar assunto" e "Trocar nível".
+// os botões "Próxima pergunta", "Trocar assunto" e "Trocar nível". Aceita também `isDaily: true`
+// (desafio do dia): o título muda e o bônus é anunciado.
 function challengeMessage(ch, ownerId, issuedAt, state = { type: "open" }) {
   let body = ch.question;
   if (ch.code) {
@@ -510,12 +550,14 @@ function challengeMessage(ch, ownerId, issuedAt, state = { type: "open" }) {
     chosen: state.chosen ?? null,
     reveal: state.type === "answered",
     study: Boolean(state.study),
+    daily: Boolean(state.isDaily),
   });
 
+  const heading = ch.topic?.label ?? `Desafio de ${capitalize(ch.language)}`;
   const container = new ContainerBuilder()
     .setAccentColor(color)
     .addTextDisplayComponents(
-      text(`## 🧩 ${ch.topic?.label ?? `Desafio de ${capitalize(ch.language)}`}`),
+      text(state.isDaily ? `## 📆 Desafio do dia · ${heading}` : `## 🧩 ${heading}`),
       text(`${ch.difficulty ? `Nível: ${levelTag(ch.difficulty)}\n\n` : ""}${body}`)
     )
     .addSeparatorComponents(divider())
@@ -581,13 +623,21 @@ function challengeMessage(ch, ownerId, issuedAt, state = { type: "open" }) {
       );
     }
   } else if (state.type === "expired") {
-    container.addTextDisplayComponents(text("-# ⏰ Esse desafio expirou."));
+    container.addTextDisplayComponents(text(`-# ⏰ Esse desafio expirou.${state.isDaily ? " O do dia continua valendo: peça de novo com `diario`." : ""}`));
   } else {
-    container.addTextDisplayComponents(text("-# Só quem pediu pode responder"));
+    const bonus =
+      state.isDaily && config.dailyChallengeBonusXp > 0
+        ? ` • +${config.dailyChallengeBonusXp} XP de bônus no primeiro acerto do dia, fora do limite diário`
+        : "";
+    container.addTextDisplayComponents(text(`-# Só quem pediu pode responder${bonus}`));
   }
 
   if (state.study && state.type !== "open") {
     container.addActionRowComponents(studyNavigation(ch, ownerId));
+  }
+  // Depois do desafio do dia, atalhos para seguir estudando ou ver o perfil.
+  if (state.isDaily && state.type === "answered") {
+    container.addActionRowComponents(navRow(ownerId, ["estudar", "perfil"]));
   }
 
   return [container];

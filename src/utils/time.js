@@ -8,11 +8,9 @@ function dayKey(date, timeZone) {
   }).format(date);
 }
 
-// Soma (ou subtrai) dias de uma data YYYY-MM-DD.
-function shiftDay(day, delta) {
-  const date = new Date(`${day}T00:00:00Z`);
-  date.setUTCDate(date.getUTCDate() + delta);
-  return date.toISOString().slice(0, 10);
+// Quantos dias separam duas datas YYYY-MM-DD: positivo se `to` vem depois de `from`, 0 se é o mesmo dia.
+function daysBetween(from, to) {
+  return Math.round((Date.parse(`${to}T00:00:00Z`) - Date.parse(`${from}T00:00:00Z`)) / 86_400_000);
 }
 
-module.exports = { dayKey, shiftDay };
+module.exports = { dayKey, daysBetween };
