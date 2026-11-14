@@ -3,6 +3,7 @@ const config = require("../config");
 const db = require("../utils/db");
 const challenges = require("../utils/challenges");
 const courses = require("../utils/courses");
+const dailyChallenge = require("../utils/daily");
 const { levelSuggestion: suggestLevel } = require("../utils/study");
 const logger = require("../utils/logger");
 const { commandRef, challengeMessage } = require("../utils/ui");
@@ -23,10 +24,11 @@ const update = (interaction, components) =>
 module.exports = {
   prefix: "ch",
 
-  // customId: ch:<idDoDesafio>:<opção>:<idDoDono>:<criadoEm em base36>[:s]
+  // customId: ch:<idDoDesafio>:<opção>:<idDoDono>:<criadoEm em base36>[:s|:d]
   async execute(interaction, parts, client) {
     const [, challengeId, chosenText, ownerId, issuedAt, mode] = parts;
     const study = mode === "s"; // veio do comando aprender: oferece "Próxima pergunta"
+    const isDaily = mode === "d"; // veio do comando diario
 
     if (interaction.user.id !== ownerId) {
       return interaction.reply(
@@ -46,13 +48,16 @@ module.exports = {
     const issued = parseInt(issuedAt, 36);
     if (!Number.isFinite(issued) || Date.now() - issued > config.challengeTtlMs) {
       markAnswered(key);
-      return update(interaction, challengeMessage(ch, ownerId, issuedAt, { type: "expired", study }));
+      return update(interaction, challengeMessage(ch, ownerId, issuedAt, { type: "expired", study, isDaily }));
     }
 
     markAnswered(key);
 
     const chosen = Number(chosenText);
     const correct = chosen === ch.answer;
+    // O bônus do desafio do dia só vale se a pergunta ainda é a de hoje no nível dela (uma mensagem de
+    // ontem, aberta na virada do dia, responde normalmente mas não ganha o bônus de hoje).
+    const dailyToday = isDaily && dailyChallenge.challengeFor(ch.difficulty, dailyChallenge.todayKey())?.id === ch.id;
     // O resultado traz tudo o que a mensagem mostra: XP que entrou (já com o limite diário), bônus,
     // combo, meta do dia, marcos de sequência, subida de nível e conquistas novas.
     let result;
@@ -63,7 +68,7 @@ module.exports = {
         correct,
         config.xpCorrect,
         new Date(),
-        { difficulty: ch.difficulty, challengeId: ch.id }
+        { difficulty: ch.difficulty, challengeId: ch.id, daily: dailyToday }
       );
     } catch (error) {
       // Nada foi gravado: solta a trava para a pessoa poder tentar de novo. Sem isso, o clique
@@ -100,7 +105,7 @@ module.exports = {
     return update(
       interaction,
       challengeMessage(ch, ownerId, issuedAt, {
-        type: "answered", chosen, correct, study, ...result, certificates, courseHint, levelSuggestion,
+        type: "answered", chosen, correct, study, isDaily, ...result, certificates, courseHint, levelSuggestion,
       })
     );
   },

@@ -50,6 +50,12 @@ module.exports = {
   streakMilestones: { 3: 10, 7: 30, 14: 60, 30: 150, 60: 300, 100: 500 },
   comboEvery: 5, // a cada N acertos seguidos, o combo dá um bônus
   comboBonusXp: 5,
+  // Congelamento de sequência: a cada `freezeEvery` dias seguidos a pessoa ganha 1 (0 desliga), guarda
+  // no máximo `freezeMax`, e cada um salva um dia sem responder, sozinho, quando ela volta.
+  freezeEvery: 7,
+  freezeMax: 2,
+  // Desafio do dia (comando diario): XP extra no primeiro acerto do dia, FORA do limite diário (0 desliga o bônus).
+  dailyChallengeBonusXp: 10,
 
   // ---- Cursos e certificados. Um módulo (assunto) de um nível está concluído quando a pessoa
   // acertou pelo menos esta porcentagem das perguntas DIFERENTES dele. Acertar a mesma pergunta
