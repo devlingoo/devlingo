@@ -28,6 +28,6 @@
     "axe-core": "4.14.0",
     "parse5": "8.1.1",
     "puppeteer-core": "25.17.0",
-    "typescript": "6.0.3"
+    "typescript": "7.0.2"
   }
 }
