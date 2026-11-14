@@ -1,0 +1,128 @@
+---
+import { areaList, courses, stats } from "../lib/data";
+import { inlineSvg } from "../lib/brand";
+import { LICENSE_URL, REPO_URL, inviteUrl } from "../lib/site";
+import certificate from "../assets/exemplo-certificado.png?url";
+
+const icon = (name: string) => inlineSvg(`icons/${name}.svg`, `ic-${name}`, 'aria-hidden="true" class="icon"');
+const habits = [
+  { name: "target", title: "Meta do dia", text: "<b>5</b> respostas por dia, certas ou erradas, cumprem a meta e rendem <b>+15 XP</b>." },
+  { name: "flame", title: "Sequência", text: "Cresce a cada dia em que você responde. Marcos de <b>3, 7, 14, 30, 60 e 100</b> dias dão XP extra." },
+  { name: "bolt", title: "Combo", text: "A cada <b>5</b> acertos seguidos, <b>+5 XP</b>. Errou, o combo zera e o bot avisa sem drama." },
+  { name: "star", title: "Níveis", text: "Cada <b>100 XP</b> é um nível, com títulos de Semente a Lenda." },
+  { name: "medal", title: "Conquistas", text: "<b>13</b> medalhas, do primeiro passo ao nível Especialista." },
+];
+---
+
+<section id="como-funciona" class="band" aria-labelledby="t-como">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 id="t-como">Do primeiro comando ao primeiro certificado</h2>
+      <p>No servidor, marque o bot no começo da mensagem. Na DM, escreva só o comando.</p>
+    </div>
+    <ol class="steps">
+      <li><h3>Configure</h3><code class="chip">@Devlingo configurar</code><p>Escolha suas áreas (Frontend, Backend, Banco de dados, DevOps) e o seu nível. Leva uns 10 segundos e dá para mudar quando quiser.</p></li>
+      <li><h3>Estude</h3><code class="chip">@Devlingo aprender</code><p>Escolha o assunto exato e receba só perguntas dele. O bot evita repetir o que você já acertou.</p></li>
+      <li><h3>Responda</h3><code class="chip">botões A, B, C ou D</code><p>Cada resposta vem com a explicação. Acertou, ganha 10 XP; errou, descobre o porquê.</p></li>
+      <li><h3>Certifique-se</h3><code class="chip">@Devlingo cursos</code><p>Acerte 75% das perguntas diferentes de cada módulo para fechar um nível do curso e receber o certificado.</p></li>
+    </ol>
+  </div>
+</section>
+
+<section id="assuntos" aria-labelledby="t-assuntos">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 id="t-assuntos">O que dá para estudar</h2>
+      <p>{stats.topics} assuntos em quatro áreas. Todos têm perguntas nos quatro níveis, e o número ao lado é o total de desafios do assunto.</p>
+    </div>
+    <div class="areas">
+      {
+        areaList.map((area) => (
+          <article class="area">
+            <h3>{area.label}</h3>
+            <p>{area.description}</p>
+            <ul>
+              {area.topics.map((topic) => (
+                <li><span>{topic.label}</span><span class="t-n">{topic.total}</span></li>
+              ))}
+            </ul>
+          </article>
+        ))
+      }
+    </div>
+    <ul class="levels" aria-label="Os quatro níveis">
+      <li class="lv-1">Iniciante</li>
+      <li class="lv-2">Intermediário</li>
+      <li class="lv-3">Avançado</li>
+      <li class="lv-4">Especialista</li>
+    </ul>
+  </div>
+</section>
+
+<section id="certificados" class="band" aria-labelledby="t-cert">
+  <div class="wrap cert">
+    <figure>
+      <img src={certificate} alt="Exemplo de certificado do Devlingo: Ana Beatriz Almeida, curso TypeScript na prática, nível Avançado" width="1100" height="778" loading="lazy" decoding="async" />
+      <figcaption>Exemplo ilustrativo. O certificado de verdade leva o seu nome e um código único.</figcaption>
+    </figure>
+    <div class="cert-copy">
+      <h2 id="t-cert">Cursos com certificado por nível</h2>
+      <p>Cada curso junta alguns assuntos e rende até quatro certificados: Iniciante, Intermediário, Avançado e Especialista. A imagem sai em PNG, e qualquer pessoa confere o código com o comando <code class="chip">verificar</code></p>
+      <ul class="courses">
+        {courses.map((course) => <li>{course.emoji} {course.name}</li>)}
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="habito" aria-labelledby="t-habito">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 id="t-habito">Um motivo para voltar amanhã</h2>
+      <p>O bot recompensa quem aparece todo dia e não pune quem falha.</p>
+    </div>
+    <ul class="habits">
+      {habits.map((habit) => (
+        <li>
+          <Fragment set:html={icon(habit.name)} />
+          <h3>{habit.title}</h3>
+          <p set:html={habit.text} />
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<section class="band" aria-labelledby="t-aberto">
+  <div class="wrap open">
+    <h2 id="t-aberto">Código aberto e sem permissões a mais</h2>
+    <dl>
+      <div><dt>Licença MIT</dt><dd>O código está no GitHub. Dá para ler, rodar o seu próprio Devlingo e sugerir melhorias.</dd></div>
+      <div><dt>Só lê o que precisa</dt><dd>O bot não usa permissões privilegiadas: lê apenas as mensagens que o marcam e as DMs.</dd></div>
+      <div><dt>Seu progresso fica com o bot</dt><dd>XP, sequência e certificados ficam no banco de dados do próprio bot, e o XP diário tem teto para ninguém se esgotar.</dd></div>
+    </dl>
+  </div>
+</section>
+
+<section aria-labelledby="t-cta">
+  <div class="wrap">
+    <div class="cta">
+      <div>
+        <h2 id="t-cta">Pronto para a primeira pergunta?</h2>
+        <p>{inviteUrl ? "Leve o Devlingo para o seu servidor e comece em 10 segundos." : "O código é aberto: rode o seu próprio Devlingo e comece em poucos minutos."}</p>
+      </div>
+      <a class="btn" href={inviteUrl ?? REPO_URL} target="_blank" rel="noopener noreferrer">{inviteUrl ? "Adicionar ao Discord" : "Ver o código no GitHub"}</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <a href="/" aria-label="Devlingo, início"><Fragment set:html={inlineSvg("logo/logo-horizontal.svg", "fl", 'role="img" aria-label="Devlingo" class="logo logo-light"')} /><Fragment set:html={inlineSvg("logo/logo-horizontal-on-dark.svg", "fd", 'role="img" aria-label="Devlingo" class="logo logo-dark"')} /></a>
+    <nav aria-label="Rodapé">
+      <a href={REPO_URL} target="_blank" rel="noopener noreferrer">GitHub</a>
+      <a href={LICENSE_URL} target="_blank" rel="noopener noreferrer">Licença MIT</a>
+    </nav>
+    <p class="privacy">Este site não usa cookies nem rastreadores. Ele guarda só a sua escolha de tema, no seu próprio navegador.</p>
+  </div>
+</footer>

@@ -84,7 +84,7 @@ O bot olha as **últimas 20 respostas no seu nível** (só perguntas do nível e
 
 ### Cursos e certificados (`cursos`)
 
-Cada curso junta alguns assuntos (os **módulos**) e tem um certificado **por nível**, então um curso rende até quatro: Iniciante, Intermediário, Avançado e Especialista. Hoje são dezesseis cursos: 🟨 JavaScript do zero, 🟦 TypeScript na prática, 🎨 Frontend na prática (HTML, CSS e DOM), ♿ Acessibilidade na web, 🔌 HTTP e APIs REST, 🔐 Segurança web, 🧪 Testes automatizados, 🌐 Redes na prática, 🐍 Python do zero, 🧮 Estruturas de dados, 🕸️ Algoritmos de grafos, 🗄️ SQL essencial, 🧱 Modelagem de dados, 🐳 Linux e Docker, 🚀 CI/CD com GitHub Actions e 🔀 Git na prática.
+Cada curso junta alguns assuntos (os **módulos**) e tem um certificado **por nível**, então um curso rende até quatro: Iniciante, Intermediário, Avançado e Especialista. Hoje são dezessete cursos: 🟨 JavaScript do zero, 🟦 TypeScript na prática, 🎨 Frontend na prática (HTML, CSS e DOM), ♿ Acessibilidade na web, 🔌 HTTP e APIs REST, 🔐 Segurança web, 🧪 Testes automatizados, 🌐 Redes na prática, 🐍 Python do zero, 🧮 Estruturas de dados, 🕸️ Algoritmos de grafos, 🗄️ SQL essencial, 🧱 Modelagem de dados, 🐳 Linux e Docker, 🚀 CI/CD com GitHub Actions, 📈 Observabilidade na prática e 🔀 Git na prática.
 
 - **Como conclui um módulo:** acertar **75% das perguntas diferentes** daquele assunto e nível (arredondado para cima). Acertar a mesma pergunta de novo não conta, e errar não tira o que já foi acertado. O nível do curso fecha quando **todos** os módulos dele passam, e o certificado sai na hora, na própria resposta que fechou, com um botão **Ver meu certificado**.
 - **Quem estuda de qualquer jeito também avança:** o progresso conta pelas perguntas acertadas em `aprender`, `desafio` ou pelo botão **Praticar** da tela do curso. Cada resposta mostra uma linha com quanto falta para o certificado.
@@ -151,8 +151,10 @@ src/
   data/courses.json     os cursos: quais assuntos são os módulos de cada um
 test/                   testes automáticos (npm test), sem precisar de token nem de internet
 brand/                  identidade visual: logotipo, cores, fontes, ícones, avatar e banner (veja brand/guide.html)
+site/                   site de apresentação do bot (Astro, estático e com segurança reforçada; veja site/README.md)
 data/                   banco SQLite em runtime (fora do git)
-.github/                CI (testes em cada PR), template de PR e o workflow manual de teste do bot
+.github/                CI (testes em cada PR e o do site), Dependabot, template de PR e o workflow manual de teste do bot
+SECURITY.md             como avisar de uma vulnerabilidade e o que fazer se o token vazar
 ```
 
 ### Criar um comando novo
