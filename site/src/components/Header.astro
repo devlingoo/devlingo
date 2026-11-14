@@ -1,0 +1,23 @@
+---
+import { inlineSvg } from "../lib/brand";
+import { REPO_URL } from "../lib/site";
+
+const logoLight = inlineSvg("logo/logo-horizontal.svg", "hl", 'role="img" aria-label="Devlingo" class="logo logo-light"');
+const logoDark = inlineSvg("logo/logo-horizontal-on-dark.svg", "hd", 'role="img" aria-label="Devlingo" class="logo logo-dark"');
+---
+
+<a class="skip" href="#conteudo">Pular para o conteúdo</a>
+<header class="wrap top">
+  <a href="/" aria-label="Devlingo, início"><Fragment set:html={logoLight} /><Fragment set:html={logoDark} /></a>
+  <nav aria-label="Seções">
+    <a class="nav-hide" href="#como-funciona">Como funciona</a>
+    <a class="nav-hide" href="#assuntos">Assuntos</a>
+    <a class="nav-hide" href="#certificados">Certificados</a>
+    <a href={REPO_URL} target="_blank" rel="noopener noreferrer">GitHub</a>
+    <button type="button" class="theme" id="theme-toggle">Tema: automático</button>
+  </nav>
+</header>
+
+<script>
+  import "../scripts/theme";
+</script>

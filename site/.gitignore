@@ -1,0 +1,13 @@
+node_modules/
+dist/
+.astro/
+
+# Gerados por scripts/sync.mjs (npm run sync, que o build já roda). O _headers e o vercel.json ficam no git de propósito:
+# o hospedeiro lê esses arquivos, e a auditoria (npm run audit:dist) confere que continuam iguais à política.
+public/favicon.svg
+public/apple-touch-icon.png
+public/og-image.png
+public/fonts/
+public/.well-known/
+src/generated/
+src/styles/fonts.generated.css

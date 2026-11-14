@@ -148,8 +148,10 @@ src/
   data/courses.json     os cursos: quais assuntos são os módulos de cada um
 test/                   testes automáticos (npm test), sem precisar de token nem de internet
 brand/                  identidade visual: logotipo, cores, fontes, ícones, avatar e banner (veja brand/guide.html)
+site/                   site de apresentação do bot (Astro, estático e com segurança reforçada; veja site/README.md)
 data/                   banco SQLite em runtime (fora do git)
-.github/                CI (testes em cada PR), template de PR e o workflow manual de teste do bot
+.github/                CI (testes em cada PR e o do site), Dependabot, template de PR e o workflow manual de teste do bot
+SECURITY.md             como avisar de uma vulnerabilidade e o que fazer se o token vazar
 ```
 
 ### Criar um comando novo

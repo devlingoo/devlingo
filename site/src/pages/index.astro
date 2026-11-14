@@ -1,0 +1,17 @@
+---
+import Base from "../layouts/Base.astro";
+import Header from "../components/Header.astro";
+import Hero from "../components/Hero.astro";
+import Sections from "../components/Sections.astro";
+import { stats } from "../lib/data";
+
+const description = `Devlingo: um bot de Discord para aprender programação respondendo desafios. ${stats.challenges} desafios em ${stats.topics} assuntos, com XP, sequência diária e certificados.`;
+---
+
+<Base title="Devlingo" description={description}>
+  <Header />
+  <main id="conteudo" tabindex="-1">
+    <Hero />
+    <Sections />
+  </main>
+</Base>

@@ -1,0 +1,72 @@
+---
+import { demo, stats } from "../lib/data";
+import { inlineSvg } from "../lib/brand";
+import { REPO_URL, inviteUrl } from "../lib/site";
+
+const avatar = inlineSvg("logo/mark.svg", "av", 'aria-hidden="true" class="avatar-mark"');
+---
+
+<div class="wrap hero">
+  <div>
+    <p class="eyebrow">Bot para Discord</p>
+    <h1>Aprenda programação <em>jogando.</em></h1>
+    <p class="lede">Um desafio por vez, direto no seu servidor ou na DM. Você responde, ganha XP, mantém a sequência e sai com certificado.</p>
+    <div class="actions">
+      {
+        inviteUrl ? (
+          <>
+            <a class="btn btn-primary" href={inviteUrl} target="_blank" rel="noopener noreferrer">Adicionar ao Discord</a>
+            <a class="btn btn-ghost" href={REPO_URL} target="_blank" rel="noopener noreferrer">Ver o código</a>
+          </>
+        ) : (
+          <a class="btn btn-primary" href={REPO_URL} target="_blank" rel="noopener noreferrer">Ver o código no GitHub</a>
+        )
+      }
+    </div>
+    {!inviteUrl && <p class="note">O convite público do bot ainda não está aberto. Enquanto isso, dá para rodar o seu próprio Devlingo.</p>}
+    <ul class="facts" aria-label="O Devlingo em números">
+      <li><b>{stats.challenges}</b> desafios</li>
+      <li><b>{stats.topics}</b> assuntos</li>
+      <li><b>{stats.courses}</b> cursos</li>
+      <li><b>{stats.levels}</b> níveis</li>
+    </ul>
+  </div>
+
+  <div class="demo">
+    <p class="demo-cap"><span>É assim que o bot responde. Clique em uma alternativa (ou aperte A, B, C ou D).</span><span>Perguntas reais do Devlingo</span></p>
+    <div class="discord" id="demo" data-challenges={JSON.stringify(demo)} role="group" aria-label="Exemplo de conversa com o Devlingo no Discord">
+      <div class="msg">
+        <div class="av av-user" aria-hidden="true">A</div>
+        <div class="body">
+          <div class="who"><strong>ana</strong></div>
+          <div><span class="mention">@Devlingo</span> aprender</div>
+        </div>
+      </div>
+      <div class="msg">
+        <div class="av av-bot"><Fragment set:html={avatar} /></div>
+        <div class="body">
+          <div class="who"><strong>Devlingo</strong><span class="tag">BOT</span></div>
+          <div class="card" data-role="card">
+            <p class="card-title" data-role="title"></p>
+            <div class="qtext"><span data-role="level"></span><br /><span data-role="question"></span></div>
+            <pre><code data-role="code"></code></pre>
+            <div class="opts" data-role="options" role="group" aria-label="Alternativas"></div>
+            <p class="tiny" data-role="hint">Só quem pediu pode responder</p>
+            <div class="res" data-role="result" hidden aria-live="polite">
+              <hr class="sep" />
+              <div class="verdict" data-role="verdict"></div>
+              <div class="expl" data-role="explanation"></div>
+              <div class="party" data-role="party"></div>
+              <div class="foot" data-role="footer"></div>
+              <button type="button" class="next" data-role="next">Próxima pergunta ▶</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  import "../scripts/demo";
+</script>
