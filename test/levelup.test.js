@@ -269,10 +269,10 @@ test("banco antigo (versão 4) ganha a coluna nova sem perder dados", () => {
     db.setPreferences("velha", { level: "beginner", areas: ["banco"] });
     db.close();
 
-    // Volta o banco para a versão 4, sem a coluna nova, como estava antes desta mudança.
+    // Volta o banco para a versão 4: sem a coluna desta mudança (v5) e sem o que as versões seguintes criaram.
     const { DatabaseSync } = require("node:sqlite");
     const raw = new DatabaseSync(file);
-    raw.exec("ALTER TABLE users DROP COLUMN recent; PRAGMA user_version = 4;");
+    raw.exec("ALTER TABLE users DROP COLUMN recent; ALTER TABLE users DROP COLUMN freezes; DROP TABLE daily_done; PRAGMA user_version = 4;");
     raw.close();
 
     db.open(file);
