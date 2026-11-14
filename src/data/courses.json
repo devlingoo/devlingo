@@ -110,5 +110,12 @@
     "emoji": "🚀",
     "description": "Workflows, jobs, cache, segredos e deploy: automatize testes e entregas.",
     "modules": ["ci-cd"]
+  },
+  {
+    "id": "observab",
+    "name": "Observabilidade na prática",
+    "emoji": "📈",
+    "description": "Logs, métricas, traces, PromQL e SLOs: entenda o que o seu sistema está fazendo.",
+    "modules": ["observability"]
   }
 ]

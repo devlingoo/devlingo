@@ -6798,5 +6798,325 @@
       "label": "Acessibilidade",
       "description": "HTML acessível, teclado, leitores de tela e contraste"
     }
+  },
+  {
+    "id": "obs-001",
+    "language": "javascript",
+    "question": "Qual a principal vantagem da segunda linha (log estruturado)?",
+    "code": "console.log(\"Erro: pagamento recusado do usuário 42 em 130ms\");\n\nconsole.log(JSON.stringify({ level: \"error\", msg: \"pagamento recusado\", userId: 42, ms: 130 }));",
+    "options": [
+      "Só funciona se o projeto usar uma biblioteca de logs específica",
+      "O JSON ocupa menos espaço em disco do que o texto solto",
+      "O JSON é criptografado, então dados sensíveis ficam protegidos",
+      "Cada campo vira filtrável, sem depender de regex frágil"
+    ],
+    "answer": 3,
+    "explanation": "Num log estruturado, cada informação é um campo (`level`, `userId`, `ms`), e as ferramentas de log filtram e somam por campo: \"todos os erros do usuário 42\" ou \"a soma dos `ms`\". No texto solto, é preciso uma expressão regular, que quebra quando alguém reescreve a mensagem. O JSON não é menor (tem aspas e chaves), não é criptografado e basta o `JSON.stringify`: nenhuma biblioteca é obrigatória.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "observability",
+      "label": "Observabilidade",
+      "description": "Logs, métricas, traces, PromQL e SLOs"
+    }
+  },
+  {
+    "id": "obs-002",
+    "language": "javascript",
+    "question": "Quais mensagens aparecem no console?",
+    "code": "const logger = pino({ level: \"warn\" });\n\nlogger.debug(\"a\");\nlogger.info(\"b\");\nlogger.warn(\"c\");\nlogger.error(\"d\");",
+    "options": [
+      "c e d (warn e error)",
+      "Só d (error), pois o nível warn é exato e filtra o resto",
+      "a e b (debug e info), que são os níveis mais leves",
+      "a, b, c e d, pois o nível só muda a cor das linhas"
+    ],
+    "answer": 0,
+    "explanation": "O nível mínimo (`level`) funciona como um filtro: aparecem as mensagens desse nível e dos mais graves. Na ordem do menos para o mais grave: `debug`, `info`, `warn`, `error`. Com `warn`, o `debug` e o `info` são descartados e saem só `c` e `d`. Em produção costuma-se usar `info` ou `warn`, e subir para `debug` só para investigar um problema.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "observability",
+      "label": "Observabilidade",
+      "description": "Logs, métricas, traces, PromQL e SLOs"
+    }
+  },
+  {
+    "id": "obs-003",
+    "language": "text",
+    "question": "Qual tipo de métrica do Prometheus representa a memória em uso agora?",
+    "code": "process_resident_memory_bytes 48234496",
+    "options": [
+      "summary",
+      "counter",
+      "gauge",
+      "histogram"
+    ],
+    "answer": 2,
+    "explanation": "Um **gauge** é um valor que sobe e desce: memória em uso, conexões abertas, itens na fila. Um **counter** só aumenta (e volta a 0 quando o processo reinicia): a biblioteca recusa diminuí-lo. Já o **histogram** (e o summary) guarda a distribuição de várias medidas, como a latência, em vez de um valor único.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "observability",
+      "label": "Observabilidade",
+      "description": "Logs, métricas, traces, PromQL e SLOs"
+    }
+  },
+  {
+    "id": "obs-004",
+    "language": "text",
+    "question": "O que essa linha da página /metrics diz?",
+    "code": "http_requests_total{method=\"GET\",status=\"200\"} 1027",
+    "options": [
+      "A última requisição GET com status 200 levou 1027 milissegundos",
+      "Até agora, o processo atendeu 1027 requisições GET com status 200",
+      "O servidor atende 1027 requisições por segundo, com GET e status 200",
+      "Em média, 1027 requisições GET com status 200 por minuto"
+    ],
+    "answer": 1,
+    "explanation": "É um **counter**: o total acumulado desde que o processo iniciou, e não uma taxa. Para saber \"quantas por segundo\", compara-se o valor em dois instantes, o que o PromQL faz com `rate()`. Se o processo reiniciar, o contador volta a 0 e recomeça a contar. E 1027 não é um tempo: tempos são medidos por histogramas.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "observability",
+      "label": "Observabilidade",
+      "description": "Logs, métricas, traces, PromQL e SLOs"
+    }
+  },
+  {
+    "id": "obs-005",
+    "language": "promql",
+    "question": "O contador requests_total cresce 60 a cada minuto. Qual o valor dessa consulta?",
+    "code": "rate(requests_total[5m])",
+    "options": [
+      "0,0167 (um sessenta avos de requisição por segundo)",
+      "60 (requisições por minuto, que é como o contador cresce)",
+      "1, porque o rate() devolve a taxa por segundo",
+      "300 (o aumento total dentro da janela de 5 minutos)"
+    ],
+    "answer": 2,
+    "explanation": "O `rate()` devolve o aumento médio **por segundo** dentro da janela: 60 por minuto são 1 por segundo. O aumento total na janela de 5 minutos (300) é o que o `increase()` calcula. Como o `rate()` já corrige reinícios do contador, ele é a forma certa de ler um counter; o valor bruto só diz \"quanto já foi contado\".",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "observability",
+      "label": "Observabilidade",
+      "description": "Logs, métricas, traces, PromQL e SLOs"
+    }
+  },
+  {
+    "id": "obs-006",
+    "language": "text",
+    "question": "Quantas requisições levaram mais de 0,5 segundo?",
+    "code": "latency_seconds_bucket{le=\"0.1\"} 2\nlatency_seconds_bucket{le=\"0.5\"} 4\nlatency_seconds_bucket{le=\"1\"} 5\nlatency_seconds_bucket{le=\"+Inf\"} 6\nlatency_seconds_sum 3.3\nlatency_seconds_count 6",
+    "options": [
+      "1",
+      "2",
+      "4",
+      "5"
+    ],
+    "answer": 1,
+    "explanation": "Os buckets do histograma são **cumulativos**: `le=\"0.5\"` (\"menor ou igual a 0,5\") já inclui os do bucket de 0,1, e `+Inf` inclui todos (6 no total, igual a `_count`). Então, mais de 0,5 s = total − bucket de 0,5 = 6 − 4 = 2. O 1 seria a conta de quem passou de 1 s (6 − 5); `_sum` guarda a soma de todos os tempos (3,3 s).",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "observability",
+      "label": "Observabilidade",
+      "description": "Logs, métricas, traces, PromQL e SLOs"
+    }
+  },
+  {
+    "id": "obs-007",
+    "language": "javascript",
+    "question": "A latência média é 119 ms, mas 2% dos usuários esperam 3,5 s. Qual métrica mostra isso?",
+    "code": "const tempos = [...Array(98).fill(50), 3500, 3500]; // em milissegundos",
+    "options": [
+      "A média, que já considera todas as requisições do período",
+      "O p99: o tempo abaixo do qual ficam 99% das requisições",
+      "A mediana (p50), que representa o usuário que está no meio",
+      "O tempo mínimo, que mostra o melhor caso registrado"
+    ],
+    "answer": 1,
+    "explanation": "A média esconde os casos lentos: 98 requisições de 50 ms e 2 de 3500 ms dão média de 119 ms, e quase todo mundo está bem. O **p99** (percentil 99) pega justamente a cauda: 3500 ms. A mediana (p50) é 50 ms e não vê o problema. Por isso se acompanham percentis (p50, p95, p99), que um histograma permite calcular.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "observability",
+      "label": "Observabilidade",
+      "description": "Logs, métricas, traces, PromQL e SLOs"
+    }
+  },
+  {
+    "id": "obs-008",
+    "language": "javascript",
+    "question": "O que esse código imprime?",
+    "code": "const { AsyncLocalStorage } = require(\"node:async_hooks\");\nconst contexto = new AsyncLocalStorage();\n\nfunction log(msg) {\n  console.log(contexto.getStore()?.requestId, msg);\n}\n\nasync function tratar(requestId) {\n  await contexto.run({ requestId }, async () => {\n    log(\"início\");\n    await new Promise((r) => setTimeout(r, requestId === \"A\" ? 20 : 5));\n    log(\"fim\");\n  });\n}\n\nPromise.all([tratar(\"A\"), tratar(\"B\")]);",
+    "options": [
+      "A início, B início, B fim, A fim",
+      "A início, A fim, B início, B fim",
+      "undefined em todas as linhas",
+      "A início, B início, A fim, B fim"
+    ],
+    "answer": 0,
+    "explanation": "O `AsyncLocalStorage` guarda um contexto (aqui, o `requestId`) que **acompanha** a requisição por todas as chamadas assíncronas, mesmo com várias requisições intercaladas: a B termina antes (5 ms contra 20 ms), e cada linha mostra o ID da sua própria requisição. É assim que se grava um ID de correlação em todo log, para reconstruir a história de uma requisição. Com uma variável global, a linha \"fim\" da A sairia com o ID da B.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "observability",
+      "label": "Observabilidade",
+      "description": "Logs, métricas, traces, PromQL e SLOs"
+    }
+  },
+  {
+    "id": "obs-009",
+    "language": "text",
+    "question": "Por que user_id não deve ser uma label de métrica?",
+    "code": "http_requests_total{method=\"GET\", route=\"/users/:id\", status=\"200\"}\nhttp_requests_total{method=\"GET\", user_id=\"8f3a21\", status=\"200\"}",
+    "options": [
+      "Cada valor novo cria uma série nova e a memória explode",
+      "Labels com mais de 5 caracteres são descartadas pelo servidor",
+      "Labels só aceitam valores numéricos, e o ID do usuário é um texto",
+      "O Prometheus reserva o nome user_id para uso interno"
+    ],
+    "answer": 0,
+    "explanation": "Cada combinação de valores de labels é uma **série temporal** que o Prometheus guarda na memória e no disco. Com `method`, `route` e `status` há poucas combinações (a rota `/users/:id` vale para todos os usuários), mas `user_id` cria uma série nova para cada pessoa: 1000 usuários × 3 status = 3000 séries numa só métrica. Isso é a **cardinalidade alta**, uma das principais causas de custo e de queda do monitoramento. IDs de usuário ficam nos logs e nos traces.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "observability",
+      "label": "Observabilidade",
+      "description": "Logs, métricas, traces, PromQL e SLOs"
+    }
+  },
+  {
+    "id": "obs-010",
+    "language": "promql",
+    "question": "Qual consulta dá o p99 da latência dos últimos 5 minutos?",
+    "code": "request_seconds_bucket{le=\"0.1\"}\nrequest_seconds_bucket{le=\"0.5\"}\nrequest_seconds_bucket{le=\"1\"}\nrequest_seconds_bucket{le=\"+Inf\"}\nrequest_seconds_sum\nrequest_seconds_count",
+    "options": [
+      "quantile(0.99, sum by (le) (rate(request_seconds_bucket[5m])))",
+      "sum(rate(request_seconds_sum[5m])) / sum(rate(request_seconds_count[5m]))",
+      "histogram_quantile(0.99, sum by (le) (rate(request_seconds_bucket[5m])))",
+      "rate(request_seconds_count[5m])"
+    ],
+    "answer": 2,
+    "explanation": "O histograma guarda quantas requisições cabem em cada bucket (`le`). O `rate()` transforma esses contadores em taxas, o `sum by (le)` junta as instâncias mantendo os buckets, e o `histogram_quantile(0.99, ...)` estima o p99 interpolando dentro do bucket. A divisão `_sum / _count` dá a **média** (0,12 s no teste); o `quantile()` agrega os **valores** das séries (aqui, as taxas dos buckets, e não a distribuição da latência); e `rate(..._count)` é a vazão, em requisições por segundo.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "observability",
+      "label": "Observabilidade",
+      "description": "Logs, métricas, traces, PromQL e SLOs"
+    }
+  },
+  {
+    "id": "obs-011",
+    "language": "yaml",
+    "question": "Quando o alerta ErroAlto passa a disparar (firing)?",
+    "code": "groups:\n  - name: api\n    rules:\n      - alert: ErroAlto\n        expr: erros_por_segundo > 5\n        for: 5m",
+    "options": [
+      "A cada 5 minutos, enquanto a condição continuar verdadeira",
+      "No instante em que a condição fica verdadeira pela primeira vez",
+      "Cinco minutos depois de a condição voltar ao normal",
+      "Quando a condição fica verdadeira por 5 minutos seguidos"
+    ],
+    "answer": 3,
+    "explanation": "O `for: 5m` faz o alerta passar primeiro por **pending**: a condição precisa continuar verdadeira por 5 minutos seguidos para virar **firing**. Se ela falhar no meio, a contagem recomeça. Isso evita acordar alguém por um pico de segundos. No teste, com a condição verdadeira a partir de 2 min, o alerta só aparece em 7 min; e uma queda aos 5 min o reinicia.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "observability",
+      "label": "Observabilidade",
+      "description": "Logs, métricas, traces, PromQL e SLOs"
+    }
+  },
+  {
+    "id": "obs-012",
+    "language": "javascript",
+    "question": "Por que a amostragem por razão decide a partir do trace id?",
+    "code": "const sampler = new TraceIdRatioBasedSampler(0.1);",
+    "options": [
+      "Para os 10% amostrados serem sempre do mesmo usuário",
+      "Todos os serviços chegam à mesma decisão para o mesmo trace",
+      "Porque o trace id guarda se a requisição acabou com erro",
+      "Para sortear de novo a cada span e, assim, reduzir o tráfego"
+    ],
+    "answer": 1,
+    "explanation": "A decisão é uma função do trace id: cada serviço, olhando só o id que chegou no cabeçalho, calcula o mesmo resultado, e o trace sai completo ou não sai, sem os serviços precisarem conversar. Se cada span sorteasse sozinho, os traces ficariam cheios de buracos. O trace id é só um número aleatório (não carrega erro nem usuário), e decidir no início da requisição, antes de saber se ela deu erro, é a limitação da amostragem por razão (head sampling).",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "observability",
+      "label": "Observabilidade",
+      "description": "Logs, métricas, traces, PromQL e SLOs"
+    }
+  },
+  {
+    "id": "obs-013",
+    "language": "text",
+    "question": "O que cada parte desse cabeçalho significa?",
+    "code": "traceparent: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01",
+    "options": [
+      "Versão, id do usuário, id da sessão e prioridade da requisição",
+      "Versão, id do span, id do serviço e tamanho do corpo",
+      "Versão, trace id, id do span pai e flags (01 = amostrado)",
+      "Data, trace id, id do span filho e nível de log"
+    ],
+    "answer": 2,
+    "explanation": "O `traceparent` é o cabeçalho do padrão W3C Trace Context, que leva o contexto do trace de um serviço para o outro: **versão** (`00`), **trace id** (32 hex, o mesmo em toda a requisição), **id do span pai** (16 hex, o span de quem está chamando) e **flags** (`01` = amostrado). O serviço que recebe cria um span filho com o mesmo trace id e um id novo, e repassa o seu id como \"pai\" na próxima chamada.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "observability",
+      "label": "Observabilidade",
+      "description": "Logs, métricas, traces, PromQL e SLOs"
+    }
+  },
+  {
+    "id": "obs-014",
+    "language": "text",
+    "question": "Um SLO de 99,9% de disponibilidade em 30 dias permite quanto tempo fora do ar?",
+    "code": "",
+    "options": [
+      "Cerca de 2 horas e 53 minutos",
+      "Cerca de 43 minutos",
+      "Cerca de 4 minutos e 19 segundos",
+      "Cerca de 7 horas e 12 minutos"
+    ],
+    "answer": 1,
+    "explanation": "O orçamento de erro (*error budget*) é o que sobra do SLO: 100% − 99,9% = 0,1%. Em 30 dias (43 200 minutos), 0,1% dá 43,2 minutos. Cada nove a mais divide o orçamento por dez: 99,99% dá 4 minutos e 19 segundos, 99% dá 7 horas e 12 minutos, e 99,6% dá 2 horas e 53 minutos (as outras alternativas). Por isso \"mais um nove\" custa tão caro.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "observability",
+      "label": "Observabilidade",
+      "description": "Logs, métricas, traces, PromQL e SLOs"
+    }
+  },
+  {
+    "id": "obs-015",
+    "language": "text",
+    "question": "Com SLO de 30 dias, quanto do orçamento de erro um burn rate de 14,4 consome em 1 hora?",
+    "code": "",
+    "options": [
+      "1%",
+      "2%",
+      "10%",
+      "14,4%"
+    ],
+    "answer": 1,
+    "explanation": "O *burn rate* é a velocidade com que o serviço gasta o orçamento de erro em relação ao ritmo que o consumiria exatamente em 30 dias (burn rate 1). Com 14,4, em 1 hora gasta-se 14,4 × (1 h ÷ 720 h) = 2% do orçamento, o limite que o Google SRE sugere para **acordar alguém** (page). O 1% seria um burn rate de 7,2, e o 10% levaria 5 horas a 14,4.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "observability",
+      "label": "Observabilidade",
+      "description": "Logs, métricas, traces, PromQL e SLOs"
+    }
+  },
+  {
+    "id": "obs-016",
+    "language": "text",
+    "question": "O processo reiniciou e o contador caiu. O que o rate() mostra?",
+    "code": "# amostras de requests_total, uma por minuto\n0, 60, 120, 180, 60, 120, 180, 240\n#                ^ o processo reiniciou aqui",
+    "options": [
+      "Um valor negativo, por causa da queda de 180 para 60 no meio da janela",
+      "Zero: a janela com reinício é descartada inteira pelo Prometheus",
+      "Um erro \"counter reset\", e a consulta não devolve nada",
+      "1 por segundo: ele trata a queda como reinício e segue contando"
+    ],
+    "answer": 3,
+    "explanation": "O `rate()` (e o `increase()`) foi feito para counters: quando um valor é **menor** que o anterior, entende que o processo reiniciou e continua a conta a partir daí, em vez de dar um aumento negativo. Aqui o contador cresce 60 por minuto, com um reinício no meio, e a taxa continua 1 por segundo. É um dos motivos para nunca olhar o valor bruto de um counter nem usar `delta()` nele.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "observability",
+      "label": "Observabilidade",
+      "description": "Logs, métricas, traces, PromQL e SLOs"
+    }
   }
 ]

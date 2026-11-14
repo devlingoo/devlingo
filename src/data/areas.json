@@ -34,6 +34,7 @@
       "python-collections",
       "data-structures",
       "graph-algorithms",
+      "observability",
       "networking-basics"
     ]
   },
@@ -49,6 +50,6 @@
     "label": "Ferramentas e DevOps",
     "emoji": "🛠️",
     "description": "Versionamento, entrega e infraestrutura",
-    "topics": ["linux-shell", "docker-basics", "git-versioning", "ci-cd", "networking-basics"]
+    "topics": ["linux-shell", "docker-basics", "git-versioning", "ci-cd", "observability", "networking-basics"]
   }
 ]
