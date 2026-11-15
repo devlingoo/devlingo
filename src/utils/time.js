@@ -26,4 +26,9 @@ function weekStartOf(day) {
   return addDays(day, -((weekday + 6) % 7));
 }
 
-module.exports = { dayKey, daysBetween, addDays, weekStartOf };
+// A hora cheia (0 a 23) de um instante no fuso informado.
+function hourOf(date, timeZone) {
+  return Number(new Intl.DateTimeFormat("en-GB", { timeZone, hour: "2-digit", hourCycle: "h23" }).format(date));
+}
+
+module.exports = { dayKey, daysBetween, addDays, weekStartOf, hourOf };

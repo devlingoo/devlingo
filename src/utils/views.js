@@ -10,6 +10,7 @@ const courseLib = require("./courses");
 const courseUi = require("./courseUi");
 const certificate = require("./certificate");
 const progress = require("./progress");
+const reminders = require("./reminders");
 const study = require("./study");
 const ui = require("./ui");
 
@@ -178,6 +179,16 @@ async function league({ client, guild, guildId, ownerId, action = null, now = ne
   });
 }
 
+// ---------- lembretes por DM ----------
+
+// A tela dos lembretes. `action` ("on" ou "off") liga ou desliga antes de mostrar a tela, e `hour` escolhe a hora ao
+// ligar (o que o comando `lembrete` e os botões fazem). `user` é quem pediu e `inGuild` diz se foi num servidor:
+// a DM de confirmação depende dos dois.
+async function reminder({ ownerId, user, inGuild, action = null, hour = null }) {
+  const flash = await reminders.apply({ action, user, ownerId, inGuild, hour });
+  return ui.reminderScreen({ ownerId, reminder: db.getReminder(ownerId), flash });
+}
+
 // ---------- cursos e certificados ----------
 
 // Lista de cursos com o progresso de cada nível. Ao abrir, confere se a pessoa merece algum
@@ -248,6 +259,7 @@ module.exports = {
   achievements: achievementsView,
   ranking,
   league,
+  reminder,
   courses,
   courseDetail,
   certificates,

@@ -3,7 +3,7 @@ const path = require("path");
 const { DatabaseSync } = require("node:sqlite"); // embutido no Node 22.13+, sem dependência extra
 const config = require("../config");
 const logger = require("./logger");
-const { dayKey, daysBetween, addDays, weekStartOf } = require("./time");
+const { dayKey, daysBetween, addDays, weekStartOf, hourOf } = require("./time");
 const { levelOf } = require("./progress");
 const achievements = require("./achievements");
 
@@ -114,6 +114,21 @@ const MIGRATIONS = [
     PRIMARY KEY (guild_id, user_id, week)
   );
   CREATE INDEX league_xp_board ON league_xp (guild_id, week, xp DESC);
+  `,
+  // v8: lembretes por DM. Uma linha por pessoa que LIGOU (só entra quem pede; desligar apaga a linha). "hour" é a
+  // hora cheia (0 a 23) no fuso do bot; "last_try_day" é o último dia em que o bot tentou mandar (garante no
+  // máximo uma tentativa por dia); "failures" conta dias seguidos com falha de envio; "enabled" vira 0 quando o
+  // bot desliga sozinho (a DM falhou), com "off_reason" = 'dm' para avisar a pessoa na próxima vez que ela vier.
+  `
+  CREATE TABLE reminders (
+    user_id      TEXT PRIMARY KEY,
+    hour         INTEGER NOT NULL,
+    enabled      INTEGER NOT NULL DEFAULT 1,
+    last_try_day TEXT,
+    failures     INTEGER NOT NULL DEFAULT 0,
+    off_reason   TEXT
+  );
+  CREATE INDEX reminders_due ON reminders (enabled, hour);
   `,
 ];
 
@@ -641,6 +656,87 @@ function leagueBoard(guildId, userId, now = new Date(), { weeksAgo = 0, limit = 
   return { week, participants, rows, you: { member, xp, position } };
 }
 
+// ---------- lembretes por DM ----------
+
+// Os lembretes da pessoa: { enabled, hour, offReason } ou null se ela nunca ligou (ou desligou por conta própria).
+// offReason = "dm" quando o bot desligou sozinho porque a DM falhou.
+function getReminder(userId) {
+  const row = connection().prepare("SELECT hour, enabled, off_reason FROM reminders WHERE user_id = ?").get(userId);
+  return row ? { enabled: row.enabled === 1, hour: row.hour, offReason: row.off_reason ?? null } : null;
+}
+
+// Liga os lembretes (ou muda a hora). Zera as falhas. O dia da última tentativa fica como estava: mudar a hora
+// no mesmo dia nunca resulta em duas DMs.
+function setReminder(userId, hour) {
+  connection()
+    .prepare(
+      `INSERT INTO reminders (user_id, hour) VALUES (?, ?)
+       ON CONFLICT(user_id) DO UPDATE SET hour = excluded.hour, enabled = 1, failures = 0, off_reason = NULL`
+    )
+    .run(userId, hour);
+}
+
+// A pessoa desligou: apaga a linha (não sobra nada dela).
+function clearReminder(userId) {
+  return connection().prepare("DELETE FROM reminders WHERE user_id = ?").run(userId).changes > 0;
+}
+
+// Quem está na hora de receber agora: ligou, a hora marcada já chegou (e ainda está dentro da janela
+// `reminderWindowHours`), o bot ainda não tentou hoje e a pessoa ainda não respondeu nada hoje. [{ userId, hour }].
+function dueReminders(now = new Date(), limit = config.reminderBatch) {
+  const today = todayKey(now);
+  const hour = hourOf(now, config.timezone);
+  return connection()
+    .prepare(
+      `SELECT r.user_id AS userId, r.hour AS hour
+       FROM reminders r LEFT JOIN users u ON u.id = r.user_id
+       WHERE r.enabled = 1
+         AND r.hour <= ? AND ? < r.hour + ?
+         AND (r.last_try_day IS NULL OR r.last_try_day <> ?)
+         AND (u.last_day IS NULL OR u.last_day <> ?)
+       ORDER BY r.hour, r.user_id
+       LIMIT ?`
+    )
+    .all(hour, hour, config.reminderWindowHours, today, today, limit)
+    .map((r) => ({ userId: r.userId, hour: r.hour }));
+}
+
+// Reserva a tentativa de hoje para a pessoa. Devolve false se hoje já foi tentado (ou se ela desligou no meio
+// tempo): é isso que impede uma segunda DM no mesmo dia, mesmo com dois processos no mesmo banco.
+function claimReminder(userId, now = new Date()) {
+  const today = todayKey(now);
+  return (
+    connection()
+      .prepare(
+        `UPDATE reminders SET last_try_day = ?
+         WHERE user_id = ? AND enabled = 1 AND (last_try_day IS NULL OR last_try_day <> ?)`
+      )
+      .run(today, userId, today).changes > 0
+  );
+}
+
+// A DM chegou: zera a contagem de falhas.
+function reminderSent(userId) {
+  connection().prepare("UPDATE reminders SET failures = 0 WHERE user_id = ?").run(userId);
+}
+
+// A DM falhou. Com `fatal` (a pessoa não aceita DM, bloqueou o bot ou a conta não existe) desliga na hora;
+// sem ele, só desliga depois de `reminderMaxFailures` dias seguidos com falha. Devolve { disabled, failures }.
+function reminderFailed(userId, { fatal = false } = {}) {
+  return transaction(() => {
+    const conn = connection();
+    const row = conn.prepare("SELECT failures FROM reminders WHERE user_id = ?").get(userId);
+    if (!row) return { disabled: false, failures: 0 };
+
+    const failures = row.failures + 1;
+    const disabled = fatal || failures >= config.reminderMaxFailures;
+    conn
+      .prepare("UPDATE reminders SET failures = ?, enabled = ?, off_reason = ? WHERE user_id = ?")
+      .run(failures, disabled ? 0 : 1, disabled ? "dm" : null, userId);
+    return { disabled, failures };
+  });
+}
+
 module.exports = {
   getUser,
   getPreferences,
@@ -666,6 +762,13 @@ module.exports = {
   joinLeague,
   leaveLeague,
   leagueBoard,
+  getReminder,
+  setReminder,
+  clearReminder,
+  dueReminders,
+  claimReminder,
+  reminderSent,
+  reminderFailed,
   open,
   close,
 };

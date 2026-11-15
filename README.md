@@ -31,6 +31,7 @@ No servidor, marque o bot no começo da mensagem. Na DM, escreva direto.
 | `@Devlingo perfil` | `perfil` | nível, XP, sequência, meta do dia, estatísticas e trilha |
 | `@Devlingo ranking` | `ranking` | top 10 do servidor (na DM, ranking global) e a sua posição |
 | `@Devlingo liga` | — (só em servidor) | a liga da semana do servidor: `liga entrar` para participar, `liga sair` para deixar de participar |
+| `@Devlingo lembrete` | `lembrete` | um lembrete por dia por DM, só se você ligar: `lembrete ligar 20` (qualquer hora de 0 a 23) e `lembrete desligar` |
 | `@Devlingo conquistas` | `conquistas` | suas medalhas: as que você já ganhou e as que faltam |
 | `@Devlingo ajuda` | `ajuda` | lista de comandos, agrupada por tipo |
 
@@ -53,6 +54,7 @@ O bot recompensa quem volta todo dia, sem punir quem falha:
 - 🏅 **Conquistas:** 13 medalhas (primeiro passo, 10/50/100 acertos, sequências, combos, meta, nível Especialista...). O comando `conquistas` mostra as ganhas e as que faltam.
 - 📍 **Ranking com a sua posição**, mesmo fora do top 10.
 - 🥇 **Liga semanal (`liga`), só para quem quiser:** cada servidor tem a sua liga, de segunda a domingo (no fuso configurado). Ninguém entra sozinho: quem usa `liga entrar` (ou o botão **Entrar na liga**) passa a competir pelo XP que ganhar **naquele servidor, depois de entrar**, e o top 10 da semana aparece no comando `liga` (quem está fora do top vê a própria posição). A semana seguinte começa do zero e a tela mostra o pódio da semana que passou. Não há rebaixamento nem mensagem automática: o bot nunca escreve na liga sozinho. `liga sair` deixa de participar e **apaga seus pontos da liga** (o seu XP e o ranking do servidor não mudam). A liga não existe na DM.
+- 🔔 **Lembrete por DM (`lembrete`), só para quem ligar:** é a **única** coisa em que o bot escreve sozinho, e só para quem pediu. `lembrete ligar 20` (ou o botão **Ligar** e o menu de hora da tela `lembrete`) liga um aviso diário na hora que você escolher (de 0 a 23, no fuso configurado). Regras: **no máximo uma DM por dia**, e **só se você ainda não respondeu nada naquele dia** (quem já estudou não recebe). A mensagem lembra o que está em jogo (a sequência, o desafio do dia) e traz o botão **Parar lembretes**. Ao ligar num servidor, o bot manda antes uma DM de confirmação: se ela não chega, os lembretes não são ligados. Se uma DM falhar, o bot desliga sozinho (na hora, se você bloqueou o bot ou não aceita DMs; senão, depois de 3 dias seguidos de erro) e avisa na próxima vez que você abrir `lembrete`. Se o bot ficar fora do ar na hora marcada, ainda envia até 2 horas depois; passou disso, pula o dia. `lembrete desligar` apaga o seu registro. Só vale enquanto o bot estiver ligado (precisa de um processo sempre no ar).
 
 Os bônus ficam **fora** do limite diário de XP: são raros e premiam constância, não volume (e o combo só dá bônus quando o XP da resposta entrou). Os valores estão em `src/config.js`; `DAILY_GOAL` no `.env` muda a meta ou a desliga (`0`). Quem já usava o bot começa as estatísticas e conquistas do zero, mas mantém XP e sequência.
 
@@ -114,7 +116,7 @@ npm start                # ou npm run dev para reiniciar ao salvar
 
 **Nunca** suba o `.env` para o GitHub (já está no `.gitignore`).
 
-**Uma instância por token.** Cada instância ligada responde a todas as mensagens, então, se o bot rodar em dois lugares com o mesmo token (por exemplo, no seu computador e no workflow manual do GitHub Actions), **toda mensagem é respondida duas vezes**. Para desenvolver, crie um segundo bot de teste no Developer Portal (outro token, no seu `.env`) e deixe o token do bot de verdade só no lugar onde ele roda de fato.
+**Uma instância por token.** Cada instância ligada responde a todas as mensagens, então, se o bot rodar em dois lugares com o mesmo token (por exemplo, no seu computador e no workflow manual do GitHub Actions), **toda mensagem é respondida duas vezes**. Para desenvolver, crie um segundo bot de teste no Developer Portal (outro token, no seu `.env`) e deixe o token do bot de verdade só no lugar onde ele roda de fato. Isso vale em dobro para os lembretes por DM: duas cópias com o mesmo banco (ou um backup do banco de verdade) mandariam o lembrete duas vezes, então, em qualquer cópia de teste, use `REMINDERS=off`.
 
 Variáveis opcionais do `.env` (todas explicadas no `.env.example`):
 
@@ -126,7 +128,8 @@ Variáveis opcionais do `.env` (todas explicadas no `.env.example`):
 | `COURSE_PASS_PERCENT` | `75` | % das perguntas de um módulo que precisa acertar para concluí-lo (de 1 a 100) |
 | `LEVEL_UP_WINDOW` | `20` | últimas respostas no seu nível que contam para sugerir subir (`0` = não sugerir) |
 | `LEVEL_UP_PERCENT` | `90` | % de acerto nessa janela para receber a sugestão (de 1 a 100) |
-| `TIMEZONE` | `America/Sao_Paulo` | fuso que define "o dia" da sequência e do limite diário |
+| `TIMEZONE` | `America/Sao_Paulo` | fuso que define "o dia" da sequência e do limite diário (e a hora dos lembretes) |
+| `REMINDERS` | ligado | `off` desliga o envio dos lembretes por DM neste processo (use num bot de teste que tenha uma cópia do banco) |
 | `DB_PATH` | `data/devlingo.db` | onde fica o banco |
 
 **Dados:** o progresso fica em SQLite (`data/devlingo.db`, ignorado pelo git; faça backup dessa pasta). Se existir um `data/data.json` da versão antiga, ele é importado sozinho na primeira inicialização e guardado como `data.json.migrated`.
@@ -205,5 +208,4 @@ Cada curso tem `id` (até 12 caracteres), `name`, `emoji`, `description` e `modu
 ## Próximos passos
 
 - Mais desafios e mais assuntos (hoje são 340 desafios em 21 assuntos, com 4 em cada nível; `npm test` exige esse mínimo). Ideias que ainda não existem: observabilidade e Kubernetes. O limite é de 20 cursos (`MAX_COURSES` em `src/utils/courses.js`).
-- Mais um estímulo de hábito, ainda não feito: lembretes por DM (só com **opt-in** da pessoa, nunca por padrão)
 - Escala: ao chegar perto de ~2.500 servidores o Discord exige sharding (`ShardingManager`), e o SQLite em arquivo único passa a ser o gargalo (a troca natural é Postgres). Hoje quase nada atrapalha: os dados ficam por pessoa e não por servidor. O que precisa mudar na hora é a memória de cada processo (trava de clique duplo, cooldown), que teria de ir para o banco compartilhado.
