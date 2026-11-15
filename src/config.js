@@ -68,6 +68,17 @@ module.exports = {
   levelUpWindow: nonNegativeInt(process.env.LEVEL_UP_WINDOW, 20),
   levelUpPercent: Math.min(100, Math.max(1, nonNegativeInt(process.env.LEVEL_UP_PERCENT, 90) || 90)),
 
+  // ---- Lembretes por DM (comando "lembrete"). Só vão para quem ligou, no máximo 1 por dia e só se a pessoa
+  // ainda não respondeu nada naquele dia. REMINDERS=off desliga o envio neste processo (útil num bot de teste).
+  remindersEnabled: process.env.REMINDERS?.trim().toLowerCase() !== "off",
+  reminderDefaultHour: 20, // hora sugerida (no fuso do bot) para quem liga sem escolher
+  // Se o bot estava fora do ar na hora marcada, ainda envia até (janela - 1) horas depois; passou disso, pula o dia.
+  reminderWindowHours: 3,
+  reminderTickMs: 60_000, // de quanto em quanto tempo o bot confere quem está na hora
+  reminderBatch: 20, // no máximo quantas DMs por conferência (o resto sai na conferência seguinte)
+  reminderSpacingMs: 1_100, // pausa entre uma DM e a próxima, para não parecer spam para o Discord
+  reminderMaxFailures: 3, // dias seguidos com falha de envio antes de desligar sozinho
+
   // Cores da marca (a paleta completa e o porquê de cada uma estão em brand/guide.html).
   // Os valores são os mesmos de brand/tokens/colors.json.
   colors: {

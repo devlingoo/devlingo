@@ -157,6 +157,117 @@ function leagueMessage({ period, timeLeft, participants, lines, you, joined, las
   return [container];
 }
 
+// ---------- lembretes por DM ----------
+
+const hourLabel = (hour) => `${String(hour).padStart(2, "0")}h`;
+
+// Botões que acompanham as DMs dos lembretes: ir estudar e parar (customId remind:off:<idDoDono>, tratado em
+// buttons/remind.js). O de estudar é o atalho comum de navegação.
+function reminderButtons(ownerId) {
+  return new ActionRowBuilder().addComponents(
+    new ButtonBuilder().setCustomId(`nav:${ownerId}:estudar`).setLabel("Estudar").setEmoji("📚").setStyle(ButtonStyle.Primary),
+    new ButtonBuilder().setCustomId(`remind:off:${ownerId}`).setLabel("Parar lembretes").setEmoji("🔕").setStyle(ButtonStyle.Secondary)
+  );
+}
+
+// A DM do lembrete. Sem cobrança: só lembra o que está em jogo (a sequência, o desafio do dia) e como parar.
+// state: { streak, frozenDays, dailyDone } (a sequência já considera os congelamentos que a cobrem).
+function reminderMessage({ ownerId, streak = 0, frozenDays = 0, dailyDone = true }) {
+  const lines = [];
+  if (frozenDays > 0) {
+    lines.push(
+      `❄️ Você ficou ${plural(frozenDays, "dia", "dias")} sem responder, mas ${frozenDays === 1 ? "um congelamento cobre" : "os congelamentos cobrem"} isso: ` +
+        `responda hoje e sua sequência de ${plural(streak, "dia", "dias")} segue de pé.`
+    );
+  } else if (streak > 0) {
+    lines.push(`🔥 Sua sequência é de **${plural(streak, "dia", "dias")}**. Uma pergunta hoje mantém ela.`);
+  } else {
+    lines.push("📚 Que tal uma pergunta hoje? Leva só um minutinho.");
+  }
+  if (!dailyDone) {
+    lines.push(
+      `📆 O desafio do dia está esperando${config.dailyChallengeBonusXp > 0 ? ` (+${config.dailyChallengeBonusXp} XP)` : ""}: escreva \`diario\`.`
+    );
+  }
+
+  return [
+    new ContainerBuilder()
+      .setAccentColor(config.colors.brand)
+      .addTextDisplayComponents(
+        text("## 🔔 Lembrete do Devlingo"),
+        text(lines.join("\n")),
+        text("-# Você recebe isso porque ligou os lembretes: no máximo uma DM por dia, e só se ainda não respondeu nada hoje.")
+      )
+      .addActionRowComponents(reminderButtons(ownerId)),
+  ];
+}
+
+// A DM de confirmação, mandada na hora em que a pessoa liga os lembretes num servidor (serve de teste: se ela
+// não chega, os lembretes não são ligados).
+function reminderWelcome({ ownerId, hour }) {
+  return [
+    new ContainerBuilder()
+      .setAccentColor(config.colors.success)
+      .addTextDisplayComponents(
+        text("## 🔔 Lembretes ligados!"),
+        text(
+          `Vou te avisar por aqui todo dia às **${hourLabel(hour)}** (${config.timezone}), só se você ainda não tiver respondido nada. ` +
+            "No máximo uma DM por dia. Para parar: escreva `lembrete desligar` ou use o botão abaixo."
+        )
+      )
+      .addActionRowComponents(reminderButtons(ownerId)),
+  ];
+}
+
+// A tela do comando `lembrete`. reminder: db.getReminder (ou null); flash: aviso de uma ação recém-feita.
+// customIds: remind:on|off:<idDoDono> (botão) e remind:hour:<idDoDono> (menu de hora), tratados em buttons/remind.js.
+function reminderScreen({ ownerId, reminder, flash = null }) {
+  const on = Boolean(reminder?.enabled);
+  const hour = reminder?.hour ?? config.reminderDefaultHour;
+
+  const lines = [
+    on
+      ? `🔔 **Ligados**: uma DM por dia às **${hourLabel(hour)}** (${config.timezone}).`
+      : "🔕 **Desligados.** Você não recebe nenhuma DM minha.",
+  ];
+  if (!on && reminder?.offReason === "dm") {
+    lines.push(
+      "⚠️ Desliguei seus lembretes porque não consegui te mandar DM. Confira se você aceita mensagens diretas de membros do servidor e ligue de novo."
+    );
+  }
+
+  const container = new ContainerBuilder()
+    .setAccentColor(config.colors.brand)
+    .addTextDisplayComponents(text("## 🔔 Lembretes por DM"));
+  if (flash) container.addTextDisplayComponents(text(flash));
+  container
+    .addTextDisplayComponents(text(lines.join("\n")))
+    .addTextDisplayComponents(
+      text(
+        "-# Só para quem liga: no máximo uma DM por dia, e só se você ainda não tiver respondido nada naquele dia. " +
+          "Dá para desligar quando quiser."
+      )
+    )
+    .addSeparatorComponents(divider())
+    .addActionRowComponents(
+      new ActionRowBuilder().addComponents(
+        on
+          ? new ButtonBuilder().setCustomId(`remind:off:${ownerId}`).setLabel("Desligar").setEmoji("🔕").setStyle(ButtonStyle.Secondary)
+          : new ButtonBuilder().setCustomId(`remind:on:${ownerId}`).setLabel(`Ligar às ${hourLabel(hour)}`).setEmoji("🔔").setStyle(ButtonStyle.Success)
+      )
+    )
+    .addActionRowComponents(
+      new ActionRowBuilder().addComponents(
+        new StringSelectMenuBuilder()
+          .setCustomId(`remind:hour:${ownerId}`)
+          .setPlaceholder(on ? "Mudar a hora" : "Ligar em outra hora")
+          .addOptions(Array.from({ length: 24 }, (_, h) => ({ label: hourLabel(h), value: String(h), default: on && h === hour })))
+      )
+    )
+    .addActionRowComponents(navRow(ownerId, ["estudar", "perfil"]));
+  return [container];
+}
+
 // ---------- perfil ----------
 
 // user: { xp, streak, dailyXp } (db.getUser). Os demais campos são opcionais: stats (db.getStats),
@@ -693,6 +804,9 @@ module.exports = {
   helpMessage,
   rankingMessage,
   leagueMessage,
+  reminderMessage,
+  reminderWelcome,
+  reminderScreen,
   profileMessage,
   achievementsMessage,
   challengeMessage,

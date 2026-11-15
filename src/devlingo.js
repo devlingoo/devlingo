@@ -35,6 +35,7 @@ process.on("uncaughtException", (error) => logger.error("Exceção não tratada:
 for (const signal of ["SIGINT", "SIGTERM"]) {
   process.once(signal, async () => {
     logger.info(`${signal} recebido; encerrando.`);
+    client.reminders?.stop(); // para o relógio dos lembretes antes de fechar o banco
     await client.destroy();
     db.close();
     process.exit(0);

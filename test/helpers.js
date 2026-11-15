@@ -56,6 +56,7 @@ function assertWithinDiscordLimits(components, label, assert) {
 // Como desfazer cada migração do banco (a de número N cria o que está em DOWNGRADES[N]). Ao acrescentar uma
 // migração em src/utils/db.js, acrescente aqui a linha que a desfaz: os testes de "banco antigo" dependem disso.
 const DOWNGRADES = {
+  8: "DROP TABLE reminders;",
   7: "DROP TABLE league_xp; DROP TABLE league_members;",
   6: "ALTER TABLE users DROP COLUMN freezes; DROP TABLE daily_done;",
   5: "ALTER TABLE users DROP COLUMN recent;",
