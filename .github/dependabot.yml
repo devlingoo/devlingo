@@ -14,6 +14,11 @@ updates:
     groups:
       astro:
         patterns: ["astro", "@astrojs/*"]
+    ignore:
+      # O @astrojs/check ainda só aceita TypeScript 5 e 6 (peer dependency): com o 7 o `npm ci` do site falha.
+      # Tire esta regra quando uma versão dele aceitar o 7.
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
     commit-message:
       prefix: "site"
 
@@ -25,6 +30,11 @@ updates:
     cooldown:
       default-days: 7
     open-pull-requests-limit: 5
+    ignore:
+      # O opentype.js 2.x não consegue ler a tabela de substituições (GSUB) da fonte do certificado
+      # ("substFormat: 2 is not yet supported") e os testes de certificado quebram. Reveja quando ele a suportar.
+      - dependency-name: "opentype.js"
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: github-actions
     directory: /
