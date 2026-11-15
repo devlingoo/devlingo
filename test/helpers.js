@@ -53,4 +53,29 @@ function assertWithinDiscordLimits(components, label, assert) {
   }
 }
 
-module.exports = { TYPE, flatten, customIds, fakeInteraction, fakeClient, assertWithinDiscordLimits };
+// Como desfazer cada migração do banco (a de número N cria o que está em DOWNGRADES[N]). Ao acrescentar uma
+// migração em src/utils/db.js, acrescente aqui a linha que a desfaz: os testes de "banco antigo" dependem disso.
+const DOWNGRADES = {
+  7: "DROP TABLE league_xp; DROP TABLE league_members;",
+  6: "ALTER TABLE users DROP COLUMN freezes; DROP TABLE daily_done;",
+  5: "ALTER TABLE users DROP COLUMN recent;",
+};
+
+// Volta um banco em arquivo (já migrado e FECHADO) para a versão `version`, apagando o que as migrações
+// seguintes criaram, como se ele nunca tivesse passado por elas.
+function downgradeTo(file, version) {
+  const { DatabaseSync } = require("node:sqlite");
+  const raw = new DatabaseSync(file);
+  try {
+    const { user_version: current } = raw.prepare("PRAGMA user_version").get();
+    for (let v = current; v > version; v--) {
+      if (!DOWNGRADES[v]) throw new Error(`helpers.js: falta DOWNGRADES[${v}] (como desfazer a migração ${v})`);
+      raw.exec(DOWNGRADES[v]);
+    }
+    raw.exec(`PRAGMA user_version = ${version}`);
+  } finally {
+    raw.close();
+  }
+}
+
+module.exports = { TYPE, flatten, customIds, fakeInteraction, fakeClient, assertWithinDiscordLimits, downgradeTo };

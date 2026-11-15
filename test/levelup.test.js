@@ -1,6 +1,6 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const { TYPE, flatten, customIds, fakeInteraction, fakeClient, assertWithinDiscordLimits } = require("./helpers");
+const { TYPE, flatten, customIds, fakeInteraction, fakeClient, assertWithinDiscordLimits, downgradeTo } = require("./helpers");
 
 const config = require("../src/config");
 const db = require("../src/utils/db");
@@ -270,10 +270,7 @@ test("banco antigo (versão 4) ganha a coluna nova sem perder dados", () => {
     db.close();
 
     // Volta o banco para a versão 4: sem a coluna desta mudança (v5) e sem o que as versões seguintes criaram.
-    const { DatabaseSync } = require("node:sqlite");
-    const raw = new DatabaseSync(file);
-    raw.exec("ALTER TABLE users DROP COLUMN recent; ALTER TABLE users DROP COLUMN freezes; DROP TABLE daily_done; PRAGMA user_version = 4;");
-    raw.close();
+    downgradeTo(file, 4);
 
     db.open(file);
     assert.deepEqual(db.getPreferences("velha"), { level: "beginner", areas: ["banco"] });

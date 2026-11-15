@@ -30,10 +30,11 @@ No servidor, marque o bot no começo da mensagem. Na DM, escreva direto.
 | `@Devlingo verificar DVL-XXXX-XXXX` | `verificar DVL-XXXX-XXXX` | confere se um certificado é verdadeiro e de quem é |
 | `@Devlingo perfil` | `perfil` | nível, XP, sequência, meta do dia, estatísticas e trilha |
 | `@Devlingo ranking` | `ranking` | top 10 do servidor (na DM, ranking global) e a sua posição |
+| `@Devlingo liga` | — (só em servidor) | a liga da semana do servidor: `liga entrar` para participar, `liga sair` para deixar de participar |
 | `@Devlingo conquistas` | `conquistas` | suas medalhas: as que você já ganhou e as que faltam |
 | `@Devlingo ajuda` | `ajuda` | lista de comandos, agrupada por tipo |
 
-As telas têm botões de atalho (📚 Estudar, 🎓 Cursos, 👤 Perfil, 🏆 Ranking, 🏅 Conquistas, ⚙️ Configurar) para andar entre elas sem digitar.
+As telas têm botões de atalho (📚 Estudar, 🎓 Cursos, 👤 Perfil, 🏆 Ranking, 🏅 Conquistas, 🥇 Liga, ⚙️ Configurar) para andar entre elas sem digitar.
 
 O XP e a sequência são globais por pessoa; o ranking do servidor conta só o XP ganho naquele servidor. Cada desafio expira em 5 minutos e só quem pediu pode responder.
 
@@ -51,6 +52,7 @@ O bot recompensa quem volta todo dia, sem punir quem falha:
 - 🆙 **Níveis e títulos:** cada 100 XP é um nível. Títulos: 🌱 Semente, 🌿 Broto, 🌳 Árvore, ⚡ Faísca, 🔥 Chama e 👑 Lenda. Subir de nível é comemorado na própria resposta (a mensagem fica dourada).
 - 🏅 **Conquistas:** 13 medalhas (primeiro passo, 10/50/100 acertos, sequências, combos, meta, nível Especialista...). O comando `conquistas` mostra as ganhas e as que faltam.
 - 📍 **Ranking com a sua posição**, mesmo fora do top 10.
+- 🥇 **Liga semanal (`liga`), só para quem quiser:** cada servidor tem a sua liga, de segunda a domingo (no fuso configurado). Ninguém entra sozinho: quem usa `liga entrar` (ou o botão **Entrar na liga**) passa a competir pelo XP que ganhar **naquele servidor, depois de entrar**, e o top 10 da semana aparece no comando `liga` (quem está fora do top vê a própria posição). A semana seguinte começa do zero e a tela mostra o pódio da semana que passou. Não há rebaixamento nem mensagem automática: o bot nunca escreve na liga sozinho. `liga sair` deixa de participar e **apaga seus pontos da liga** (o seu XP e o ranking do servidor não mudam). A liga não existe na DM.
 
 Os bônus ficam **fora** do limite diário de XP: são raros e premiam constância, não volume (e o combo só dá bônus quando o XP da resposta entrou). Os valores estão em `src/config.js`; `DAILY_GOAL` no `.env` muda a meta ou a desliga (`0`). Quem já usava o bot começa as estatísticas e conquistas do zero, mas mantém XP e sequência.
 
@@ -203,5 +205,5 @@ Cada curso tem `id` (até 12 caracteres), `name`, `emoji`, `description` e `modu
 ## Próximos passos
 
 - Mais desafios e mais assuntos (hoje são 340 desafios em 21 assuntos, com 4 em cada nível; `npm test` exige esse mínimo). Ideias que ainda não existem: observabilidade e Kubernetes. O limite é de 20 cursos (`MAX_COURSES` em `src/utils/courses.js`).
-- Mais estímulos de hábito, ainda não feitos: ligas semanais de ranking e lembretes por DM (esses só com **opt-in** da pessoa, nunca por padrão)
+- Mais um estímulo de hábito, ainda não feito: lembretes por DM (só com **opt-in** da pessoa, nunca por padrão)
 - Escala: ao chegar perto de ~2.500 servidores o Discord exige sharding (`ShardingManager`), e o SQLite em arquivo único passa a ser o gargalo (a troca natural é Postgres). Hoje quase nada atrapalha: os dados ficam por pessoa e não por servidor. O que precisa mudar na hora é a memória de cada processo (trava de clique duplo, cooldown), que teria de ir para o banco compartilhado.

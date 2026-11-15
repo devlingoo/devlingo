@@ -1,7 +1,9 @@
 // Telas completas do bot (o que cada comando mostra). Os comandos e os botões de atalho (nav)
 // usam as mesmas funções daqui, então "digitar o comando" e "clicar no botão" dão o mesmo resultado.
 const { AttachmentBuilder } = require("discord.js");
+const config = require("../config");
 const db = require("./db");
+const { dayKey, daysBetween, addDays } = require("./time");
 const { safeText } = require("./text");
 const challenges = require("./challenges");
 const courseLib = require("./courses");
@@ -106,6 +108,73 @@ async function ranking({ client, guild, guildId, ownerId }) {
     lines,
     you,
     ownerId,
+    league: Boolean(guildId),
+  });
+}
+
+// ---------- liga semanal ----------
+
+const shortDate = (day) => `${day.slice(8, 10)}/${day.slice(5, 7)}`;
+
+// A liga da semana do servidor. `action` ("join" ou "leave") faz a pessoa entrar ou sair antes de mostrar a tela
+// (é o que o comando `liga entrar|sair` e os botões fazem). Na DM não há liga: ela é de cada servidor.
+async function league({ client, guild, guildId, ownerId, action = null, now = new Date() }) {
+  if (!guildId) {
+    return ui.notice(
+      `A liga é de cada servidor. Use ${ui.commandRef(client, true, "liga")} em um servidor onde eu esteja.`
+    );
+  }
+
+  let flash = null;
+  if (action === "join") {
+    flash = db.joinLeague(guildId, ownerId, now)
+      ? "✅ **Você entrou na liga!** Só conta o XP que você ganhar daqui para a frente, neste servidor."
+      : "Você já estava na liga.";
+  } else if (action === "leave") {
+    flash = db.leaveLeague(guildId, ownerId)
+      ? "👋 **Você saiu da liga** e seus pontos nela foram apagados. Dá para voltar quando quiser (começando do zero)."
+      : "Você não estava na liga.";
+  }
+
+  const board = db.leagueBoard(guildId, ownerId, now, { limit: 10 });
+  const last = db.leagueBoard(guildId, ownerId, now, { weeksAgo: 1, limit: 3 });
+
+  // Empatados dividem a posição (e a medalha), como no "Sua posição": 1º, 2º, 2º, 4º...
+  const positionOf = (rows, row) => 1 + rows.findIndex((r) => r.xp === row.xp);
+  const name = (row) => displayName(client, guild, row.userId);
+  const lines = await Promise.all(
+    board.rows.map(async (row) => {
+      const position = positionOf(board.rows, row);
+      const you = row.userId === ownerId ? "  ◀ você" : "";
+      return `${MEDALS[position - 1] ?? `**${position}.**`} **${await name(row)}** — ${row.xp} XP${you}`;
+    })
+  );
+  const lastWeek = await Promise.all(
+    last.rows.map(async (row) => `${MEDALS[positionOf(last.rows, row) - 1]} ${await name(row)} (${row.xp} XP)`)
+  );
+
+  const { member, xp, position } = board.you;
+  const you = !member
+    ? "📍 Você ainda não está na liga. Quem entra compete de segunda a domingo, só com o XP ganho **depois** de entrar. " +
+      "Sair a qualquer momento apaga seus pontos da liga."
+    : position
+      ? `📍 Sua posição: **#${position}** • ${xp} XP nesta semana`
+      : "📍 Você está na liga, mas ainda não pontuou nesta semana. Responda uma pergunta!";
+
+  const today = dayKey(now, config.timezone);
+  const daysLeft = 6 - daysBetween(board.week, today); // a semana vai de segunda (0) a domingo (6)
+  const timeLeft = daysLeft === 0 ? "termina hoje" : daysLeft === 1 ? "termina amanhã" : `faltam ${daysLeft} dias`;
+
+  return ui.leagueMessage({
+    period: `seg ${shortDate(board.week)} – dom ${shortDate(addDays(board.week, 6))}`,
+    timeLeft,
+    participants: board.participants,
+    lines,
+    you,
+    joined: member,
+    lastWeek,
+    flash,
+    ownerId,
   });
 }
 
@@ -178,6 +247,7 @@ module.exports = {
   profile,
   achievements: achievementsView,
   ranking,
+  league,
   courses,
   courseDetail,
   certificates,

@@ -13,4 +13,17 @@ function daysBetween(from, to) {
   return Math.round((Date.parse(`${to}T00:00:00Z`) - Date.parse(`${from}T00:00:00Z`)) / 86_400_000);
 }
 
-module.exports = { dayKey, daysBetween };
+// Soma (ou subtrai) dias de uma data YYYY-MM-DD.
+function addDays(day, delta) {
+  const date = new Date(`${day}T00:00:00Z`);
+  date.setUTCDate(date.getUTCDate() + delta);
+  return date.toISOString().slice(0, 10);
+}
+
+// A segunda-feira da semana (segunda a domingo) em que cai a data YYYY-MM-DD. Serve de "nome" da semana.
+function weekStartOf(day) {
+  const weekday = new Date(`${day}T00:00:00Z`).getUTCDay(); // 0 = domingo
+  return addDays(day, -((weekday + 6) % 7));
+}
+
+module.exports = { dayKey, daysBetween, addDays, weekStartOf };

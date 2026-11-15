@@ -61,6 +61,7 @@ const NAV = {
   perfil: { label: "Perfil", emoji: "👤" },
   ranking: { label: "Ranking", emoji: "🏆" },
   conquistas: { label: "Conquistas", emoji: "🏅" },
+  liga: { label: "Liga", emoji: "🥇" },
   configurar: { label: "Configurar", emoji: "⚙️" },
 };
 
@@ -109,15 +110,50 @@ function helpMessage({ client, groups, intro, footer, ownerId }) {
 
 // ---------- ranking ----------
 
-// lines: linhas já formatadas do top; you: texto da posição de quem pediu (ou null).
-function rankingMessage({ title, subtitle, lines, you, ownerId }) {
+// lines: linhas já formatadas do top; you: texto da posição de quem pediu (ou null); league: true num
+// servidor, onde dá para ir direto à liga da semana.
+function rankingMessage({ title, subtitle, lines, you, ownerId, league = false }) {
   const container = new ContainerBuilder()
     .setAccentColor(config.colors.brand)
     .addTextDisplayComponents(text(`## ${title}`), ...(subtitle ? [text(`-# ${subtitle}`)] : []))
     .addSeparatorComponents(divider())
     .addTextDisplayComponents(text(lines.join("\n")));
   if (you) container.addSeparatorComponents(divider()).addTextDisplayComponents(text(you));
-  container.addActionRowComponents(navRow(ownerId, ["estudar", "perfil", "conquistas"]));
+  container.addActionRowComponents(navRow(ownerId, ["estudar", "perfil", "conquistas", ...(league ? ["liga"] : [])]));
+  return [container];
+}
+
+// ---------- liga semanal ----------
+
+// period: "seg 09/11 – dom 15/11"; timeLeft: quanto falta para a semana acabar; lines: top da semana já formatado
+// (pode ser vazio); you: texto de quem pediu; joined: quem pediu já está na liga (muda o botão); lastWeek: pódio da
+// semana passada, já formatado (pode ser vazio); flash: aviso de uma ação recém-feita (entrar, sair), ou null.
+// Os botões são "league:join|leave:<idDoDono>" (tratados em buttons/league.js).
+function leagueMessage({ period, timeLeft, participants, lines, you, joined, lastWeek = [], flash = null, ownerId }) {
+  const who = participants === 0 ? "ninguém entrou ainda" : plural(participants, "participante", "participantes");
+  const container = new ContainerBuilder()
+    .setAccentColor(config.colors.brand)
+    .addTextDisplayComponents(text("## 🥇 Liga da semana"), text(`-# ${period} • ${timeLeft} • ${who}`));
+  if (flash) container.addTextDisplayComponents(text(flash));
+  container
+    .addSeparatorComponents(divider())
+    .addTextDisplayComponents(
+      text(lines.length > 0 ? lines.join("\n") : "Ninguém pontuou na liga esta semana ainda. Responda uma pergunta!")
+    )
+    .addSeparatorComponents(divider())
+    .addTextDisplayComponents(text(you));
+  if (lastWeek.length > 0) container.addTextDisplayComponents(text(`-# 🏁 Semana passada: ${lastWeek.join(" · ")}`));
+
+  container.addActionRowComponents(
+    new ActionRowBuilder().addComponents(
+      new ButtonBuilder()
+        .setCustomId(`league:${joined ? "leave" : "join"}:${ownerId}`)
+        .setLabel(joined ? "Sair da liga" : "Entrar na liga")
+        .setEmoji(joined ? "🚪" : "🥇")
+        .setStyle(joined ? ButtonStyle.Secondary : ButtonStyle.Success)
+    )
+  );
+  container.addActionRowComponents(navRow(ownerId, ["estudar", "ranking", "perfil"]));
   return [container];
 }
 
@@ -656,6 +692,7 @@ module.exports = {
   notice,
   helpMessage,
   rankingMessage,
+  leagueMessage,
   profileMessage,
   achievementsMessage,
   challengeMessage,

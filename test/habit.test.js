@@ -4,7 +4,7 @@ const fs = require("fs");
 const os = require("os");
 const path = require("path");
 const { ChannelType } = require("discord.js");
-const { TYPE, flatten, customIds, fakeInteraction, fakeClient, assertWithinDiscordLimits } = require("./helpers");
+const { TYPE, flatten, customIds, fakeInteraction, fakeClient, assertWithinDiscordLimits, downgradeTo } = require("./helpers");
 
 const config = require("../src/config");
 const db = require("../src/utils/db");
@@ -416,10 +416,7 @@ test("banco antigo (versão 5) ganha congelamento e desafio do dia sem perder da
     db.close();
 
     // Volta o banco para a versão 5, como estava antes do congelamento e do desafio do dia.
-    const { DatabaseSync } = require("node:sqlite");
-    const raw = new DatabaseSync(file);
-    raw.exec("ALTER TABLE users DROP COLUMN freezes; DROP TABLE daily_done; PRAGMA user_version = 5;");
-    raw.close();
+    downgradeTo(file, 5);
 
     db.open(file);
     assert.equal(db.getUser("velha", day(2)).streak, 3, "a sequência que já existia continua");

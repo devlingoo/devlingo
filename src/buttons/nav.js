@@ -22,6 +22,7 @@ module.exports = {
       cursos: async () => views.courses(ownerId),
       perfil: async () => views.profile({ ownerId, name, avatarUrl }),
       ranking: () => views.ranking({ client, guild: interaction.guild, guildId: interaction.guildId, ownerId }),
+      liga: () => views.league({ client, guild: interaction.guild, guildId: interaction.guildId, ownerId }),
       conquistas: async () => views.achievements(ownerId),
       configurar: async () => views.setup(ownerId),
     };
