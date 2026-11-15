@@ -3,7 +3,7 @@ const path = require("path");
 const { DatabaseSync } = require("node:sqlite"); // embutido no Node 22.13+, sem dependência extra
 const config = require("../config");
 const logger = require("./logger");
-const { dayKey, daysBetween } = require("./time");
+const { dayKey, daysBetween, addDays, weekStartOf } = require("./time");
 const { levelOf } = require("./progress");
 const achievements = require("./achievements");
 
@@ -94,6 +94,26 @@ const MIGRATIONS = [
     day     TEXT NOT NULL,
     PRIMARY KEY (user_id, day)
   );
+  `,
+  // v7: liga semanal. "league_members" são as pessoas que ENTRARAM na liga de cada servidor (só entra quem
+  // pede); "league_xp" guarda o XP que cada uma ganhou naquele servidor em cada semana (a semana é a data da
+  // segunda-feira, no fuso do bot). Sair da liga apaga as linhas da pessoa nas duas tabelas.
+  `
+  CREATE TABLE league_members (
+    guild_id  TEXT NOT NULL,
+    user_id   TEXT NOT NULL,
+    joined_at INTEGER NOT NULL,
+    PRIMARY KEY (guild_id, user_id)
+  );
+
+  CREATE TABLE league_xp (
+    guild_id TEXT NOT NULL,
+    user_id  TEXT NOT NULL,
+    week     TEXT NOT NULL,
+    xp       INTEGER NOT NULL DEFAULT 0,
+    PRIMARY KEY (guild_id, user_id, week)
+  );
+  CREATE INDEX league_xp_board ON league_xp (guild_id, week, xp DESC);
   `,
 ];
 
@@ -377,6 +397,16 @@ function recordAnswer(userId, guildId, correct, xpReward, now = new Date(), extr
            ON CONFLICT(guild_id, user_id) DO UPDATE SET xp = xp + excluded.xp`
         )
         .run(guildId, userId, gained + bonusTotal);
+
+      // Liga semanal: só soma para quem entrou na liga deste servidor (e só o XP de depois que entrou).
+      if (conn.prepare("SELECT 1 FROM league_members WHERE guild_id = ? AND user_id = ?").get(guildId, userId)) {
+        conn
+          .prepare(
+            `INSERT INTO league_xp (guild_id, user_id, week, xp) VALUES (?, ?, ?, ?)
+             ON CONFLICT(guild_id, user_id, week) DO UPDATE SET xp = xp + excluded.xp`
+          )
+          .run(guildId, userId, weekStartOf(today), gained + bonusTotal);
+      }
     }
 
     // Lembra da pergunta (quando foi vista e se já foi acertada): alimenta os cursos e o sorteio.
@@ -564,6 +594,53 @@ function top(guildId, limit = 10) {
   return rows.map((r) => ({ userId: r.userId, xp: r.xp }));
 }
 
+// ---------- liga semanal ----------
+
+// A pessoa entra na liga do servidor. Devolve false se ela já estava.
+function joinLeague(guildId, userId, now = new Date()) {
+  return (
+    connection()
+      .prepare("INSERT OR IGNORE INTO league_members (guild_id, user_id, joined_at) VALUES (?, ?, ?)")
+      .run(guildId, userId, now.getTime()).changes > 0
+  );
+}
+
+// A pessoa sai da liga do servidor e os pontos dela nessa liga são apagados (voltar depois começa do zero).
+// Devolve false se ela não estava na liga.
+function leaveLeague(guildId, userId) {
+  return transaction(() => {
+    const conn = connection();
+    conn.prepare("DELETE FROM league_xp WHERE guild_id = ? AND user_id = ?").run(guildId, userId);
+    return conn.prepare("DELETE FROM league_members WHERE guild_id = ? AND user_id = ?").run(guildId, userId).changes > 0;
+  });
+}
+
+// A liga de uma semana de um servidor: { week, participants, rows, you }.
+//   week          a segunda-feira da semana (YYYY-MM-DD); `weeksAgo: 1` é a semana passada
+//   participants  quantas pessoas estão na liga do servidor agora
+//   rows          [{ userId, xp }] só de quem pontuou na semana, do maior XP para o menor (empate: pelo id), até `limit`
+//   you           { member, xp, position } de quem pediu; `position` é null se ela ainda não pontuou na semana
+//                 (empates dividem a posição, como no ranking)
+function leagueBoard(guildId, userId, now = new Date(), { weeksAgo = 0, limit = 10 } = {}) {
+  const conn = connection();
+  const week = addDays(weekStartOf(todayKey(now)), -7 * weeksAgo);
+
+  const { n: participants } = conn.prepare("SELECT COUNT(*) AS n FROM league_members WHERE guild_id = ?").get(guildId);
+  const rows = conn
+    .prepare("SELECT user_id AS userId, xp FROM league_xp WHERE guild_id = ? AND week = ? AND xp > 0 ORDER BY xp DESC, user_id LIMIT ?")
+    .all(guildId, week, limit)
+    .map((r) => ({ userId: r.userId, xp: r.xp }));
+
+  const member = Boolean(conn.prepare("SELECT 1 FROM league_members WHERE guild_id = ? AND user_id = ?").get(guildId, userId));
+  const xp = conn.prepare("SELECT xp FROM league_xp WHERE guild_id = ? AND user_id = ? AND week = ?").get(guildId, userId, week)?.xp ?? 0;
+  const position =
+    xp > 0
+      ? conn.prepare("SELECT COUNT(*) AS n FROM league_xp WHERE guild_id = ? AND week = ? AND xp > ?").get(guildId, week, xp).n + 1
+      : null;
+
+  return { week, participants, rows, you: { member, xp, position } };
+}
+
 module.exports = {
   getUser,
   getPreferences,
@@ -586,6 +663,9 @@ module.exports = {
   setCertificateName,
   rankOf,
   top,
+  joinLeague,
+  leaveLeague,
+  leagueBoard,
   open,
   close,
 };
