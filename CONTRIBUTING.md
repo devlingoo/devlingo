@@ -13,6 +13,8 @@ npm test        # não precisa de token nem de internet
 
 Para rodar o bot de verdade, copie `.env.example` para `.env` e preencha o `DISCORD_TOKEN`. O `.env` e a pasta `data/` nunca vão para o GitHub.
 
+**Dependências.** O `package-lock.json` fixa a versão exata de tudo o que o bot instala, e o CI usa `npm ci` (que recusa um lock fora de sincronia com o `package.json`). Mexeu em uma dependência? Rode `npm install` e **suba o `package-lock.json` junto**. O `.npmrc` desliga os scripts de instalação, e hoje nenhuma dependência precisa deles.
+
 ## Fluxo
 
 1. Crie uma branch a partir da `main`. Nomes: `feat/...` (funcionalidade), `fix/...` (correção), `content/...` (só desafios), `chore/...` (organização, CI, docs).

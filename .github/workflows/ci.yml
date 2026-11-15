@@ -21,16 +21,21 @@ jobs:
         node: [22, 24]
 
     steps:
+      # As actions ficam fixadas pelo SHA do commit (a tag é só o comentário): uma tag pode ser movida, o SHA não.
       - name: Baixar código
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Configurar Node.js
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: ${{ matrix.node }}
 
+      # npm ci usa exatamente o package-lock.json (e falha se ele não bate com o package.json),
+      # e o .npmrc impede qualquer script de instalação.
       - name: Instalar dependências
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
 
       - name: Rodar testes
         run: npm test
