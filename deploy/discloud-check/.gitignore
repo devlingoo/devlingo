@@ -1,0 +1,4 @@
+# Criados só se você rodar o diagnóstico no seu computador (CHECK_ONCE=1 node check.js).
+node_modules/
+data/
+package-lock.json
