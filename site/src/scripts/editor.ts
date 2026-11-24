@@ -7,6 +7,9 @@
 // animação; quem pede menos movimento não vê nada digitando sozinho; a digitação pausa quando o editor sai da tela ou a aba é
 // escondida; passa pelos arquivos uma vez só e para; e o cursor para de piscar uns segundos depois de terminar.
 
+// Sem import nem export o TypeScript trata o arquivo como script global e as variáveis colidem com as do demo.ts; o export o torna módulo.
+export {};
+
 interface Piece {
   el: HTMLElement;
   text: string;
