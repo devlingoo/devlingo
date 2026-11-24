@@ -15,9 +15,11 @@
     "audit:dist": "node scripts/audit-dist.mjs",
     "audit:selftest": "node scripts/audit-selftest.mjs",
     "e2e": "node scripts/e2e.mjs",
-    "verify": "npm run build && npm run audit:dist && npm run audit:selftest && npm run e2e",
+    "verify": "npm run build && npm run audit:dist && npm run audit:selftest && npm run check:server && npm run e2e",
     "preview": "astro preview",
-    "certificado": "node scripts/certificado.mjs"
+    "certificado": "node scripts/certificado.mjs",
+    "check:server": "node --test scripts/check-server.mjs",
+    "package:discloud": "node scripts/package-discloud.mjs"
   },
   "devDependencies": {
     "@astrojs/check": "0.9.12",

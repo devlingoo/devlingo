@@ -1,6 +1,7 @@
 name: Site
 
-# Gera o site, audita o resultado e roda o teste de navegador. Só roda quando algo que o site usa muda
+# Gera o site, audita o resultado, testa o servidor e roda o teste de navegador, e deixa o pacote pronto para subir na
+# Discloud (baixe em "Artifacts" da execução). Só roda quando algo que o site usa muda
 # (as pastas do site, os dados do bot e a marca). Não é uma verificação obrigatória da main de propósito:
 # um PR que não mexe no site não precisa esperar por ele.
 on:
@@ -26,6 +27,11 @@ jobs:
     defaults:
       run:
         working-directory: site
+    # O que vai ao ar é o que passa nos testes: o convite do bot (o ID do aplicativo é público) e o endereço público entram aqui,
+    # no build que é auditado e testado. SITE_URL pode ser trocado em Settings > Variables (se a Discloud der outro sufixo).
+    env:
+      PUBLIC_INVITE_URL: https://discord.com/oauth2/authorize?client_id=1569442084426092686&permissions=68672&scope=bot
+      SITE_URL: ${{ vars.SITE_URL || 'https://devlingo.discloud.dev' }}
 
     steps:
       # As actions ficam fixadas pelo SHA do commit (a tag é só o comentário): uma tag pode ser movida, o SHA não.
@@ -57,6 +63,9 @@ jobs:
       - name: Auto-teste do auditor
         run: npm run audit:selftest
 
+      - name: Servidor do site e pacote da Discloud
+        run: npm run check:server
+
       - name: Teste de navegador (política de segurança, demo e acessibilidade)
         run: npm run e2e
         env:
@@ -65,3 +74,15 @@ jobs:
       # Os arquivos gerados que ficam no git precisam estar em dia com a política.
       - name: Arquivos gerados em dia
         run: git diff --exit-code -- vercel.json public/_headers
+
+      # A pasta tem o discloud.config na raiz; o artefato baixado já é um .zip com ela no topo, pronto para enviar à Discloud.
+      - name: Montar o pacote da Discloud
+        run: npm run package:discloud
+
+      - name: Guardar o pacote da Discloud
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: devlingo-site-discloud
+          path: site/discloud-out/
+          if-no-files-found: error
+          retention-days: 30
