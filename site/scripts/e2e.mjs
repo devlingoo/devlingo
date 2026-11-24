@@ -332,6 +332,14 @@ try {
   check(calmState.code === first && calmState.carets === 0 && calmState.label === "Reproduzir animação", "com 'reduzir movimento': código inteiro desde o começo, sem cursor e sem digitar sozinho", calmState.label);
   check(calmState.term === "none", "com 'reduzir movimento': o comando do topo também fica parado", calmState.term);
   await shoot(await calm.$("#editor"), "editor-reduzido");
+  if (SHOTS) {
+    // uma captura de cada arquivo, para conferir a colorização de cada linguagem
+    for (const id of panels.map((p) => p.id)) {
+      await calm.click(`#t-${id}`);
+      await shoot(await calm.$("#editor"), `arquivo-${id}`);
+    }
+    await calm.click(`#t-${panels[0].id}`);
+  }
   await calm.click('#editor [data-role="toggle"]');
   await sleep(800);
   const calmTyped = withoutBlankTail(await calm.evaluate((selector) => [...document.querySelectorAll(selector)].map((l) => l.textContent).join("\n"), SHOWN));
