@@ -138,6 +138,29 @@ Variáveis opcionais do `.env` (todas explicadas no `.env.example`):
 
 Quer contribuir? Veja o [CONTRIBUTING.md](CONTRIBUTING.md).
 
+## Hospedar na Discloud
+
+O bot e o site rodam como **dois apps separados** na Discloud. O que foi comprovado numa conta real (plano Diamond, 24/11/2026) está em [deploy/discloud-check](deploy/discloud-check/README.md): Node 26 com `VERSION=latest`, SQLite com WAL, arquivos de `data/` que sobrevivem a reinício, rebuild e commit, e o `package-lock.json` respeitado.
+
+### O bot (`TYPE=bot`)
+
+1. **O token vai nas variáveis do painel, nunca no zip.** No app, aba *Variáveis*, cadastre `DISCORD_TOKEN` (e, se quiser, `TIMEZONE`, `DAILY_XP_CAP`... da tabela acima). Variável nova só vale depois de um **rebuild**. Quem cola o token é você.
+2. **Um único lugar por token** (veja "Uma instância por token"). Se o bot ainda roda no seu computador ou no workflow manual, pare lá antes de ligar na Discloud.
+3. **Gere o zip** a partir da `main`, com tudo commitado: `git checkout main && git pull && npm run zip:bot`. Sai o `devlingo-bot.zip` (~1,5 MB) feito com `git archive`: só leva o que está no Git (`src/`, `brand/`, `package.json`, `package-lock.json`, `.npmrc` e o `discloud.config`), então **o banco (`data/`) e o `.env` nunca vão junto**. O que fica de fora está no `.gitattributes`; os testes (`npm test`) conferem o conteúdo do zip.
+4. **Envie** pelo painel (*Upload* para criar o app; aba *Commit* para atualizar: só os arquivos do zip são trocados e a pasta `data/` fica). O `discloud.config` já define `RAM=512` (medi um pico de ~200 MB ao renderizar certificados, no Windows; com menos de 256 o bot corre o risco de reiniciar sozinho) e `AUTORESTART=true`. Depois de subir, olhe a aba *Métricas* e a aba *Logs* (deve aparecer o "Logado como ...").
+5. **O banco** nasce vazio na primeira execução. Para levar o do seu computador, **pare o bot local primeiro** (o SQLite fecha o arquivo direito) e envie só o `data/devlingo.db` pela aba *Arquivos* ou por um commit de um zip que tenha só esse arquivo, com o bot parado. **Nunca** inclua `data/` num zip de atualização do dia a dia: ele sobrescreveria o banco de produção.
+6. **Backup:** a Discloud tem backup manual (qualquer plano) e automático (plano Diamond ou superior). Não conferi se o backup do app inclui o `data/devlingo.db`: baixe um e confira antes de depender dele, e faça um backup manual antes de uma atualização grande.
+
+### O site (`TYPE=site`)
+
+O site é estático, mas a Discloud só roda um app Node: o servidor do projeto (`site/server/`) serve o site aplicando **os mesmos cabeçalhos de segurança** da política (`site/security/policy.mjs`: CSP, HSTS...) e redireciona `http` para `https` (a Discloud não faz isso). Site exige plano Platinum ou superior e no mínimo 512 MB de RAM.
+
+1. **Subdomínio:** em *Domínios* → *Criar subdomínio* (`devlingo`). O endereço completo (`devlingo.discloud.dev` ou `.app`) é a Discloud que define ao publicar.
+2. **O pacote:** na execução mais recente do workflow **Site** (aba *Actions* do GitHub), baixe o artefato `devlingo-site-discloud`: já é um `.zip` com o `discloud.config` na raiz. Quer gerar no seu computador? `cd site && npm ci && npm run build && npm run package:discloud` e compacte o **conteúdo** (não a pasta) de `site/discloud-out`. O `DISCLOUD_ID` (padrão `devlingo`) troca o subdomínio.
+3. **Envie** pelo painel (*Upload*; para atualizar, aba *Commit*).
+4. O convite do bot (`PUBLIC_INVITE_URL`, com o ID do aplicativo, que é público) e o endereço público (`SITE_URL`) são definidos no `.github/workflows/site.yml`. Se a Discloud der `.app` em vez de `.dev`, crie a variável `SITE_URL` em *Settings → Secrets and variables → Actions → Variables*.
+5. **Confira:** `curl -sI https://devlingo.discloud.dev/` deve mostrar `Content-Security-Policy`, `Strict-Transport-Security` e os demais, e `curl -sI http://devlingo.discloud.dev/` deve responder `301` para o `https`.
+
 ## Estrutura
 
 ```
