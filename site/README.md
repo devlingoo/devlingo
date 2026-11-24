@@ -86,7 +86,7 @@ site/
   security/policy.mjs       a política (CSP e cabeçalhos): única fonte da verdade
   server/                   servidor estático para a Discloud (serve.mjs) e o ponto de entrada do pacote (server.js)
   scripts/                  sync, auditoria do dist/, auto-teste do auditor, teste de navegador, teste do servidor,
-                            empacotador da Discloud, gerador do certificado
+                            empacotador da Discloud, verificador do site no ar (check-live), gerador do certificado
   public/                   robots.txt, theme-init.js e o _headers gerado
   src/
     assets/                 certificado de exemplo (gerado pelo renderizador do bot)

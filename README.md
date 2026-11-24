@@ -155,11 +155,11 @@ O bot e o site rodam como **dois apps separados** na Discloud. O que foi comprov
 
 O site é estático, mas a Discloud só roda um app Node: o servidor do projeto (`site/server/`) serve o site aplicando **os mesmos cabeçalhos de segurança** da política (`site/security/policy.mjs`: CSP, HSTS...) e redireciona `http` para `https` (a Discloud não faz isso). Site exige plano Platinum ou superior e no mínimo 512 MB de RAM.
 
-1. **Subdomínio:** em *Domínios* → *Criar subdomínio* (`devlingo`). O endereço completo (`devlingo.discloud.dev` ou `.app`) é a Discloud que define ao publicar.
+1. **Subdomínio:** em *Domínios* → *Criar subdomínio* (`devlingo`). O endereço completo é a Discloud que define ao publicar e **não dá para prever o sufixo**: o `devlingo` ficou em **`devlingo.discloud.app`**, enquanto um subdomínio de teste criado no mesmo dia ficou em `.dev`.
 2. **O pacote:** na execução mais recente do workflow **Site** (aba *Actions* do GitHub), baixe o artefato `devlingo-site-discloud`: já é um `.zip` com o `discloud.config` na raiz. Quer gerar no seu computador? `cd site && npm ci && npm run build && npm run package:discloud` e compacte o **conteúdo** (não a pasta) de `site/discloud-out`. O `DISCLOUD_ID` (padrão `devlingo`) troca o subdomínio.
 3. **Envie** pelo painel (*Upload*; para atualizar, aba *Commit*).
-4. O convite do bot (`PUBLIC_INVITE_URL`, com o ID do aplicativo, que é público) e o endereço público (`SITE_URL`) são definidos no `.github/workflows/site.yml`. Se a Discloud der `.app` em vez de `.dev`, crie a variável `SITE_URL` em *Settings → Secrets and variables → Actions → Variables*.
-5. **Confira:** `curl -sI https://devlingo.discloud.dev/` deve mostrar `Content-Security-Policy`, `Strict-Transport-Security` e os demais, e `curl -sI http://devlingo.discloud.dev/` deve responder `301` para o `https`.
+4. O convite do bot (`PUBLIC_INVITE_URL`, com o ID do aplicativo, que é público) e o endereço público (`SITE_URL`) são definidos no `.github/workflows/site.yml`. O endereço padrão do workflow é `https://devlingo.discloud.app`; se um dia ele mudar, crie a variável `SITE_URL` em *Settings → Secrets and variables → Actions → Variables*.
+5. **Confira o site no ar** com um comando: `cd site && npm run check:live -- https://devlingo.discloud.app`. Ele confere os cabeçalhos da política, o redirecionamento de `http` para `https`, o 404, tentativas de sair da pasta, o `security.txt` e se o `canonical` da página é o endereço de onde ela foi servida. **No endereço `.app` a Discloud troca dois cabeçalhos** (`X-Frame-Options` para `SAMEORIGIN` e `Referrer-Policy` para `same-origin`); o comando mostra isso como **aviso**, porque o site continua protegido (a CSP tem `frame-ancestors 'none'`, que prevalece sobre o `X-Frame-Options`, e `same-origin` também não envia a página a outro site).
 
 ## Estrutura
 

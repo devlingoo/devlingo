@@ -246,6 +246,97 @@ test("buildIndex deixa de fora o que é oculto, dos hospedeiros e link simbólic
   for (const shown of ["/", "/index.html", "/sobre", "/sobre.html", "/docs", "/404.html", "/.well-known/security.txt", "/_astro/app.abc123.css"]) assert.ok(keys.includes(shown), `${shown} tem de estar no índice`);
 });
 
+// ---------- o verificador do site no ar (check-live) ----------
+
+// Um site de mentirinha, com a página inicial, o 404 e o security.txt, para o check-live conferir. \`tweak\` troca os
+// cabeçalhos de segurança (como um hospedeiro faria) e \`canonical\` troca o endereço que a página declara.
+async function liveSite(t, { tweak = (pairs) => pairs, canonical, csp } = {}) {
+  const index = new Map();
+  const entry = (body, type = "text/html; charset=utf-8") => ({ body: Buffer.from(body), type, etag: '"x"' });
+  index.set("/404.html", entry("<!doctype html><title>Página não encontrada</title>"));
+  index.set("/.well-known/security.txt", entry("Contact: mailto:a@example.com\nExpires: 2099-01-01T00:00:00Z\n", "text/plain; charset=utf-8"));
+  const home = entry("");
+  index.set("/", home);
+
+  const headers = tweak(SECURITY_HEADERS.map(([k, v]) => [k, k === "Content-Security-Policy" && csp !== undefined ? csp : v]));
+  const live = http.createServer(createHandler({ index, headers, cacheRules: CACHE_RULES }));
+  await new Promise((resolve) => live.listen(0, "127.0.0.1", resolve));
+  t.after(() => live.close());
+  const origin = "http://127.0.0.1:" + live.address().port;
+  home.body = Buffer.from('<!doctype html><link rel="canonical" href="' + (canonical ?? origin + "/") + '"><title>Início</title>');
+  return origin;
+}
+
+async function runLive(origin) {
+  const child = spawn(process.execPath, ["scripts/check-live.mjs", origin], { cwd: SITE, stdio: ["ignore", "pipe", "pipe"] });
+  let out = "";
+  child.stdout.on("data", (chunk) => (out += chunk));
+  child.stderr.on("data", (chunk) => (out += chunk));
+  const [code] = await once(child, "exit");
+  return { code, out };
+}
+
+const swap = (name, value) => (pairs) => pairs.map(([k, v]) => (k === name ? [k, value] : [k, v]));
+const drop = (name) => (pairs) => pairs.filter(([k]) => k !== name);
+
+test("check-live: um site correto passa (sem erros)", async (t) => {
+  const { code, out } = await runLive(await liveSite(t));
+  assert.equal(code, 0, out);
+  assert.match(out, /0 erro\(s\)/);
+  assert.match(out, /✔ canonical é o endereço do site/);
+  assert.match(out, /✔ security\.txt no ar/);
+  assert.match(out, /✔ não serve arquivos do servidor nem sai da pasta/);
+});
+
+test("check-live: cabeçalho da política ausente é erro", async (t) => {
+  const { code, out } = await runLive(await liveSite(t, { tweak: drop("Strict-Transport-Security") }));
+  assert.equal(code, 1);
+  assert.match(out, /✖ cabeçalho Strict-Transport-Security {2}\[ausente\]/);
+});
+
+test("check-live: canonical de outro endereço é erro (o caso do .dev no lugar do .app)", async (t) => {
+  const { code, out } = await runLive(await liveSite(t, { canonical: "https://devlingo.discloud.dev/" }));
+  assert.equal(code, 1);
+  assert.match(out, /✖ canonical é o endereço do site/);
+  assert.match(out, /Ajuste o SITE_URL/);
+});
+
+test("check-live: as trocas seguras que a Discloud faz no .app viram aviso, não erro", async (t) => {
+  const tweak = (pairs) => swap("Referrer-Policy", "same-origin")(swap("X-Frame-Options", "SAMEORIGIN")(pairs));
+  const { code, out } = await runLive(await liveSite(t, { tweak }));
+  assert.equal(code, 0, out);
+  assert.match(out, /⚠ cabeçalho X-Frame-Options/);
+  assert.match(out, /⚠ cabeçalho Referrer-Policy/);
+  assert.match(out, /⚠ http redireciona para https {2}\[pulado: o endereço conferido é http\]/, "num servidor local http, o redirecionamento não dá para conferir");
+  assert.match(out, /3 aviso\(s\), 0 erro\(s\)/);
+});
+
+test("check-live: troca insegura continua sendo erro", async (t) => {
+  const unsafeReferrer = await runLive(await liveSite(t, { tweak: swap("Referrer-Policy", "unsafe-url") }));
+  assert.equal(unsafeReferrer.code, 1);
+  assert.match(unsafeReferrer.out, /✖ cabeçalho Referrer-Policy/);
+
+  // SAMEORIGIN só é aceito se a CSP ainda proíbe o enquadramento (frame-ancestors 'none').
+  const noFrameAncestors = SECURITY_HEADERS.find(([k]) => k === "Content-Security-Policy")[1].replace("; frame-ancestors 'none'", "");
+  const weak = await runLive(await liveSite(t, { tweak: swap("X-Frame-Options", "SAMEORIGIN"), csp: noFrameAncestors }));
+  assert.equal(weak.code, 1);
+  assert.match(weak.out, /✖ cabeçalho X-Frame-Options/);
+
+  const anyOther = await runLive(await liveSite(t, { tweak: swap("X-Content-Type-Options", "outro") }));
+  assert.equal(anyOther.code, 1, "só X-Frame-Options e Referrer-Policy têm troca tolerada");
+});
+
+test("check-live: site fora do ar é erro e uso errado sai com 2", async () => {
+  const dead = await runLive("http://127.0.0.1:1");
+  assert.equal(dead.code, 1);
+  assert.match(dead.out, /não consegui falar com/);
+
+  const noArgs = spawnSync(process.execPath, ["scripts/check-live.mjs"], { cwd: SITE, encoding: "utf8" });
+  assert.equal(noArgs.status, 2);
+  const invalid = spawnSync(process.execPath, ["scripts/check-live.mjs", "isto não é um endereço"], { cwd: SITE, encoding: "utf8" });
+  assert.equal(invalid.status, 2);
+});
+
 // ---------- o pacote da Discloud de verdade ----------
 
 const listFiles = (dir, base = dir) =>
