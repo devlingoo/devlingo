@@ -84,7 +84,7 @@ async function runOne(question) {
     } catch (caught) {
       lab.fact(`aviso: a limpeza falhou (${caught.message})`);
     }
-    await lab.cleanup();
+    await lab.cleanup({ wait: Boolean(question.exclusive) });
   }
 
   let holds = null;

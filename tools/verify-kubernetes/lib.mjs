@@ -140,7 +140,10 @@ export class Lab {
     return slices.flatMap((slice) => slice.endpoints ?? []).filter((endpoint) => endpoint.conditions?.ready === true).length;
   }
 
-  async cleanup() {
+  // wait: espera os namespaces sumirem de vez (os cenários que mexem em nós precisam disso: um pod avulso ainda
+  // terminando faz o próximo "kubectl drain" recusar o nó).
+  async cleanup({ wait = false } = {}) {
     for (const ns of this.namespaces) await this.k(["delete", "namespace", ns, "--wait=false", "--ignore-not-found"]);
+    if (wait) for (const ns of this.namespaces) await this.k(["wait", "--for=delete", `namespace/${ns}`, "--timeout=180s"], { timeout: 200_000 });
   }
 }
