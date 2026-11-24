@@ -120,6 +120,9 @@ async function pool(items, limit, worker) {
 const shared = questions.filter((q) => !q.exclusive);
 const alone = questions.filter((q) => q.exclusive);
 const results = [...(await pool(shared, CONCURRENCY, runOne))];
+// Antes de mexer nos nós, espera os namespaces dos cenários anteriores terminarem de ser apagados (pods ainda
+// sumindo atrapalhariam o drain). Se não houver nenhum, o kubectl responde logo e a resposta não importa.
+if (alone.length > 0) await run("kubectl", ["wait", "--for=delete", "namespace", "-l", "devlingo-verify=true", "--timeout=180s"], { timeout: 200_000 });
 for (const question of alone) results.push(await runOne(question));
 results.sort((a, b) => a.id.localeCompare(b.id));
 

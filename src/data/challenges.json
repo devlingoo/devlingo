@@ -7202,8 +7202,8 @@
   {
     "id": "ks-005",
     "language": "bash",
-    "question": "Os pods estão Running, mas o Service mostra Endpoints: <none>. Qual é a causa mais provável?",
-    "code": "kubectl get pods -l app=api\n# api-6f7d9c-x2k4p   1/1   Running\n\nkubectl describe service api\n# Port:        80/TCP\n# Endpoints:   <none>",
+    "question": "Os pods estão Running, mas o ENDPOINTS do Service mostra <none>. Qual é a causa mais provável?",
+    "code": "kubectl get pods -l app=api\n# api-6f7d9c-x2k4p   1/1   Running\n\nkubectl get endpoints api\n# NAME   ENDPOINTS   AGE\n# api    <none>      5m",
     "options": [
       "O targetPort do Service aponta para uma porta errada do contêiner",
       "O selector do Service não bate com as labels dos pods",
@@ -7211,7 +7211,7 @@
       "Um Service do tipo ClusterIP precisa virar NodePort para ter endpoints"
     ],
     "answer": 1,
-    "explanation": "O Service não guarda IPs: o cluster procura os pods cujas labels batem com o `selector` e lista os endereços deles. Se nenhum pod casa, a lista fica vazia (`<none>`) mesmo com os pods saudáveis. Um `targetPort` errado é outro defeito: os endereços aparecem, só que a conexão é recusada. E nem o tipo ClusterIP nem a falta de um Ingress impedem os endpoints.",
+    "explanation": "O Service não guarda IPs: o cluster procura os pods cujas labels batem com o `selector` e lista os endereços deles. Se nenhum pod casa, a lista fica vazia (`<none>`) mesmo com os pods saudáveis. Um `targetPort` errado é outro defeito: os endereços aparecem, só que a conexão é recusada. E nem o tipo ClusterIP nem a falta de um Ingress impedem os endpoints. Nas versões novas, o `kubectl get endpoints` avisa que o objeto Endpoints está em desuso; o `kubectl get endpointslices` mostra o mesmo, com `<unset>`.",
     "difficulty": "intermediate",
     "topic": {
       "id": "kubernetes",
