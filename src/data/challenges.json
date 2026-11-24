@@ -7202,8 +7202,8 @@
   {
     "id": "ks-005",
     "language": "bash",
-    "question": "Os pods estão Running, mas o Service mostra ENDPOINTS <none>. Qual é a causa mais provável?",
-    "code": "kubectl get pods -l app=api\n# api-6f7d9c-x2k4p   1/1   Running\n\nkubectl get endpoints api\n# NAME   ENDPOINTS   AGE\n# api    <none>      5m",
+    "question": "Os pods estão Running, mas o Service mostra Endpoints: <none>. Qual é a causa mais provável?",
+    "code": "kubectl get pods -l app=api\n# api-6f7d9c-x2k4p   1/1   Running\n\nkubectl describe service api\n# Port:        80/TCP\n# Endpoints:   <none>",
     "options": [
       "O targetPort do Service aponta para uma porta errada do contêiner",
       "O selector do Service não bate com as labels dos pods",

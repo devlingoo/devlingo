@@ -74,6 +74,8 @@ spec:
     lab.fact(`drain do nó ${node} com PDB minAvailable 2: código ${observed.drainCode}; mensagem: "${observed.refusal.slice(0, 170)}"`);
     lab.fact(`durante o drain havia ${observed.podsDuringDrain} pods do Deployment (nenhum extra) e o pod original continuava lá = ${victimStillThere}`);
     lab.fact(`kubectl delete pod direto, com o mesmo PDB: código ${observed.deleteCode}; sem o PDB, o drain do nó ${target} terminou com código ${observed.drainWithoutPdbCode}`);
+    lab.fact(`saída do 1º drain (${drain.ms} ms): ${drainText.trim().replace(/\s+/g, " ").slice(0, 700)}`);
+    lab.fact(`saída do drain sem PDB (${drainFree.ms} ms): ${`${drainFree.stdout}${drainFree.stderr}`.trim().replace(/\s+/g, " ").slice(0, 500)}`);
     return observed;
   },
 
