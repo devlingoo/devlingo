@@ -1,3 +1,16 @@
 # Todos os arquivos de texto usam LF no repositório e no disco, em qualquer sistema.
 # Sem isso, quem edita no Windows gera diffs cheios de quebras de linha trocadas.
 * text=auto eol=lf
+
+# O zip do bot para a Discloud sai de `git archive` (npm run zip:bot): o que tem export-ignore fica de fora.
+# O bot só precisa de src/, brand/ (o certificado lê dois SVGs de lá), package.json, package-lock.json, .npmrc e discloud.config.
+/.github export-ignore
+/.gitattributes export-ignore
+/.gitignore export-ignore
+/.discloudignore export-ignore
+/.env.example export-ignore
+/CONTRIBUTING.md export-ignore
+/SECURITY.md export-ignore
+/deploy export-ignore
+/site export-ignore
+/test export-ignore
