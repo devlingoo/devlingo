@@ -1,6 +1,8 @@
 node_modules/
 dist/
 .astro/
+# capturas de tela do teste de navegador (E2E_SHOTS=shots npm run e2e); o CI as guarda como artefato
+shots/
 
 # Gerados por scripts/sync.mjs (npm run sync, que o build já roda). O _headers e o vercel.json ficam no git de propósito:
 # o hospedeiro lê esses arquivos, e a auditoria (npm run audit:dist) confere que continuam iguais à política.

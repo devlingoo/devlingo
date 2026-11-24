@@ -1,0 +1,56 @@
+---
+import { editorSnippets } from "../lib/data";
+import { highlight } from "../lib/highlight";
+
+// O HTML já sai COMPLETO e colorido (quem não tem JavaScript lê o código inteiro). O script só repete a "digitação" por cima,
+// e o código que o leitor de tela lê é uma cópia em texto puro (.sr), porque o que está na tela fica pela metade enquanto digita.
+const snippets = editorSnippets.map((snippet) => ({ ...snippet, lines: highlight(snippet.code, snippet.language) }));
+const first = snippets[0];
+const cls = (kind: string) => (kind === "p" ? "tk" : `tk ${kind}`);
+---
+
+<section id="codigo" aria-labelledby="t-codigo">
+  <div class="wrap code-sec">
+    <div class="code-copy">
+      <p class="eyebrow">Código de verdade</p>
+      <h2 id="t-codigo">Leia o código, ache o erro, responda.</h2>
+      <p>Os desafios usam trechos reais, de Python e JavaScript a SQL, Docker e Kubernetes. O código que o editor digita vem de perguntas do próprio Devlingo: no bot, você escolhe o que ele imprime, onde ele quebra ou o que precisa mudar.</p>
+      <a class="btn btn-ghost" href="#demo">Experimentar uma pergunta</a>
+    </div>
+
+    <div class="ide" id="editor">
+      <div class="ide-bar">
+        <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span class="ide-title" aria-hidden="true">devlingo · desafios</span>
+        <button type="button" class="ide-play" data-role="toggle">Parar animação</button>
+      </div>
+      <div class="ide-tabs" role="tablist" aria-label="Exemplos de código dos desafios">
+        {
+          snippets.map((snippet, index) => (
+            <button type="button" role="tab" class="ide-tab" id={`t-${snippet.id}`} aria-controls={`p-${snippet.id}`} aria-selected={index === 0 ? "true" : "false"} tabindex={index === 0 ? 0 : -1} data-label={snippet.label}>{snippet.file}</button>
+          ))
+        }
+      </div>
+      <div class="ide-panels">
+        {
+          snippets.map((snippet, index) => (
+            <div class="ide-panel" role="tabpanel" id={`p-${snippet.id}`} aria-labelledby={`t-${snippet.id}`} tabindex="0" hidden={index !== 0} data-id={snippet.id}>
+              <pre class="code" aria-hidden="true"><code>{snippet.lines.map((line) => <span class="line">{line.map((token) => <span class={cls(token.kind)}>{token.text}</span>)}</span>)}</code></pre>
+              <pre class="sr">{snippet.code}</pre>
+              <p class="ide-q"><b>{snippet.level[0]} {snippet.level[1]}</b> · {snippet.topic}<br />{snippet.question}</p>
+            </div>
+          ))
+        }
+      </div>
+      <div class="ide-status" aria-hidden="true">
+        <span data-role="pos">Ln 1, Col 1</span>
+        <span>UTF-8</span>
+        <span data-role="lang">{first?.label}</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import "../scripts/editor";
+</script>

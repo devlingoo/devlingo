@@ -2,6 +2,7 @@
 import Base from "../layouts/Base.astro";
 import Header from "../components/Header.astro";
 import Hero from "../components/Hero.astro";
+import Editor from "../components/Editor.astro";
 import Sections from "../components/Sections.astro";
 import { stats } from "../lib/data";
 
@@ -12,6 +13,7 @@ const description = `Devlingo: um bot de Discord para aprender programação res
   <Header />
   <main id="conteudo" tabindex="-1">
     <Hero />
+    <Editor />
     <Sections />
   </main>
 </Base>
