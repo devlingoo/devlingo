@@ -34,6 +34,25 @@ curl -s  https://SEU-ID.discloud.app/__headers
 
 O app define sete cabeçalhos (`Content-Security-Policy`, `Strict-Transport-Security`, `X-Content-Type-Options`, `Referrer-Policy`, `Cross-Origin-Opener-Policy`, `Permissions-Policy` e `X-Devlingo-Teste`). Veja **quais aparecem** na resposta do `curl`: os que sumirem foram removidos ou trocados pelo proxy.
 
+> **Todo app Node na Discloud precisa de um `package.json`**, inclusive o `TYPE=site` (sem ele o build falha com "Não detectamos package.json"). Os dois mini-apps já trazem o deles.
+
+## Resultado da primeira execução (24/11/2026, plano Diamond)
+
+Rodado de verdade na conta, não só lido na documentação:
+
+| Pergunta | Resposta |
+| --- | --- |
+| Versão do Node com `VERSION=latest` | **v26.13.1** (Linux x64, glibc 2.41). A página de versões da documentação, que só lista até o Node 20, está desatualizada |
+| `node:sqlite` e modo WAL | funcionam |
+| `resvg` nativo | instala sozinho e renderiza |
+| Arquivos criados em execução (`data/`) | **sobrevivem a reinício, rebuild e commit** (o contador foi de 1 a 4; o zip não tinha `data/`) |
+| Variável cadastrada no painel | chega em `process.env`, mas **só depois de um rebuild** |
+| `package-lock.json` no zip | **é respeitado** (o `resvg` preso em 2.6.0 no lock foi instalado, embora o `package.json` aceitasse a 2.6.2) |
+| Script `postinstall` com `.npmrc` `ignore-scripts=true` | não rodou |
+| Cabeçalhos do site | **os 7 que o app define chegam intactos**; a Discloud acrescenta `X-Powered-By` e `X-Xss-Protection` e passa tudo por um Cloudflare |
+| `http://` do site | **não é redirecionado** para `https://`: o servidor do site precisa fazer isso olhando o cabeçalho `x-forwarded-proto` |
+| Endereço do site | `https://<id>.discloud.dev` (a Discloud escolhe `.dev` ou `.app`) |
+
 ## O que me mandar
 
 - O texto dos logs do `bot/` (as linhas `[OK]`, `[FALHA]` e `[info]`) e o resultado dos passos 3 e 4.
