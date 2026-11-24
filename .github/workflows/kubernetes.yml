@@ -68,6 +68,10 @@ jobs:
           NODE_IMAGE: ${{ matrix.node_image }}
         run: |
           kind create cluster --name verificador --image "$NODE_IMAGE" --config tools/verify-kubernetes/kind.yaml --wait 240s
+          # o --wait do kind só espera o plano de controle: os nós de trabalho, o DNS e o provisionador de volumes vêm depois
+          kubectl wait --for=condition=Ready nodes --all --timeout=240s
+          kubectl -n kube-system wait --for=condition=Available deployment/coredns --timeout=240s
+          kubectl -n local-path-storage wait --for=condition=Available deployment/local-path-provisioner --timeout=240s
           kubectl get nodes -o wide
 
       - name: Verificar os desafios

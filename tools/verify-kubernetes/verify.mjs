@@ -7,7 +7,7 @@
 import { appendFileSync, mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { loadChallenges, loadQuestions, verdict, wiring } from "./catalog.mjs";
-import { Lab, run } from "./lib.mjs";
+import { Lab, run, sleep } from "./lib.mjs";
 
 const reportDir = process.env.REPORT_DIR ?? "report";
 const only = (process.env.ONLY ?? "").split(",").map((s) => s.trim()).filter(Boolean);
@@ -33,18 +33,26 @@ if (questions.length === 0) {
 // 2) o que o cluster é
 const kubectl = (args) => run("kubectl", args);
 const version = JSON.parse((await kubectl(["version", "-o", "json"])).stdout);
-const nodes = JSON.parse((await kubectl(["get", "nodes", "-o", "json"])).stdout).items.map((node) => ({
-  name: node.metadata.name,
-  ready: node.status.conditions.find((c) => c.type === "Ready")?.status === "True",
-  kubelet: node.status.nodeInfo.kubeletVersion,
-  runtime: node.status.nodeInfo.containerRuntimeVersion,
-  os: node.status.nodeInfo.osImage,
-  kernel: node.status.nodeInfo.kernelVersion,
-  controlPlane: "node-role.kubernetes.io/control-plane" in (node.metadata.labels ?? {}),
-}));
+const readNodes = async () =>
+  JSON.parse((await kubectl(["get", "nodes", "-o", "json"])).stdout).items.map((node) => ({
+    name: node.metadata.name,
+    ready: node.status.conditions.find((c) => c.type === "Ready")?.status === "True",
+    kubelet: node.status.nodeInfo.kubeletVersion,
+    runtime: node.status.nodeInfo.containerRuntimeVersion,
+    os: node.status.nodeInfo.osImage,
+    kernel: node.status.nodeInfo.kernelVersion,
+    controlPlane: "node-role.kubernetes.io/control-plane" in (node.metadata.labels ?? {}),
+  }));
+
+// Os nós de trabalho entram no cluster alguns segundos depois do plano de controle: espera até 4 minutos.
+let nodes = await readNodes();
+for (let waited = 0; nodes.filter((n) => !n.controlPlane && n.ready).length < 2 && waited < 240; waited += 5) {
+  await sleep(5_000);
+  nodes = await readNodes();
+}
 const cluster = { server: version.serverVersion?.gitVersion, client: version.clientVersion?.gitVersion, nodes };
 console.log(`Cluster: servidor ${cluster.server}, kubectl ${cluster.client}, ${nodes.length} nós`);
-for (const node of nodes) console.log(`  ${node.name}: ${node.ready ? "pronto" : "NÃO PRONTO"} (${node.kubelet}, ${node.runtime}, ${node.os})`);
+for (const node of nodes) console.log(`  ${node.name}: ${node.ready ? "pronto" : "NÃO PRONTO"} (${node.kubelet}, ${node.runtime}, ${node.os}, kernel ${node.kernel})`);
 if (nodes.filter((n) => !n.controlPlane && n.ready).length < 2) {
   console.error("O verificador precisa de pelo menos 2 nós de trabalho prontos.");
   process.exit(1);
