@@ -28,10 +28,11 @@ jobs:
       run:
         working-directory: site
     # O que vai ao ar é o que passa nos testes: o convite do bot (o ID do aplicativo é público) e o endereço público entram aqui,
-    # no build que é auditado e testado. SITE_URL pode ser trocado em Settings > Variables (se a Discloud der outro sufixo).
+    # no build que é auditado e testado. O sufixo do endereço (.app ou .dev) é a Discloud quem escolhe: o de "devlingo" é .app.
+    # SITE_URL pode ser trocado em Settings > Variables, se um dia o endereço mudar.
     env:
       PUBLIC_INVITE_URL: https://discord.com/oauth2/authorize?client_id=1569442084426092686&permissions=68672&scope=bot
-      SITE_URL: ${{ vars.SITE_URL || 'https://devlingo.discloud.dev' }}
+      SITE_URL: ${{ vars.SITE_URL || 'https://devlingo.discloud.app' }}
 
     steps:
       # As actions ficam fixadas pelo SHA do commit (a tag é só o comentário): uma tag pode ser movida, o SHA não.

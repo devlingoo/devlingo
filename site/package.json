@@ -19,7 +19,8 @@
     "preview": "astro preview",
     "certificado": "node scripts/certificado.mjs",
     "check:server": "node --test scripts/check-server.mjs",
-    "package:discloud": "node scripts/package-discloud.mjs"
+    "package:discloud": "node scripts/package-discloud.mjs",
+    "check:live": "node scripts/check-live.mjs"
   },
   "devDependencies": {
     "@astrojs/check": "0.9.12",

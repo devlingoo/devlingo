@@ -51,7 +51,7 @@ Rodado de verdade na conta, não só lido na documentação:
 | Script `postinstall` com `.npmrc` `ignore-scripts=true` | não rodou |
 | Cabeçalhos do site | **os 7 que o app define chegam intactos**; a Discloud acrescenta `X-Powered-By` e `X-Xss-Protection` e passa tudo por um Cloudflare |
 | `http://` do site | **não é redirecionado** para `https://`: o servidor do site precisa fazer isso olhando o cabeçalho `x-forwarded-proto` |
-| Endereço do site | `https://<id>.discloud.dev` (a Discloud escolhe `.dev` ou `.app`) |
+| Endereço do site | `https://<id>.discloud.dev` ou `.app`: a Discloud escolhe e não dá para prever (neste teste o `devlingo-teste` ficou `.dev` e depois o `devlingo` ficou `.app`) |
 
 ## O que me mandar
 
