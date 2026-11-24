@@ -85,4 +85,6 @@ jobs:
           name: devlingo-site-discloud
           path: site/discloud-out/
           if-no-files-found: error
+          # Sem isto o upload-artifact ignora pastas ocultas e o artefato perde o www/.well-known/security.txt.
+          include-hidden-files: true
           retention-days: 30
