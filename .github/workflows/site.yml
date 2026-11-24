@@ -67,10 +67,21 @@ jobs:
       - name: Servidor do site e pacote da Discloud
         run: npm run check:server
 
-      - name: Teste de navegador (política de segurança, demo e acessibilidade)
+      - name: Teste de navegador (política de segurança, demo, editor animado e acessibilidade)
         run: npm run e2e
         env:
           CHROME_PATH: /usr/bin/google-chrome
+          E2E_SHOTS: shots
+
+      # Capturas de tela do teste de navegador (tema claro e escuro, desktop e celular), para revisar o visual sem rodar nada local.
+      - name: Guardar as capturas de tela
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: site-capturas
+          path: site/shots/
+          if-no-files-found: ignore
+          retention-days: 7
 
       # Os arquivos gerados que ficam no git precisam estar em dia com a política.
       - name: Arquivos gerados em dia

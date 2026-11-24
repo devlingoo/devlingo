@@ -3,7 +3,7 @@
 // em duas camadas, e (4) a acessibilidade passa no axe-core em 4 configurações. Rode depois de `npm run build`.
 // Precisa de um navegador Chromium: use CHROME_PATH para indicar o caminho, se não for um dos comuns.
 import { createServer } from "node:http";
-import { readFileSync, existsSync, statSync } from "node:fs";
+import { readFileSync, existsSync, statSync, mkdirSync } from "node:fs";
 import path from "node:path";
 import puppeteer from "puppeteer-core";
 import axeCore from "axe-core";
@@ -211,6 +211,140 @@ try {
   check(nf.status() === 404 && (await notFound.title()).includes("não encontrada"), "página inexistente devolve 404 com a página própria", `status ${nf.status()}`);
   const links = await page.evaluate(() => [...document.querySelectorAll("a[target=_blank]")].map((a) => `${new URL(a.href).hostname} rel=${a.rel}`));
   check(links.length > 0 && links.every((l) => /rel=.*noopener/.test(l) && /rel=.*noreferrer/.test(l)), "todo link externo abre com rel noopener noreferrer", [...new Set(links)].join("; "));
+
+  // ------------------------------------------------------------------ 7) editor de código animado
+  console.log("\n7) Editor de código animado (digitação, abas, botão de parar, teclado e menos movimento)");
+  const SHOTS = process.env["E2E_SHOTS"]; // com E2E_SHOTS=pasta, guarda capturas de tela (o CI as deixa como artefato para revisão visual)
+  if (SHOTS) mkdirSync(SHOTS, { recursive: true });
+  const shoot = async (target, name) => { if (SHOTS && target) await target.screenshot({ path: path.join(SHOTS, `${name}.png`) }); };
+  const bank = JSON.parse(readFileSync(path.join(SITE, "..", "src", "data", "challenges.json"), "utf8"));
+  const codeOf = (id) => bank.find((c) => c.id === id)?.code;
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+  const SHOWN = "#editor .ide-panel:not([hidden]) .code .line";
+
+  const ed = await browser.newPage();
+  const edProblems = [];
+  ed.on("console", (m) => { if (["error", "warning"].includes(m.type())) edProblems.push(`${m.type()}: ${m.text().slice(0, 140)}`); });
+  ed.on("pageerror", (e) => edProblems.push("pageerror: " + e.message));
+  await ed.evaluateOnNewDocument(() => {
+    window.__violations = [];
+    document.addEventListener("securitypolicyviolation", (e) => window.__violations.push(`${e.violatedDirective} ${e.blockedURI}`));
+  });
+  await ed.setViewport({ width: 1280, height: 700 }); // baixa de propósito: o editor começa fora da tela
+  await ed.goto(URL_BASE + "/", { waitUntil: "networkidle0" });
+  const typed = () => ed.evaluate((selector) => [...document.querySelectorAll(selector)].map((l) => l.textContent).join("\n"), SHOWN);
+  const statusText = () => ed.evaluate(() => document.querySelector('#editor [data-role="pos"]').textContent);
+  const carets = () => ed.evaluate(() => document.querySelectorAll("#editor .caret").length);
+  const toggleLabel = () => ed.evaluate(() => document.querySelector('#editor [data-role="toggle"]').textContent);
+  const selectedTab = () => ed.evaluate(() => document.querySelector('#editor [role="tab"][aria-selected="true"]').id);
+  const withoutBlankTail = (text) => text.replace(/\n+$/, "");
+
+  // 7a) o que a tela e o leitor de tela mostram, antes de qualquer animação
+  const panels = await ed.evaluate(() => [...document.querySelectorAll("#editor .ide-panel")].map((p) => ({
+    id: p.dataset.id,
+    shown: [...p.querySelectorAll(".code .line")].map((l) => l.textContent).join("\n"),
+    sr: p.querySelector(".sr").textContent,
+    colored: p.querySelectorAll(".tk.k, .tk.s, .tk.n, .tk.f, .tk.t, .tk.c").length,
+    hiddenFromReaders: p.querySelector(".code").getAttribute("aria-hidden") === "true",
+    visible: getComputedStyle(p).visibility !== "hidden",
+  })));
+  check(panels.length === 6 && panels.filter((p) => p.visible).length === 1, "o editor tem 6 arquivos (abas) e só 1 painel visível", `${panels.length} painéis, ${panels.filter((p) => p.visible).length} visível`);
+  const wrong = panels.filter((p) => p.shown !== codeOf(p.id) || p.sr !== codeOf(p.id)).map((p) => p.id);
+  check(wrong.length === 0, "o texto da tela e a cópia do leitor de tela são IDÊNTICOS ao código do desafio, nos 6 arquivos (a colorização não perdeu nem mudou nada)", wrong.join(", "));
+  check(panels.every((p) => p.colored > 0 && p.hiddenFromReaders), "todo arquivo vem colorido, e o texto animado fica escondido do leitor de tela (que lê a cópia)", panels.map((p) => p.colored).join("/"));
+  const top = await ed.evaluate(() => document.getElementById("editor").getBoundingClientRect().top);
+  check(top >= 700 && (await carets()) === 0 && (await typed()) === codeOf(panels[0].id), "fora da tela o editor fica parado: código inteiro e sem cursor", `topo em ${Math.round(top)}px`);
+  const termAnimation = await ed.evaluate(() => ({ text: document.querySelector(".term code").textContent, name: getComputedStyle(document.querySelector(".term code")).animationName }));
+  check(termAnimation.text === "@Devlingo aprender" && termAnimation.name.includes("type"), "o comando do topo está inteiro no HTML e se digita só com CSS", JSON.stringify(termAnimation));
+
+  // 7b) ao aparecer na tela, digita (com o cursor) até o fim
+  const first = codeOf(panels[0].id);
+  await ed.evaluate(() => document.getElementById("editor").scrollIntoView({ block: "center" }));
+  await sleep(1500);
+  const partial = withoutBlankTail(await typed());
+  check(partial.length > 0 && partial.length < first.length && first.startsWith(partial), "ao aparecer na tela, começa a digitar: o texto é um pedaço do começo do código", `${partial.length} de ${first.length} caracteres`);
+  check((await carets()) === 1 && /^Ln \d+, Col \d+$/.test(await statusText()), "tem um cursor, e a barra de status mostra a linha e a coluna", await statusText());
+  await shoot(await ed.$("#editor"), "editor-digitando");
+  await ed.waitForFunction((selector, expected) => [...document.querySelectorAll(selector)].map((l) => l.textContent).join("\n") === expected, { timeout: 25_000 }, SHOWN, first).catch(() => {});
+  check((await typed()) === first, "termina de digitar, e o texto final é idêntico ao código do desafio");
+  const lines = first.split("\n");
+  check((await statusText()) === `Ln ${lines.length}, Col ${lines[lines.length - 1].length + 1}`, "ao terminar, a barra de status aponta o fim do arquivo", await statusText());
+  await shoot(await ed.$("#editor"), "editor-pronto");
+  await ed.waitForFunction(() => document.querySelector('#editor [role="tab"][aria-selected="true"]').id !== "t-py-010", { timeout: 12_000 }).catch(() => {});
+  check((await selectedTab()) !== "t-py-010", "sozinho, passa para o próximo arquivo depois de uns segundos", await selectedTab());
+
+  // 7c) abas, botão de parar e teclado
+  await ed.click("#t-ts-004");
+  await sleep(700);
+  const tsCode = codeOf("ts-004");
+  const tsPartial = withoutBlankTail(await typed());
+  check((await selectedTab()) === "t-ts-004" && tsPartial.length < tsCode.length && tsCode.startsWith(tsPartial), "clicar numa aba mostra aquele arquivo e digita de novo", `${tsPartial.length} de ${tsCode.length}`);
+  await ed.click('#editor [data-role="toggle"]');
+  check((await typed()) === tsCode && (await toggleLabel()) === "Reproduzir animação", "o botão 'Parar animação' mostra o código inteiro na hora", await toggleLabel());
+  await sleep(1200);
+  check((await typed()) === tsCode && (await carets()) === 0, "parado, nada mais muda e o cursor some");
+  await ed.click("#t-mod-006");
+  check((await typed()) === codeOf("mod-006"), "com a animação parada, trocar de aba mostra o código inteiro na hora");
+  const heights = [];
+  for (const id of panels.map((p) => p.id)) {
+    await ed.click(`#t-${id}`);
+    heights.push(await ed.evaluate(() => document.getElementById("editor").getBoundingClientRect().height));
+  }
+  check(Math.max(...heights) - Math.min(...heights) < 1, "trocar de aba não muda a altura do editor (a página não pula)", heights.map((h) => Math.round(h)).join("/"));
+  await ed.click('#editor [data-role="toggle"]');
+  await sleep(800);
+  const replay = withoutBlankTail(await typed());
+  check((await toggleLabel()) === "Parar animação" && replay.length < codeOf(panels[5].id).length, "'Reproduzir animação' volta a digitar", `${replay.length} caracteres`);
+  await ed.focus('#editor [role="tab"][aria-selected="true"]');
+  await ed.keyboard.press("Home");
+  const afterHome = await selectedTab();
+  await ed.keyboard.press("ArrowRight");
+  const afterRight = await selectedTab();
+  await ed.keyboard.press("End");
+  const afterEnd = await selectedTab();
+  await ed.keyboard.press("ArrowRight");
+  const wrapped = await selectedTab();
+  check(afterHome === `t-${panels[0].id}` && afterRight === `t-${panels[1].id}` && afterEnd === `t-${panels[5].id}` && wrapped === afterHome, "teclado nas abas: Home, seta direita, End e volta ao começo", [afterHome, afterRight, afterEnd, wrapped].join(" > "));
+  check((await ed.evaluate(() => document.activeElement.id)) === wrapped, "o foco acompanha a aba escolhida pelo teclado");
+  check(edProblems.length === 0 && (await ed.evaluate(() => window.__violations)).length === 0, "durante tudo isso: zero violações de CSP e zero erros no console", `${edProblems.join(" | ")} ${JSON.stringify(await ed.evaluate(() => window.__violations))}`);
+  await ed.close();
+
+  // 7d) quem pede menos movimento: nada digita sozinho, mas a pessoa pode ligar
+  const calm = await browser.newPage();
+  await calm.emulateMediaFeatures([{ name: "prefers-reduced-motion", value: "reduce" }]);
+  await calm.setViewport({ width: 1280, height: 700 });
+  await calm.goto(URL_BASE + "/", { waitUntil: "networkidle0" });
+  await calm.evaluate(() => document.getElementById("editor").scrollIntoView({ block: "center" }));
+  await sleep(1200);
+  const calmState = await calm.evaluate((selector) => ({
+    code: [...document.querySelectorAll(selector)].map((l) => l.textContent).join("\n"),
+    carets: document.querySelectorAll("#editor .caret").length,
+    label: document.querySelector('#editor [data-role="toggle"]').textContent,
+    term: getComputedStyle(document.querySelector(".term code")).animationName,
+  }), SHOWN);
+  check(calmState.code === first && calmState.carets === 0 && calmState.label === "Reproduzir animação", "com 'reduzir movimento': código inteiro desde o começo, sem cursor e sem digitar sozinho", calmState.label);
+  check(calmState.term === "none", "com 'reduzir movimento': o comando do topo também fica parado", calmState.term);
+  await shoot(await calm.$("#editor"), "editor-reduzido");
+  await calm.click('#editor [data-role="toggle"]');
+  await sleep(800);
+  const calmTyped = withoutBlankTail(await calm.evaluate((selector) => [...document.querySelectorAll(selector)].map((l) => l.textContent).join("\n"), SHOWN));
+  check(calmTyped.length < first.length, "quem pediu menos movimento pode ligar a animação pelo botão", `${calmTyped.length} de ${first.length}`);
+  await calm.close();
+
+  // 7e) no celular o código cabe sem rolar de lado, e dá para ver capturas de tela (com E2E_SHOTS)
+  for (const [name, w, hh, scheme] of [["desktop-escuro", 1280, 900, "dark"], ["desktop-claro", 1280, 900, "light"], ["celular-escuro", 400, 900, "dark"], ["celular-claro", 400, 900, "light"]]) {
+    const p = await browser.newPage();
+    await p.emulateMediaFeatures([{ name: "prefers-color-scheme", value: scheme }, { name: "prefers-reduced-motion", value: "reduce" }]);
+    await p.setViewport({ width: w, height: hh });
+    await p.goto(URL_BASE + "/", { waitUntil: "networkidle0" });
+    await shoot(p, `inicio-${name}`);
+    if (w < 500) {
+      const overflowing = await p.evaluate(() => [...document.querySelectorAll("#editor .code")].filter((c) => c.scrollWidth > c.clientWidth + 1).length);
+      check(overflowing === 0, `${name}: o código de nenhum arquivo precisa rolar de lado`, `${overflowing} com rolagem`);
+    }
+    await shoot(await p.$("#codigo"), `secao-editor-${name}`);
+    await p.close();
+  }
 } finally {
   await browser.close();
   server.close();

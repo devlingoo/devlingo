@@ -1,6 +1,6 @@
 # Site do Devlingo
 
-Página de apresentação do bot: demo interativo com perguntas reais, assuntos, cursos, certificado de exemplo e o que é o hábito. É um site **100% estático**: não tem servidor, banco de dados nem rota que aceite entrada de ninguém. O que vai ao ar é só HTML, CSS, um pouco de JavaScript e fontes, tudo do próprio domínio.
+Página de apresentação do bot: demo interativo com perguntas reais, um editor de código que "digita" trechos reais dos desafios, assuntos, cursos, certificado de exemplo e o que é o hábito. É um site **100% estático**: não tem servidor, banco de dados nem rota que aceite entrada de ninguém. O que vai ao ar é só HTML, CSS, um pouco de JavaScript e fontes, tudo do próprio domínio.
 
 ## Stack
 
@@ -28,7 +28,7 @@ npm run verify       # build + auditoria de segurança + auto-teste do auditor +
 | `build` | `sync`, `check` e a geração do site em `dist/`. |
 | `audit:dist` | Auditoria de segurança do que o build gerou (veja abaixo). |
 | `audit:selftest` | Injeta 20 problemas de propósito numa cópia do `dist/` e confere que a auditoria reprova cada um. |
-| `e2e` | Teste de navegador (Chrome ou Edge de verdade): o site funciona sem violar a própria política, e a política bloqueia ataques simulados. |
+| `e2e` | Teste de navegador (Chrome ou Edge de verdade): o site funciona sem violar a própria política, o demo e o editor animado funcionam (digitação, abas, botão de parar, teclado, "reduzir movimento"), a política bloqueia ataques simulados e a acessibilidade passa no axe-core. Com `E2E_SHOTS=pasta`, guarda capturas de tela (o CI as deixa como artefato `site-capturas`). |
 | `certificado` | Regenera `src/assets/exemplo-certificado.png` com o renderizador do bot. Só quando o visual do certificado mudar. |
 
 ## Como o site se protege
@@ -90,10 +90,10 @@ site/
   public/                   robots.txt, theme-init.js e o _headers gerado
   src/
     assets/                 certificado de exemplo (gerado pelo renderizador do bot)
-    components/             Header, Hero (com o demo) e as seções
+    components/             Header, Hero (com o demo), Editor (o editor de código animado) e as seções
     layouts/Base.astro      <head>: CSP em primeiro, metadados e a fonte
-    lib/                    leitura dos dados do bot, SVGs da marca e configuração
+    lib/                    leitura dos dados do bot, colorização de sintaxe (highlight.ts, no build), SVGs da marca e configuração
     pages/                  index e 404
-    scripts/                demo.ts e theme.ts (TypeScript, sem innerHTML)
+    scripts/                demo.ts, editor.ts e theme.ts (TypeScript, sem innerHTML)
     styles/global.css       CSS (e o das fontes, gerado)
 ```
