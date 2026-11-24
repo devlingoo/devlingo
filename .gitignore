@@ -2,3 +2,7 @@ node_modules/
 .env
 # Só a pasta de dados em runtime, na raiz (src/data/ guarda os desafios e precisa ir para o git)
 /data/
+
+# Zip do bot para a Discloud (npm run zip:bot) e a pasta que o site gera para subir lá (npm run package:discloud).
+/devlingo-bot.zip
+/site/discloud-out/

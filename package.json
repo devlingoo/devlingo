@@ -7,7 +7,8 @@
   "scripts": {
     "start": "node --disable-warning=ExperimentalWarning src/devlingo.js",
     "dev": "node --disable-warning=ExperimentalWarning --watch src/devlingo.js",
-    "test": "node --disable-warning=ExperimentalWarning --test"
+    "test": "node --disable-warning=ExperimentalWarning --test",
+    "zip:bot": "git archive --format=zip --output=devlingo-bot.zip HEAD"
   },
   "engines": {
     "node": ">=22.13"

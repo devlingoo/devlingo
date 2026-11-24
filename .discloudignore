@@ -1,0 +1,10 @@
+.git
+.github
+node_modules
+site
+test
+deploy
+data
+.env
+.env.example
+devlingo-bot.zip

@@ -74,6 +74,7 @@ Para montar o convite: no [Developer Portal](https://discord.com/developers/appl
 | **Vercel** | Lê o `vercel.json` desta pasta. Defina "Root Directory" como `site`. |
 | **Cloudflare Pages** | Lê o `public/_headers` (que vai para `dist/_headers`). |
 | **Netlify** | Lê o `public/_headers`. |
+| **Discloud** | Não lê `_headers` nem `vercel.json`: só roda um app Node. `npm run package:discloud` monta o pacote com um servidor próprio (`server/`) que aplica a mesma política e redireciona http para https; o workflow **Site** já deixa esse pacote pronto como artefato. Passo a passo no [README da raiz](../README.md#hospedar-na-discloud). |
 | **GitHub Pages** | **Não aceita cabeçalhos personalizados.** Só valem as `<meta>` da página (a CSP funciona, mas `frame-ancestors`, HSTS próprio e os cabeçalhos `Cross-Origin-*` ficam de fora, e o site poderia ser embutido em outro). Dá para usar, com essa perda. |
 
 `public/_headers` e `vercel.json` são **gerados** de `security/policy.mjs` (`npm run sync`) e ficam no git de propósito, porque o hospedeiro lê esses arquivos. Para mudar a política, edite só `security/policy.mjs`, rode `npm run sync` e faça o commit dos dois arquivos; o CI reprova se ficarem diferentes.
@@ -83,7 +84,9 @@ Para montar o convite: no [Developer Portal](https://discord.com/developers/appl
 ```
 site/
   security/policy.mjs       a política (CSP e cabeçalhos): única fonte da verdade
-  scripts/                  sync, auditoria do dist/, auto-teste do auditor, teste de navegador, gerador do certificado
+  server/                   servidor estático para a Discloud (serve.mjs) e o ponto de entrada do pacote (server.js)
+  scripts/                  sync, auditoria do dist/, auto-teste do auditor, teste de navegador, teste do servidor,
+                            empacotador da Discloud, gerador do certificado
   public/                   robots.txt, theme-init.js e o _headers gerado
   src/
     assets/                 certificado de exemplo (gerado pelo renderizador do bot)
