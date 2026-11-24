@@ -101,6 +101,72 @@ test("todo desafio gera mensagens válidas em todos os estados, com ou sem sess�
   }
 });
 
+// O Discord corta o rótulo do botão com "…" (no celular, perto dos 30 caracteres): por isso o botão leva só a
+// letra e a alternativa inteira fica no texto da mensagem.
+test("as alternativas aparecem completas no texto e os botões levam só a letra", () => {
+  const owner = "123456789012345678";
+  const issuedAt = Date.now().toString(36);
+  const letters = "ABCD";
+  // O que o Discord mostra de um texto com markdown escapado: sem a barra invertida e sem o caractere invisível.
+  const shown = (line) => line.replace(/\\([^0-9A-Za-z\s])/g, "$1").replace(/​/g, "");
+
+  for (const ch of challenges.list) {
+    const nodes = flatten(ui.challengeMessage(ch, owner, issuedAt, { type: "open" }));
+    const labels = nodes.filter((n) => n.type === TYPE.Button && n.custom_id.startsWith("ch:")).map((n) => n.label);
+    assert.deepEqual(labels, [...letters].slice(0, ch.options.length), `${ch.id}: rótulos dos botões`);
+
+    const lines = nodes.filter((n) => n.type === TYPE.TextDisplay).flatMap((n) => n.content.split("\n"));
+    ch.options.forEach((option, i) => {
+      const prefix = `**${letters[i]})** `;
+      const matching = lines.filter((l) => l.startsWith(prefix));
+      assert.equal(matching.length, 1, `${ch.id}: a alternativa ${letters[i]} precisa aparecer em uma linha`);
+      assert.equal(shown(matching[0].slice(prefix.length)), option, `${ch.id}: alternativa ${letters[i]} sem cortes`);
+    });
+  }
+});
+
+test("alternativas com símbolos de markdown aparecem como foram escritas, sem itálico nem link", () => {
+  const ch = challenges.list.find((c) => c.id === "sql-001"); // COUNT(*), SUM(*)...
+  const lines = flatten(ui.challengeMessage(ch, "123456789012345678", "abc", { type: "open" }))
+    .filter((n) => n.type === TYPE.TextDisplay)
+    .flatMap((n) => n.content.split("\n"));
+  assert.ok(lines.includes("**B)** COUNT(\\*)"), lines.join("\n"));
+
+  // Qualquer alternativa dos dados vira texto puro: nada de colchete, ângulo, asterisco, sublinhado ou crase
+  // sem a barra (um "|" ou um "~" sozinhos não formatam nada; só o par "||" e "~~").
+  for (const c of challenges.list) {
+    const out = flatten(ui.challengeMessage(c, "123456789012345678", "abc", { type: "open" }))
+      .filter((n) => n.type === TYPE.TextDisplay)
+      .flatMap((n) => n.content.split("\n"))
+      .filter((l) => /^\*\*[A-D]\)\*\* /.test(l))
+      .map((l) => l.replace(/^\*\*[A-D]\)\*\* /, ""));
+    for (const line of out) {
+      assert.doesNotMatch(line, /(?<!\\)[[\]<>*_`]|(?<!\\)~~|(?<!\\)\|\|/, `${c.id}: símbolo de markdown solto em "${line}"`);
+    }
+  }
+});
+
+test("depois da resposta, a alternativa certa ganha ✅ e a escolhida errada ❌ (e só essas)", () => {
+  const ch = challenges.list.find((c) => c.id === "a11y-004");
+  const marks = (state) =>
+    flatten(ui.challengeMessage(ch, "123456789012345678", "abc", state))
+      .filter((n) => n.type === TYPE.TextDisplay)
+      .flatMap((n) => n.content.split("\n"))
+      .filter((l) => /\*\*[A-D]\)\*\* /.test(l))
+      .map((l) => l.match(/^(✅|❌) /)?.[1] ?? "");
+
+  const none = ["", "", "", ""];
+  assert.deepEqual(marks({ type: "open" }), none, "aberto: sem marcas");
+  assert.deepEqual(marks({ type: "expired" }), none, "expirado: sem marcas");
+
+  const wrong = (ch.answer + 1) % 4;
+  const expected = none.map((_, i) => (i === ch.answer ? "✅" : i === wrong ? "❌" : ""));
+  assert.deepEqual(marks({ type: "answered", chosen: wrong, correct: false, gained: 0, xp: 10, streak: 1 }), expected);
+
+  const right = none.map((_, i) => (i === ch.answer ? "✅" : ""));
+  assert.deepEqual(marks({ type: "answered", chosen: ch.answer, correct: true, gained: 10, xp: 20, streak: 1 }), right);
+});
+
 // ---------- áreas (Frontend, Backend, Banco de dados, Ferramentas e DevOps) ----------
 
 const areas = require("../src/utils/areas");

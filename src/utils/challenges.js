@@ -11,7 +11,9 @@ const DIFFICULTIES = [
   { id: "expert", label: "Especialista", emoji: "🔴", description: "Arquitetura, otimização e domínio técnico" },
 ];
 
-// O botão mostra "A) " + a alternativa e o Discord limita o rótulo a 80 caracteres.
+// As alternativas vão inteiras no texto da mensagem e os botões só levam a letra (ui.js). O limite de
+// 77 vem do tempo em que o botão mostrava "A) " + a alternativa (rótulo de até 80) e foi mantido:
+// alternativas curtas ocupam poucas linhas numa tela de celular.
 const MAX_OPTION_LENGTH = 77;
 // ids vão dentro do customId dos botões (separados por ":", limite de 100 caracteres).
 const ID_PATTERN = /^[a-z0-9-]+$/;

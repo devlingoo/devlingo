@@ -216,8 +216,8 @@ Edite `src/data/challenges.json`. Cada desafio tem `id` (único), `language`, `d
 Regras que a validação cobra, porque vêm de limites do Discord:
 
 - `id` com até 16 caracteres e `topic.id` com até 32 (só `a-z`, `0-9` e hífen): eles vão dentro do `customId` dos botões.
-- Cada opção com no máximo 77 caracteres e sem repetir: o botão mostra `A) ` + a opção, e o Discord corta o rótulo em 80.
-- O texto de `question` e `explanation` aceita Markdown (como `` `código` ``); as **opções não**, porque são rótulos de botão.
+- Cada opção com no máximo 77 caracteres e sem repetir. As opções aparecem completas no texto da mensagem (`**A)** ...`) e os botões levam só a letra, porque o Discord corta o rótulo de um botão com "…" no celular.
+- O texto de `question` e `explanation` aceita Markdown (como `` `código` ``); as **opções não**: são mostradas como texto puro (o bot escapa `*`, `_`, `[`, `<` e afins), então `COUNT(*)` aparece exatamente como foi escrito.
 - Use o mesmo `label` e `description` para o mesmo `topic.id` em todos os níveis. Para o assunto aparecer em mais de um nível, basta cadastrar desafios dele em cada nível.
 - Tente ter pelo menos 4 desafios por assunto e nível, para o "Próxima pergunta" não ficar repetitivo.
 
