@@ -2,8 +2,13 @@
 // A aplicação inicial do tema, antes da primeira pintura, é feita por public/theme-init.js.
 type Choice = "auto" | "light" | "dark";
 const ORDER: Choice[] = ["auto", "light", "dark"];
-const LABEL: Record<Choice, string> = { auto: "automático", light: "claro", dark: "escuro" };
+// O botão tem dois textos para o mesmo valor: o inteiro (telas largas) e o curto (celular, onde "automático" não cabe
+// ao lado do logo e do GitHub). O CSS mostra um deles; só "auto" muda de um para o outro.
+const LONG: Record<Choice, string> = { auto: "automático", light: "claro", dark: "escuro" };
+const SHORT: Record<Choice, string> = { auto: "auto", light: "claro", dark: "escuro" };
 
+const long = document.getElementById("theme-long");
+const short = document.getElementById("theme-short");
 const button = document.getElementById("theme-toggle");
 
 function read(): Choice {
@@ -19,7 +24,9 @@ function apply(choice: Choice): void {
   if (choice === "auto") delete document.documentElement.dataset["theme"];
   else document.documentElement.dataset["theme"] = choice;
   // O nome acessível é o próprio texto visível (WCAG 2.5.3, rótulo no nome): sem aria-label diferente dele.
-  if (button) button.textContent = `Tema: ${LABEL[choice]}`;
+  // O CSS esconde com display:none o texto que não cabe, então só o outro entra no nome ("Tema: auto" no celular).
+  if (long) long.textContent = LONG[choice];
+  if (short) short.textContent = SHORT[choice];
 }
 
 let choice = read();

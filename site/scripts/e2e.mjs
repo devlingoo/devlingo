@@ -390,9 +390,12 @@ try {
           logoH: Math.round(logo.getBoundingClientRect().height),
           height: Math.round(top.getBoundingClientRect().height),
           scrolls: document.documentElement.scrollWidth > document.documentElement.clientWidth,
-          label: document.querySelector("#theme-toggle").textContent.replace(/\s+/g, " ").trim(),
+          // innerText ignora o que está com display:none: é o que a pessoa lê (e o que um leitor de tela diria)
+          label: document.querySelector("#theme-toggle").innerText.replace(/\s+/g, " ").trim(),
         };
       });
+      const wanted = { auto: w <= 520 ? "auto" : "automático", light: "claro", dark: "escuro" }[choice];
+      check(m.label === `Tema: ${wanted}`, `${w}px, tema ${choice}: o botão diz "Tema: ${wanted}" (no celular, a escolha curta)`, `"${m.label}"`);
       check(
         m.rows <= 4 && m.right <= w - 16 + 1 && m.logoRatio >= 3.5 && m.logoH >= 28 && !m.scrolls,
         `${w}px, tema ${choice}: o topo fica numa linha, dentro da margem, com o logo inteiro e sem rolar de lado`,

@@ -94,13 +94,29 @@
 
   /* topo */
   .top { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding-block: 22px; }
-  .top nav { display: flex; gap: 6px 22px; flex-wrap: wrap; align-items: center; }
+  .top > a { flex: none; } /* o logo nunca é espremido: se faltar lugar, quem quebra de linha é o menu */
+  .top nav { display: flex; gap: 6px 22px; flex-wrap: wrap; justify-content: flex-end; align-items: center; }
   .top nav a, .theme {
-    color: var(--muted); text-decoration: none; font-weight: 700; font-size: 15px;
+    color: var(--muted); text-decoration: none; font-weight: 700; font-size: 15px; white-space: nowrap;
     &:hover { color: var(--text); }
   }
-  .theme { background: none; border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; cursor: pointer; }
+  .theme { display: inline-flex; align-items: center; gap: 6px; background: none; border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; cursor: pointer; }
+  .theme-icon, .theme-short { display: none; }
+  .theme-icon { width: 16px; height: 16px; flex: none; }
   @media (max-width: 760px) { .top nav a.nav-hide { display: none; } }
+  /* celular: ícone + escolha curta ("auto"); "Tema:" só para leitores de tela. Sem isso, "Tema: automático" não cabe e o menu quebra. */
+  @media (max-width: 520px) {
+    .top { gap: 12px; padding-block: 16px; }
+    .top .logo { height: 30px; }
+    .top nav { gap: 6px 14px; }
+    .top nav a, .theme { font-size: 14px; }
+    .top nav a { padding-block: 8px; } /* área de toque maior sem mudar o visual */
+    .theme { padding: 6px 12px; min-height: 40px; }
+    .theme-icon { display: block; }
+    .theme-pre { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: pre; }
+    .theme-long { display: none; }
+    .theme-short { display: inline; }
+  }
 
   /* botões */
   .btn {
