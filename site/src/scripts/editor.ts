@@ -167,6 +167,7 @@ function setup(root: HTMLElement): void {
     if (next.enter > 0) {
       wait += next.enter * (170 + Math.random() * 110);
       mark(p.lines[next.line] ?? null, p.lines[next.line] ?? null); // o cursor vai para a linha nova enquanto a pessoa "pensa"
+      position.textContent = `Ln ${next.line + 1}, Col 1`;
     }
     later(tick, wait);
   }

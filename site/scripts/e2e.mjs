@@ -263,7 +263,14 @@ try {
   await sleep(1500);
   const partial = withoutBlankTail(await typed());
   check(partial.length > 0 && partial.length < first.length && first.startsWith(partial), "ao aparecer na tela, começa a digitar: o texto é um pedaço do começo do código", `${partial.length} de ${first.length} caracteres`);
-  check((await carets()) === 1 && /^Ln \d+, Col \d+$/.test(await statusText()), "tem um cursor, e a barra de status mostra a linha e a coluna", await statusText());
+  // lido numa tacada só: dois pedidos separados poderiam pegar duas letras diferentes
+  const cursor = await ed.evaluate(() => {
+    const caret = document.querySelector("#editor .caret");
+    const line = caret.classList.contains("line") ? caret : caret.closest(".line");
+    return { count: document.querySelectorAll("#editor .caret").length, line: [...line.parentElement.children].indexOf(line) + 1, status: document.querySelector('#editor [data-role="pos"]').textContent };
+  });
+  check(cursor.count === 1 && /^Ln \d+, Col \d+$/.test(cursor.status), "tem um cursor, e a barra de status mostra a linha e a coluna", cursor.status);
+  check(cursor.status.startsWith(`Ln ${cursor.line},`), "a linha da barra de status é a linha onde está o cursor", `cursor na linha ${cursor.line}, status "${cursor.status}"`);
   await shoot(await ed.$("#editor"), "editor-digitando");
   await ed.waitForFunction((selector, expected) => [...document.querySelectorAll(selector)].map((l) => l.textContent).join("\n") === expected, { timeout: 25_000 }, SHOWN, first).catch(() => {});
   check((await typed()) === first, "termina de digitar, e o texto final é idêntico ao código do desafio");

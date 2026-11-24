@@ -78,11 +78,11 @@ export const demo: DemoChallenge[] = DEMO_IDS.map((id) => {
 // da linguagem são só da exibição; o código, a pergunta e o nível vêm do banco do bot (o build falha se um id sumir).
 const EDITOR_FILES = [
   { id: "py-010", file: "lista.py", label: "Python" },
-  { id: "js-025", file: "closures.js", label: "JavaScript" },
+  { id: "js-025", file: "loop.js", label: "JavaScript" },
   { id: "ts-004", file: "somar.ts", label: "TypeScript" },
   { id: "mod-006", file: "pedidos.sql", label: "SQL" },
   { id: "dkr-009", file: "Dockerfile", label: "Docker" },
-  { id: "ks-011", file: "deploy.yaml", label: "YAML" },
+  { id: "ks-011", file: "deploy.yml", label: "YAML" },
 ] as const;
 export interface EditorSnippet {
   id: string;
