@@ -1,0 +1,8 @@
+# Cluster descartável do verificador: 1 plano de controle e 2 nós de trabalho.
+# Dois nós de trabalho bastam para os cenários que esvaziam (drain) ou marcam (taint) um deles.
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+  - role: control-plane
+  - role: worker
+  - role: worker

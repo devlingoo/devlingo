@@ -56,7 +56,7 @@ test(".discloudignore: só nomes exatos e protege o banco, o .env e o que não �
     assert.ok(!line.startsWith("#"), `"${line}": a Discloud não documenta comentário no .discloudignore`);
   }
   // `data` é o banco com o progresso de todo mundo: um commit com a cópia local o sobrescreveria.
-  for (const must of ["data", ".env", "node_modules", ".git", "site", "test", "deploy"]) {
+  for (const must of ["data", ".env", "node_modules", ".git", "site", "test", "deploy", "tools"]) {
     assert.ok(lines.includes(must), `faltou "${must}" no .discloudignore`);
   }
 });
@@ -123,7 +123,7 @@ test("o zip do bot (git archive) leva o que o bot usa e nada que não deve ir", 
   assert.ok(names.some((name) => name.startsWith("src/assets/fonts/") && !name.endsWith("/")), "faltaram as fontes do certificado");
 
   // O que NUNCA pode ir: o banco, segredos e o que é de outras partes do projeto.
-  const forbidden = [/^data\//, /(^|\/)\.env/, /node_modules/, /^site\//, /^test\//, /^deploy\//, /^\.github\//, /\.db(-wal|-shm)?$/];
+  const forbidden = [/^data\//, /(^|\/)\.env/, /node_modules/, /^site\//, /^test\//, /^deploy\//, /^tools\//, /^\.github\//, /\.db(-wal|-shm)?$/];
   for (const pattern of forbidden) {
     const hit = names.find((name) => pattern.test(name));
     assert.equal(hit, undefined, `não podia ir no zip do bot: ${hit}`);

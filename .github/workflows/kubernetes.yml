@@ -1,0 +1,96 @@
+name: Kubernetes
+
+# Confere as respostas dos desafios de Kubernetes contra um cluster de verdade: um kind descartável, criado e destruído
+# dentro desta execução, na máquina do GitHub (nada roda no computador de ninguém). Para cada desafio o verificador roda o
+# cenário, observa o que o cluster faz e confere, opção por opção, se só a opção marcada como correta é verdadeira.
+# Roda em duas versões do Kubernetes (a mais antiga e a mais nova com suporte). Não é um check obrigatório do merge.
+on:
+  push:
+    branches-ignore: [main]
+    paths:
+      - "tools/verify-kubernetes/**"
+      - ".github/workflows/kubernetes.yml"
+  workflow_dispatch:
+    inputs:
+      only:
+        description: "Só estes desafios (ids separados por vírgula, ex.: ks-001,ks-005). Vazio = todos."
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kubernetes-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verificar:
+    name: Kubernetes ${{ matrix.kubernetes }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Imagens dos nós publicadas na versão v0.33.0 do kind, fixadas pelo hash (a tag poderia ser movida).
+          - kubernetes: v1.36.4
+            node_image: kindest/node:v1.36.4@sha256:099e049362a1526b2db71494e1947aae99bd16290d7c895f2b7ea312e3cbfaed
+          - kubernetes: v1.37.0
+            node_image: kindest/node:v1.37.0@sha256:a1ed56cfb0e7b93589bdf97c8cd566405a265939e3620fc4f5de89adff580ae5
+
+    steps:
+      - name: Baixar código
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+
+      # Versão e hash do kind fixos: o binário baixado é conferido antes de ser instalado.
+      - name: Instalar o kind
+        env:
+          KIND_VERSION: v0.33.0
+          KIND_SHA256: aee6151561422756b764a4ae28e7f44cda5af5a9eead3cc9985112b1de8d8e0d
+        run: |
+          curl -fsSL -o kind "https://github.com/kubernetes-sigs/kind/releases/download/${KIND_VERSION}/kind-linux-amd64"
+          echo "${KIND_SHA256}  kind" | sha256sum --check
+          sudo install -m 0755 kind /usr/local/bin/kind
+          kind version
+          kubectl version --client
+
+      - name: Criar o cluster (1 plano de controle e 2 nós de trabalho)
+        env:
+          NODE_IMAGE: ${{ matrix.node_image }}
+        run: |
+          kind create cluster --name verificador --image "$NODE_IMAGE" --config tools/verify-kubernetes/kind.yaml --wait 240s
+          # o --wait do kind só espera o plano de controle: os nós de trabalho, o DNS e o provisionador de volumes vêm depois
+          kubectl wait --for=condition=Ready nodes --all --timeout=240s
+          kubectl -n kube-system wait --for=condition=Available deployment/coredns --timeout=240s
+          kubectl -n local-path-storage wait --for=condition=Available deployment/local-path-provisioner --timeout=240s
+          kubectl get nodes -o wide
+
+      - name: Verificar os desafios
+        env:
+          ONLY: ${{ inputs.only }}
+          REPORT_DIR: report
+        run: node tools/verify-kubernetes/verify.mjs
+
+      - name: Estado do cluster (só se algo falhou)
+        if: failure()
+        run: |
+          kubectl get pods -A -o wide || true
+          kubectl get events -A --sort-by=.lastTimestamp | tail -n 80 || true
+
+      - name: Guardar o relatório
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: kubernetes-${{ matrix.kubernetes }}
+          path: report/
+          if-no-files-found: ignore
+          retention-days: 30
