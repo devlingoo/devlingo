@@ -602,6 +602,9 @@ function studyNavigation(ch, ownerId) {
 
 // customId: ch:<idDoDesafio>:<opção>:<idDoDono>:<criadoEm em base36>[:s|:d]
 // O ":s" marca que o desafio faz parte de uma sessão de estudo (comando aprender); o ":d", que é o desafio do dia.
+// O botão leva só a letra: o Discord corta o rótulo com "…" perto dos 30 caracteres no celular (mais da
+// metade das alternativas passa disso) e a pessoa ficava sem ler a resposta inteira. O texto completo de
+// cada alternativa vai na mensagem (optionLines).
 function challengeButtons(ch, ownerId, issuedAt, { disabled = false, chosen = null, reveal = false, study = false, daily = false } = {}) {
   const row = new ActionRowBuilder();
   ch.options.forEach((option, i) => {
@@ -612,12 +615,25 @@ function challengeButtons(ch, ownerId, issuedAt, { disabled = false, chosen = nu
     row.addComponents(
       new ButtonBuilder()
         .setCustomId(`ch:${ch.id}:${i}:${ownerId}:${issuedAt}${study ? ":s" : daily ? ":d" : ""}`)
-        .setLabel(`${LETTERS[i]}) ${option}`.slice(0, 80))
+        .setLabel(LETTERS[i])
         .setStyle(style)
         .setDisabled(disabled)
     );
   });
   return row;
+}
+
+// As alternativas, uma por linha, completas (o texto quebra sozinho em telas estreitas). Elas são texto
+// de markdown, ao contrário do rótulo de um botão: `COUNT(*)`, `[2, 4]`, `<class 'list'>` ou `__init__`
+// sairiam em itálico, link ou sumiriam, então passam pelo safeText. Depois da resposta, a certa ganha ✅ e a
+// escolhida errada ❌: assim quem não distingue o verde do vermelho também vê o resultado.
+function optionLines(ch, { chosen = null, reveal = false } = {}) {
+  return ch.options
+    .map((option, i) => {
+      const mark = !reveal ? "" : i === ch.answer ? "✅ " : i === chosen ? "❌ " : "";
+      return `${mark}**${LETTERS[i]})** ${safeText(option, { max: 100 })}`;
+    })
+    .join("\n");
 }
 
 // Comemorações que uma resposta rendeu: subir de nível, meta do dia, marco de sequência, combo e
@@ -705,7 +721,8 @@ function challengeMessage(ch, ownerId, issuedAt, state = { type: "open" }) {
     .setAccentColor(color)
     .addTextDisplayComponents(
       text(state.isDaily ? `## 📆 Desafio do dia · ${heading}` : `## 🧩 ${heading}`),
-      text(`${ch.difficulty ? `Nível: ${levelTag(ch.difficulty)}\n\n` : ""}${body}`)
+      text(`${ch.difficulty ? `Nível: ${levelTag(ch.difficulty)}\n\n` : ""}${body}`),
+      text(optionLines(ch, { chosen: state.chosen ?? null, reveal: state.type === "answered" }))
     )
     .addSeparatorComponents(divider())
     .addActionRowComponents(buttons);
