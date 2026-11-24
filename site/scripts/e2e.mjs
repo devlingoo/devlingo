@@ -360,6 +360,51 @@ try {
     await shoot(await p.$("#codigo"), `secao-editor-${name}`);
     await p.close();
   }
+
+  // ------------------------------------------------------------------ 8) topo (logo, GitHub e botão de tema) em telas estreitas
+  // O texto do botão muda com a escolha ("Tema: automático" é o mais largo): em celular o topo não pode quebrar em duas
+  // linhas, encolher o logo nem passar da margem, em nenhuma largura de tela e com nenhuma das três escolhas.
+  console.log("\n8) Topo do site no celular (uma linha só, com as três escolhas de tema)");
+  const TOPO_SHOTS = [320, 393, 768]; // larguras que também viram captura de tela
+  for (const w of [320, 360, 375, 393, 430, 600, 768, 900]) {
+    const p = await browser.newPage();
+    await p.emulateMediaFeatures([{ name: "prefers-reduced-motion", value: "reduce" }]);
+    await p.setViewport({ width: w, height: 800 });
+    await p.goto(URL_BASE + "/", { waitUntil: "networkidle0" });
+    await p.evaluate(() => localStorage.removeItem("theme"));
+    await p.reload({ waitUntil: "networkidle0" });
+    for (const choice of ["auto", "light", "dark"]) {
+      if (choice !== "auto") await p.click("#theme-toggle"); // auto -> claro -> escuro
+      const m = await p.evaluate(() => {
+        const top = document.querySelector("header.top");
+        const shown = (el) => el.getClientRects().length > 0;
+        const items = [...top.querySelectorAll(":scope > a, nav a, nav button")].filter(shown);
+        const rects = items.map((el) => el.getBoundingClientRect());
+        const mids = rects.map((r) => Math.round(r.top + r.height / 2));
+        const logo = [...top.querySelectorAll(".logo")].find(shown);
+        return {
+          rows: Math.max(...mids) - Math.min(...mids),
+          right: Math.round(Math.max(...rects.map((r) => r.right))),
+          // o logo é 3,6 vezes mais largo que alto; se o topo o espremer, a proporção cai
+          logoRatio: Math.round((logo.getBoundingClientRect().width / logo.getBoundingClientRect().height) * 10) / 10,
+          logoH: Math.round(logo.getBoundingClientRect().height),
+          height: Math.round(top.getBoundingClientRect().height),
+          scrolls: document.documentElement.scrollWidth > document.documentElement.clientWidth,
+          // innerText ignora o que está com display:none: é o que a pessoa lê (e o que um leitor de tela diria)
+          label: document.querySelector("#theme-toggle").innerText.replace(/\s+/g, " ").trim(),
+        };
+      });
+      const wanted = { auto: w <= 520 ? "auto" : "automático", light: "claro", dark: "escuro" }[choice];
+      check(m.label === `Tema: ${wanted}`, `${w}px, tema ${choice}: o botão diz "Tema: ${wanted}" (no celular, a escolha curta)`, `"${m.label}"`);
+      check(
+        m.rows <= 4 && m.right <= w - 16 + 1 && m.logoRatio >= 3.5 && m.logoH >= 28 && !m.scrolls,
+        `${w}px, tema ${choice}: o topo fica numa linha, dentro da margem, com o logo inteiro e sem rolar de lado`,
+        `"${m.label}" desalinhamento ${m.rows}px, borda direita ${m.right}px (limite ${w - 16}), logo ${m.logoH}px (proporção ${m.logoRatio}), topo ${m.height}px`
+      );
+      if (TOPO_SHOTS.includes(w)) await shoot(await p.$("header.top"), `topo-${w}-${choice}`);
+    }
+    await p.close();
+  }
 } finally {
   await browser.close();
   server.close();

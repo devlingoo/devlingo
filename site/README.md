@@ -28,7 +28,7 @@ npm run verify       # build + auditoria de segurança + auto-teste do auditor +
 | `build` | `sync`, `check` e a geração do site em `dist/`. |
 | `audit:dist` | Auditoria de segurança do que o build gerou (veja abaixo). |
 | `audit:selftest` | Injeta 20 problemas de propósito numa cópia do `dist/` e confere que a auditoria reprova cada um. |
-| `e2e` | Teste de navegador (Chrome ou Edge de verdade): o site funciona sem violar a própria política, o demo e o editor animado funcionam (digitação, abas, botão de parar, teclado, "reduzir movimento"), a política bloqueia ataques simulados e a acessibilidade passa no axe-core. Com `E2E_SHOTS=pasta`, guarda capturas de tela (o CI as deixa como artefato `site-capturas`). |
+| `e2e` | Teste de navegador (Chrome ou Edge de verdade): o site funciona sem violar a própria política, o demo e o editor animado funcionam (digitação, abas, botão de parar, teclado, "reduzir movimento"), o topo fica numa linha só de 320 a 900 px com as três escolhas de tema, a política bloqueia ataques simulados e a acessibilidade passa no axe-core. Com `E2E_SHOTS=pasta`, guarda capturas de tela (o CI as deixa como artefato `site-capturas`). |
 | `certificado` | Regenera `src/assets/exemplo-certificado.png` com o renderizador do bot. Só quando o visual do certificado mudar. |
 
 ## Como o site se protege
