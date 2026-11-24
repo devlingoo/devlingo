@@ -7118,5 +7118,325 @@
       "label": "Observabilidade",
       "description": "Logs, métricas, traces, PromQL e SLOs"
     }
+  },
+  {
+    "id": "ks-001",
+    "language": "bash",
+    "question": "O contêiner de um Pod sai com erro e a política de reinício é a padrão. O que o Kubernetes faz?",
+    "code": "kubectl run falha --image=busybox -- sh -c \"exit 1\"\nkubectl get pod falha",
+    "options": [
+      "Apaga o Pod e cria outro com nome novo no lugar dele",
+      "Marca o Pod como Failed e não tenta de novo",
+      "Reinicia o contêiner no mesmo Pod (a coluna RESTARTS sobe)",
+      "Não reinicia nada: o contêiner só sobe de novo se você recriar o Pod"
+    ],
+    "answer": 2,
+    "explanation": "Com `restartPolicy: Always` (o padrão), quem reinicia é o kubelet, dentro do **mesmo** Pod: mesmo nome, mesmo UID, e a coluna RESTARTS sobe. Entre uma tentativa e outra ele espera cada vez mais, e é isso que aparece como `CrashLoopBackOff`. O Pod continua `Running`. Só com `restartPolicy: Never` o mesmo contêiner levaria o Pod a `Failed`, sem nenhum reinício.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "kubernetes",
+      "label": "Kubernetes",
+      "description": "Pods, Deployments, Services e o dia a dia do cluster"
+    }
+  },
+  {
+    "id": "ks-002",
+    "language": "bash",
+    "question": "Um Deployment tem 3 réplicas e você apaga um dos pods com kubectl delete pod. O que acontece?",
+    "code": "kubectl get pods\n# web-7d9f6c-abc12   1/1   Running\n# web-7d9f6c-def34   1/1   Running\n# web-7d9f6c-ghi56   1/1   Running\n\nkubectl delete pod web-7d9f6c-abc12",
+    "options": [
+      "O ReplicaSet cria um pod novo, com outro nome, e voltam a ser 3",
+      "O Deployment passa a ter 2 réplicas até você rodar kubectl apply",
+      "O kubectl recusa: pod de Deployment só pode ser apagado pelo Deployment",
+      "O Deployment inteiro é apagado junto com o pod"
+    ],
+    "answer": 0,
+    "explanation": "O Deployment cuida de um ReplicaSet, e o ReplicaSet mantém o número de pods igual ao que foi pedido em `spec.replicas`. Ao ver que faltou um, ele cria outro, com nome novo (o sufixo é aleatório). O que volta não é o pod apagado, é a quantidade. Para ter menos réplicas de verdade, o caminho é `kubectl scale` (ou editar `replicas`).",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "kubernetes",
+      "label": "Kubernetes",
+      "description": "Pods, Deployments, Services e o dia a dia do cluster"
+    }
+  },
+  {
+    "id": "ks-003",
+    "language": "bash",
+    "question": "Você roda kubectl apply -f app.yaml duas vezes seguidas, sem editar o arquivo. O que a segunda execução mostra?",
+    "code": "kubectl apply -f app.yaml    # 1ª vez\nkubectl apply -f app.yaml    # 2ª vez, arquivo igual",
+    "options": [
+      "Erro AlreadyExists: o Deployment \"web\" já existe",
+      "deployment.apps/web created, e agora há dois Deployments iguais",
+      "deployment.apps/web configured, mesmo sem nada ter mudado",
+      "deployment.apps/web unchanged"
+    ],
+    "answer": 3,
+    "explanation": "O `apply` compara o arquivo com o que já existe no cluster: sem diferença, responde `unchanged`; com diferença, atualiza e responde `configured`. Por isso dá para rodá-lo quantas vezes quiser. Já o `kubectl create -f` só sabe criar: na segunda vez, o mesmo arquivo dá o erro `AlreadyExists`.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "kubernetes",
+      "label": "Kubernetes",
+      "description": "Pods, Deployments, Services e o dia a dia do cluster"
+    }
+  },
+  {
+    "id": "ks-004",
+    "language": "bash",
+    "question": "Seu pod está no namespace dev, mas kubectl get pods diz que não achou nada. Qual comando mostra esse pod?",
+    "code": "kubectl get pods\n# No resources found in default namespace.",
+    "options": [
+      "kubectl get pods --all",
+      "kubectl get pods -n dev",
+      "kubectl get pod dev",
+      "kubectl get namespace dev"
+    ],
+    "answer": 1,
+    "explanation": "O `kubectl get` olha um namespace por vez: o atual, que por padrão é o `default` (é o que a mensagem diz). Use `-n dev` para olhar o `dev`, ou `-A` (`--all-namespaces`) para olhar todos. `--all` não existe; `kubectl get pod dev` procura um pod chamado \"dev\"; e `kubectl get namespace dev` mostra o namespace, não os pods que estão dentro dele.",
+    "difficulty": "beginner",
+    "topic": {
+      "id": "kubernetes",
+      "label": "Kubernetes",
+      "description": "Pods, Deployments, Services e o dia a dia do cluster"
+    }
+  },
+  {
+    "id": "ks-005",
+    "language": "bash",
+    "question": "Os pods estão Running, mas o Service mostra ENDPOINTS <none>. Qual é a causa mais provável?",
+    "code": "kubectl get pods -l app=api\n# api-6f7d9c-x2k4p   1/1   Running\n\nkubectl get endpoints api\n# NAME   ENDPOINTS   AGE\n# api    <none>      5m",
+    "options": [
+      "O targetPort do Service aponta para uma porta errada do contêiner",
+      "O selector do Service não bate com as labels dos pods",
+      "Falta um Ingress na frente do Service para ele ter endpoints",
+      "Um Service do tipo ClusterIP precisa virar NodePort para ter endpoints"
+    ],
+    "answer": 1,
+    "explanation": "O Service não guarda IPs: o cluster procura os pods cujas labels batem com o `selector` e lista os endereços deles. Se nenhum pod casa, a lista fica vazia (`<none>`) mesmo com os pods saudáveis. Um `targetPort` errado é outro defeito: os endereços aparecem, só que a conexão é recusada. E nem o tipo ClusterIP nem a falta de um Ingress impedem os endpoints.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "kubernetes",
+      "label": "Kubernetes",
+      "description": "Pods, Deployments, Services e o dia a dia do cluster"
+    }
+  },
+  {
+    "id": "ks-006",
+    "language": "yaml",
+    "question": "Um pod lê uma variável de ambiente de um ConfigMap. Você edita o ConfigMap. O que muda no pod que já está rodando?",
+    "code": "env:\n  - name: COR\n    valueFrom:\n      configMapKeyRef:\n        name: cfg\n        key: COR",
+    "options": [
+      "A variável muda na hora, dentro do contêiner em execução",
+      "O Kubernetes reinicia o pod sozinho para aplicar o valor novo",
+      "O kubectl recusa editar um ConfigMap que algum pod está usando",
+      "Nada: o pod mantém o valor antigo até ser recriado"
+    ],
+    "answer": 3,
+    "explanation": "As variáveis de ambiente são lidas uma única vez, quando o contêiner nasce. Editar o ConfigMap não mexe nos pods em execução nem os reinicia: só um pod novo (por exemplo, depois de `kubectl rollout restart`) enxerga o valor novo. Um ConfigMap montado como **volume** é diferente: o arquivo é atualizado depois de algum tempo, mas o processo ainda precisa relê-lo.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "kubernetes",
+      "label": "Kubernetes",
+      "description": "Pods, Deployments, Services e o dia a dia do cluster"
+    }
+  },
+  {
+    "id": "ks-007",
+    "language": "yaml",
+    "question": "A readinessProbe de um contêiner passa a falhar sempre. O que o Kubernetes faz com o pod?",
+    "code": "readinessProbe:\n  exec:\n    command: [\"sh\", \"-c\", \"exit 1\"]   # falha sempre\n  periodSeconds: 5",
+    "options": [
+      "Deixa o pod Running, mas fora do Service (0/1 pronto)",
+      "Reinicia o contêiner sem parar, até a probe voltar a passar",
+      "Apaga o pod, e o Deployment sobe outro no lugar para tentar de novo",
+      "Muda o pod para Failed e o deixa parado até alguém intervir"
+    ],
+    "answer": 0,
+    "explanation": "A `readinessProbe` responde \"este pod já pode receber tráfego?\". Falhando, o pod continua `Running`, sem reiniciar e sem ser trocado pelo Deployment, mas fica marcado como não pronto (`0/1`) e sai dos endpoints do Service, então não recebe pedidos. Quem reinicia o contêiner é a `livenessProbe`: é ela que mata e recria o processo travado.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "kubernetes",
+      "label": "Kubernetes",
+      "description": "Pods, Deployments, Services e o dia a dia do cluster"
+    }
+  },
+  {
+    "id": "ks-008",
+    "language": "yaml",
+    "question": "O processo do contêiner tenta usar bem mais memória do que o limits.memory. O que acontece?",
+    "code": "resources:\n  requests:\n    memory: 16Mi\n  limits:\n    memory: 32Mi",
+    "options": [
+      "O contêiner é só desacelerado (throttling), como acontece com a CPU",
+      "O pod é movido para um nó com mais memória livre",
+      "O contêiner é morto (OOMKilled, código 137) e reiniciado",
+      "O Kubernetes aumenta o limite sozinho até o processo caber"
+    ],
+    "answer": 2,
+    "explanation": "Memória não se comprime como CPU. Passou do `limits.memory`, o kernel mata o processo: o Kubernetes registra `OOMKilled` (código de saída 137) e, com a política padrão, reinicia o contêiner; se repetir, vira `CrashLoopBackOff`. Já o excesso de **CPU** é só segurado (throttling), sem matar nada. O limite não é alterado e o pod não muda de nó por isso.",
+    "difficulty": "intermediate",
+    "topic": {
+      "id": "kubernetes",
+      "label": "Kubernetes",
+      "description": "Pods, Deployments, Services e o dia a dia do cluster"
+    }
+  },
+  {
+    "id": "ks-009",
+    "language": "bash",
+    "question": "Um pod do namespace dev precisa chamar o Service api do namespace prod. Qual endereço funciona?",
+    "code": "# dentro de um pod do namespace dev\nwget -qO- http://???/hostname",
+    "options": [
+      "http://api, o nome curto vale em qualquer namespace",
+      "http://prod.api, com o namespace antes do nome do Service",
+      "http://api.prod (nome do Service, ponto, namespace)",
+      "http://api.prod.local, com o sufixo local no fim"
+    ],
+    "answer": 2,
+    "explanation": "O DNS do cluster dá a cada Service o nome `<service>.<namespace>.svc.cluster.local`. Dentro do mesmo namespace o nome curto (`api`) basta, porque o pod completa o resto com o namespace dele. Para outro namespace, use `api.prod` (ou o nome completo, `api.prod.svc.cluster.local`). `prod.api` procuraria o Service `prod` no namespace `api`, e `.local` não é o domínio do cluster.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "kubernetes",
+      "label": "Kubernetes",
+      "description": "Pods, Deployments, Services e o dia a dia do cluster"
+    }
+  },
+  {
+    "id": "ks-010",
+    "language": "yaml",
+    "question": "Com este Role e um RoleBinding no namespace dev ligando a ServiceAccount ci a ele, o que a ci consegue fazer?",
+    "code": "kind: Role\nmetadata:\n  namespace: dev\n  name: leitor\nrules:\n  - apiGroups: [\"\"]\n    resources: [\"pods\"]\n    verbs: [\"get\", \"list\"]",
+    "options": [
+      "Listar pods só no dev: não lista no prod nem apaga pods do dev",
+      "Listar pods de todos os namespaces, porque o Role dá acesso ao cluster",
+      "Listar e apagar pods do dev, pois o Role dá acesso total ao namespace",
+      "Nada: ServiceAccount não aceita Role, só usuários humanos aceitam"
+    ],
+    "answer": 0,
+    "explanation": "Um `Role` vale só no namespace em que foi criado e só para os recursos e verbos listados (aqui, `get` e `list` em pods). Por isso a `ci` lista os pods do `dev`, mas leva `forbidden` ao listar no `prod`, ao listar em todos os namespaces (`-A`) e ao apagar um pod. Para valer no cluster inteiro seria preciso um `ClusterRole` com um `ClusterRoleBinding`.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "kubernetes",
+      "label": "Kubernetes",
+      "description": "Pods, Deployments, Services e o dia a dia do cluster"
+    }
+  },
+  {
+    "id": "ks-011",
+    "language": "yaml",
+    "question": "Com esta estratégia, o que vale durante a atualização da imagem do Deployment?",
+    "code": "spec:\n  replicas: 4\n  strategy:\n    type: RollingUpdate\n    rollingUpdate:\n      maxSurge: 1\n      maxUnavailable: 0",
+    "options": [
+      "Os 4 pods antigos caem juntos e os 4 novos sobem em seguida",
+      "Chega a haver 8 pods ao mesmo tempo, os 4 antigos e os 4 novos",
+      "Por alguns instantes ficam só 3 pods prontos, enquanto o novo sobe",
+      "Nunca há menos de 4 pods prontos nem mais de 5 no total"
+    ],
+    "answer": 3,
+    "explanation": "`maxSurge: 1` permite 1 pod acima das 4 réplicas (teto de 5 pods no total) e `maxUnavailable: 0` proíbe ficar abaixo de 4 prontos. Então o Deployment sobe 1 pod novo, espera ele ficar pronto, só então derruba 1 antigo, e repete. Derrubar tudo para depois subir tudo é a estratégia `Recreate`, que deixa o serviço fora do ar por um tempo.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "kubernetes",
+      "label": "Kubernetes",
+      "description": "Pods, Deployments, Services e o dia a dia do cluster"
+    }
+  },
+  {
+    "id": "ks-012",
+    "language": "bash",
+    "question": "Qual efeito de taint também expulsa os pods que já estão rodando no nó e não o toleram?",
+    "code": "kubectl taint nodes no-1 chave=valor:EFEITO",
+    "options": [
+      "NoSchedule",
+      "NoExecute",
+      "PreferNoSchedule",
+      "Nenhum: taint só afeta o agendamento de pods novos"
+    ],
+    "answer": 1,
+    "explanation": "`NoSchedule` só impede que **novos** pods sem a toleration sejam agendados no nó: os que já estão lá continuam rodando. `PreferNoSchedule` é só uma preferência do agendador. Apenas o `NoExecute` também **despeja** os pods em execução que não toleram o taint (a toleration pode limitar o prazo com `tolerationSeconds`). É o efeito de quem quer esvaziar um nó.",
+    "difficulty": "advanced",
+    "topic": {
+      "id": "kubernetes",
+      "label": "Kubernetes",
+      "description": "Pods, Deployments, Services e o dia a dia do cluster"
+    }
+  },
+  {
+    "id": "ks-013",
+    "language": "bash",
+    "question": "Um PDB com minAvailable: 2 protege um Deployment de 2 réplicas. O que acontece ao rodar kubectl drain no nó de um desses pods?",
+    "code": "# PodDisruptionBudget: minAvailable: 2 (Deployment com 2 réplicas)\nkubectl drain no-1 --ignore-daemonsets",
+    "options": [
+      "O drain termina normalmente, porque o PDB só vale quando um nó cai sozinho",
+      "O drain não expulsa o pod, mas o kubectl delete pod direto passa",
+      "O drain e o kubectl delete pod são ambos barrados pelo PDB",
+      "O PDB faz o Kubernetes subir um 3º pod em outro nó para o drain poder seguir"
+    ],
+    "answer": 1,
+    "explanation": "O PDB limita as **remoções voluntárias** (evictions), como as do `kubectl drain`: com 2 pods e `minAvailable: 2`, nenhum pode sair, e o drain fica tentando até estourar o tempo (\"Cannot evict pod as it would violate the pod's disruption budget\"). O PDB não cria pods extras e **não vale para `kubectl delete pod`**, que apaga o pod mesmo assim (o ReplicaSet recria). Sem o PDB, o mesmo drain termina.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "kubernetes",
+      "label": "Kubernetes",
+      "description": "Pods, Deployments, Services e o dia a dia do cluster"
+    }
+  },
+  {
+    "id": "ks-014",
+    "language": "bash",
+    "question": "Um StatefulSet db usa volumeClaimTemplates. Você roda kubectl delete statefulset db. O que acontece com os PVCs?",
+    "code": "kubectl delete statefulset db\nkubectl get pvc\n# data-db-0   ???\n# data-db-1   ???",
+    "options": [
+      "São apagados junto com o StatefulSet, e os dados somem",
+      "Ficam em Terminating até os pods do StatefulSet voltarem",
+      "O kubectl recusa apagar o StatefulSet enquanto existirem PVCs",
+      "Continuam lá, com os dados: o padrão é não apagá-los"
+    ],
+    "answer": 3,
+    "explanation": "Por padrão (`persistentVolumeClaimRetentionPolicy` com `whenDeleted: Retain`), o StatefulSet **não apaga** os PVCs: eles continuam `Bound`, com os dados. Ao recriar o StatefulSet, o `db-0` volta a montar o `data-db-0`, com o mesmo nome e o mesmo conteúdo. É de propósito, para não perder dados por engano; para apagá-los é preciso `kubectl delete pvc` ou configurar a política como `Delete`.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "kubernetes",
+      "label": "Kubernetes",
+      "description": "Pods, Deployments, Services e o dia a dia do cluster"
+    }
+  },
+  {
+    "id": "ks-015",
+    "language": "yaml",
+    "question": "Você apaga o pod deste contêiner, sem mexer no período de graça. Quanto tempo ele demora para sumir?",
+    "code": "containers:\n  - name: app\n    image: busybox\n    command: [\"sleep\", \"3600\"]   # PID 1, sem tratar SIGTERM",
+    "options": [
+      "Cerca de 30 s: ignora o SIGTERM e só cai com o SIGKILL",
+      "Menos de 1 s: o kubelet envia SIGKILL direto",
+      "Fica em Terminating para sempre, até você apagar com --force",
+      "Cerca de 5 s, que é o período de graça padrão"
+    ],
+    "answer": 0,
+    "explanation": "Ao apagar um pod, o kubelet manda `SIGTERM` e espera `terminationGracePeriodSeconds` (30 s por padrão); se o processo ainda estiver vivo, manda `SIGKILL`. O PID 1 de um contêiner não recebe a ação padrão dos sinais: sem um *handler* de `SIGTERM`, ele simplesmente ignora o sinal, então o `sleep` só cai ao fim dos 30 s. Se o processo trata o sinal (por exemplo, `trap 'exit 0' TERM`), o pod some em segundos.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "kubernetes",
+      "label": "Kubernetes",
+      "description": "Pods, Deployments, Services e o dia a dia do cluster"
+    }
+  },
+  {
+    "id": "ks-016",
+    "language": "yaml",
+    "question": "O contêiner deste Job sempre sai com erro. Quantos pods o Job cria até desistir?",
+    "code": "spec:\n  backoffLimit: 2\n  template:\n    spec:\n      restartPolicy: Never\n      containers: [...]   # sempre sai com erro",
+    "options": [
+      "1 pod: com restartPolicy Never o Job não tenta de novo",
+      "2 pods: o backoffLimit é o total de pods do Job",
+      "3 pods: a primeira tentativa mais 2 novas tentativas",
+      "Quantos forem precisos: o Job só para quando o contêiner der certo"
+    ],
+    "answer": 2,
+    "explanation": "O `backoffLimit` conta as tentativas **extras**: o Job desiste quando as falhas passam desse limite. Com `backoffLimit: 2` e `restartPolicy: Never`, cada tentativa é um pod novo, então ele cria 3 pods (os que falharam ficam para você ler os logs) e termina `Failed` com o motivo `BackoffLimitExceeded`. Com `restartPolicy: OnFailure`, as tentativas são reinícios do contêiner no mesmo pod.",
+    "difficulty": "expert",
+    "topic": {
+      "id": "kubernetes",
+      "label": "Kubernetes",
+      "description": "Pods, Deployments, Services e o dia a dia do cluster"
+    }
   }
 ]

@@ -117,5 +117,12 @@
     "emoji": "📈",
     "description": "Logs, métricas, traces, PromQL e SLOs: entenda o que o seu sistema está fazendo.",
     "modules": ["observability"]
+  },
+  {
+    "id": "kubernetes",
+    "name": "Kubernetes na prática",
+    "emoji": "☸️",
+    "description": "Pods, Deployments, Services, probes, RBAC e agendamento: o cluster no dia a dia.",
+    "modules": ["kubernetes"]
   }
 ]

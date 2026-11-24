@@ -4,6 +4,7 @@ node_modules
 site
 test
 deploy
+tools
 data
 .env
 .env.example

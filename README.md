@@ -88,7 +88,7 @@ O bot olha as **últimas 20 respostas no seu nível** (só perguntas do nível e
 
 ### Cursos e certificados (`cursos`)
 
-Cada curso junta alguns assuntos (os **módulos**) e tem um certificado **por nível**, então um curso rende até quatro: Iniciante, Intermediário, Avançado e Especialista. Hoje são dezessete cursos: 🟨 JavaScript do zero, 🟦 TypeScript na prática, 🎨 Frontend na prática (HTML, CSS e DOM), ♿ Acessibilidade na web, 🔌 HTTP e APIs REST, 🔐 Segurança web, 🧪 Testes automatizados, 🌐 Redes na prática, 🐍 Python do zero, 🧮 Estruturas de dados, 🕸️ Algoritmos de grafos, 🗄️ SQL essencial, 🧱 Modelagem de dados, 🐳 Linux e Docker, 🚀 CI/CD com GitHub Actions, 📈 Observabilidade na prática e 🔀 Git na prática.
+Cada curso junta alguns assuntos (os **módulos**) e tem um certificado **por nível**, então um curso rende até quatro: Iniciante, Intermediário, Avançado e Especialista. Hoje são dezoito cursos: 🟨 JavaScript do zero, 🟦 TypeScript na prática, 🎨 Frontend na prática (HTML, CSS e DOM), ♿ Acessibilidade na web, 🔌 HTTP e APIs REST, 🔐 Segurança web, 🧪 Testes automatizados, 🌐 Redes na prática, 🐍 Python do zero, 🧮 Estruturas de dados, 🕸️ Algoritmos de grafos, 🗄️ SQL essencial, 🧱 Modelagem de dados, 🐳 Linux e Docker, 🚀 CI/CD com GitHub Actions, 📈 Observabilidade na prática, ☸️ Kubernetes na prática e 🔀 Git na prática.
 
 - **Como conclui um módulo:** acertar **75% das perguntas diferentes** daquele assunto e nível (arredondado para cima). Acertar a mesma pergunta de novo não conta, e errar não tira o que já foi acertado. O nível do curso fecha quando **todos** os módulos dele passam, e o certificado sai na hora, na própria resposta que fechou, com um botão **Ver meu certificado**.
 - **Quem estuda de qualquer jeito também avança:** o progresso conta pelas perguntas acertadas em `aprender`, `desafio` ou pelo botão **Praticar** da tela do curso. Cada resposta mostra uma linha com quanto falta para o certificado.
@@ -180,6 +180,7 @@ src/
 test/                   testes automáticos (npm test), sem precisar de token nem de internet
 brand/                  identidade visual: logotipo, cores, fontes, ícones, avatar e banner (veja brand/guide.html)
 site/                   site de apresentação do bot (Astro, estático e com segurança reforçada; veja site/README.md)
+tools/                  verificador dos desafios de Kubernetes (roda só no GitHub Actions; veja tools/verify-kubernetes/README.md)
 data/                   banco SQLite em runtime (fora do git)
 .github/                CI (testes em cada PR e o do site), Dependabot, template de PR e o workflow manual de teste do bot
 SECURITY.md             como avisar de uma vulnerabilidade e o que fazer se o token vazar
@@ -220,6 +221,10 @@ Regras que a validação cobra, porque vêm de limites do Discord:
 - Use o mesmo `label` e `description` para o mesmo `topic.id` em todos os níveis. Para o assunto aparecer em mais de um nível, basta cadastrar desafios dele em cada nível.
 - Tente ter pelo menos 4 desafios por assunto e nível, para o "Próxima pergunta" não ficar repetitivo.
 
+### Desafios conferidos num cluster de verdade (Kubernetes)
+
+As respostas dos 16 desafios de Kubernetes (`ks-001` a `ks-016`) não foram escritas de memória: cada uma tem um cenário em `tools/verify-kubernetes/questions/` que o GitHub Actions roda num cluster **kind descartável** (criado e destruído dentro da execução, nada no computador de ninguém), observando o que o Kubernetes faz. O workflow **Kubernetes** (`.github/workflows/kubernetes.yml`) roda em duas versões do Kubernetes e confere, opção por opção, que só a marcada como correta é verdadeira. O `npm test` não precisa de cluster, mas confere que o texto dos desafios e as verificações continuam batendo. Detalhes em `tools/verify-kubernetes/README.md`.
+
 ### Áreas (`src/data/areas.json`)
 
 Cada área lista os `topics` (ids de assunto) que pertencem a ela. Um assunto pode estar em várias áreas: JavaScript está em Frontend e em Backend. **Todo assunto novo precisa entrar em pelo menos uma área**, senão ninguém o encontra depois da configuração (`npm test` confere). Uma área nova precisa de `id` (até 10 caracteres), `label`, `emoji`, `description` e `topics`, com no máximo 6 áreas no total.
@@ -230,5 +235,5 @@ Cada curso tem `id` (até 12 caracteres), `name`, `emoji`, `description` e `modu
 
 ## Próximos passos
 
-- Mais desafios e mais assuntos (hoje são 340 desafios em 21 assuntos, com 4 em cada nível; `npm test` exige esse mínimo). Ideias que ainda não existem: observabilidade e Kubernetes. O limite é de 20 cursos (`MAX_COURSES` em `src/utils/courses.js`).
+- Mais desafios e mais assuntos (hoje são 372 desafios em 23 assuntos, com 4 em cada nível; `npm test` exige esse mínimo). Ideias que ainda não existem: infraestrutura como código (Terraform) e bancos NoSQL. O limite é de 20 cursos (`MAX_COURSES` em `src/utils/courses.js`).
 - Escala: ao chegar perto de ~2.500 servidores o Discord exige sharding (`ShardingManager`), e o SQLite em arquivo único passa a ser o gargalo (a troca natural é Postgres). Hoje quase nada atrapalha: os dados ficam por pessoa e não por servidor. O que precisa mudar na hora é a memória de cada processo (trava de clique duplo, cooldown), que teria de ir para o banco compartilhado.
