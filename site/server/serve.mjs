@@ -29,6 +29,21 @@ const HOST_ONLY = new Set(["_headers", "_redirects"]);
 const MAX_URL_LENGTH = 2048;
 const HOST_PATTERN = /^[a-z0-9]([a-z0-9.-]*[a-z0-9])?(:\d{1,5})?$/i;
 
+// Os protocolos (minúsculos) que os cabeçalhos do proxy dizem que o visitante usou: o primeiro valor de x-forwarded-proto
+// e o "scheme" do cf-visitor ({"scheme":"https"}). Cabeçalho ausente ou mal formado simplesmente não conta.
+function visitorSchemes(headers) {
+  const schemes = [];
+  const forwarded = String(headers["x-forwarded-proto"] ?? "").split(",")[0].trim().toLowerCase();
+  if (forwarded) schemes.push(forwarded);
+  try {
+    const scheme = JSON.parse(String(headers["cf-visitor"] ?? "")).scheme;
+    if (typeof scheme === "string" && scheme) schemes.push(scheme.trim().toLowerCase());
+  } catch {
+    // não é JSON: ignora
+  }
+  return schemes;
+}
+
 // Lê a pasta do site e devolve Map(caminho da URL -> { body, type, etag }).
 // Fora: links simbólicos, arquivos e pastas ocultos (menos /.well-known, onde fica o security.txt) e os arquivos HOST_ONLY.
 export function buildIndex(root) {
@@ -98,10 +113,12 @@ export function createHandler({ index, headers, cacheRules }) {
     // Só aceita "/caminho?consulta": recusa "*", "http://outro-site/..." e o que não começa com "/".
     if (!raw.startsWith("/")) return send(res, 400, { body: "Pedido inválido.\n", head });
 
-    // HTTPS: o proxy da hospedagem avisa o protocolo original em x-forwarded-proto. Quem chegou por http vai para https
-    // (a Discloud não faz isso sozinha). Usa só o cabeçalho Host, que o proxy preenche com o endereço público.
-    const proto = String(req.headers["x-forwarded-proto"] ?? "").split(",")[0].trim().toLowerCase();
-    if (proto && proto !== "https") {
+    // HTTPS: quem chegou por http vai para https (a Discloud não faz isso sozinha). Há dois sinais e vale se QUALQUER um disser
+    // que o visitante veio por http: o x-forwarded-proto (proxies comuns) e o cf-visitor (Cloudflare). Na Discloud o
+    // x-forwarded-proto é SEMPRE "https" (o trecho entre o Cloudflare e o proxy deles é https): quem diz a verdade é o
+    // cf-visitor, que vale {"scheme":"http"} para quem abriu o endereço sem TLS. Medido numa conta real.
+    // O destino usa só o cabeçalho Host, que o proxy preenche com o endereço público.
+    if (visitorSchemes(req.headers).some((scheme) => scheme !== "https")) {
       const host = String(req.headers.host ?? "");
       if (!HOST_PATTERN.test(host)) return send(res, 400, { body: "Pedido inválido.\n", head });
       return send(res, 301, { body: "", extra: { Location: `https://${host}${raw}` }, head });

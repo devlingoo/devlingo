@@ -201,6 +201,17 @@ test("https: quem chega por http é redirecionado (só pelo cabeçalho do proxy 
   assert.equal((await get("/sobre")).status, 200, "sem o cabeçalho (acesso local): não redireciona");
   assert.equal((await get("/sobre", { "X-Forwarded-Proto": "https, http" })).status, 200, "vale o primeiro valor da lista");
 
+  // O caso REAL da Discloud (medido numa conta): o proxy dela diz x-forwarded-proto: https até para quem abriu por http,
+  // e só o cf-visitor do Cloudflare conta a verdade.
+  const real = await get("/sobre?x=1", { "X-Forwarded-Proto": "https", "CF-Visitor": '{"scheme":"http"}', Host: "devlingo.discloud.dev" });
+  assert.equal(real.status, 301);
+  assert.equal(real.headers.location, "https://devlingo.discloud.dev/sobre?x=1");
+  assert.equal((await get("/sobre", { "X-Forwarded-Proto": "https", "CF-Visitor": '{"scheme":"https"}' })).status, 200, "cf-visitor https: não redireciona");
+  assert.equal((await get("/sobre", { "CF-Visitor": '{"scheme":"HTTP"}' })).status, 301, "sem x-forwarded-proto, o cf-visitor sozinho basta (e ignora maiúsculas)");
+  for (const malformed of ["isto-nao-e-json", "{}", '{"scheme":5}', '{"scheme":""}', "null", "[]"]) {
+    assert.equal((await get("/sobre", { "CF-Visitor": malformed })).status, 200, `cf-visitor mal formado (${malformed}) é ignorado`);
+  }
+
   // O destino usa o Host da própria requisição; um Host mal formado é recusado em vez de montar um endereço estranho.
   for (const host of ["evil.com/x", "a b", "evil.com@outro.com", "-.com", "x:99999999"]) {
     const res = await get("/", { "X-Forwarded-Proto": "http", Host: host });
